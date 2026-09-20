@@ -2,7 +2,7 @@
 
 Internal continuity for humans and agents. Workspace files are the source of truth; this file stores **decisions, gold numbers, and dead ends** that are easy to lose.
 
-**Last updated:** 2026-09-20 (original KSDSU Kartika/Magha photos; bijas unchanged)  
+**Last updated:** 2026-09-20 (winter manda/EoT grid: no joint fit; bijas unchanged)  
 
 ---
 
@@ -74,6 +74,7 @@ Convention: दि. 11।55 = 11:55 AM; दि. 2।17 = 2:17 PM; रा. 2।43
 - May 21 book सू.उ. **०४।१८** vs नक्षत्र २२।४८ checksum fail — do not fit.
 - Dec 15 २५।०० vs दि. 3:49 checksum fail on some Mithila rows.
 - Lucky SS dEl ≈ 0 on 30 Aug / 20 Sep 2026 was coincidence before bijas.
+- **2026-09-20 winter manda grid:** sun apogee 150–200° and manda circum 10–20° — only ~174°/14° (current) keeps July gold; winter tithi sum barely moves (394 vs ~400 min). Moon apsis only −90° passes July. NOAA EoT scale 0 fixes Kartika SR (~3 min) but July 29 SS becomes 6:43 vs book 6:50 (fails 4 min). **Do not retune apogee/manda/EoT for winter.** Next lever is not a school constant (full Makaranda manda table / true SS EoT), not a 1-D bija.
 
 ## Key paths
 
@@ -89,6 +90,6 @@ Convention: दि. 11।55 = 11:55 AM; दि. 2।17 = 2:17 PM; रा. 2।43
 
 ## Next agent move
 
-1. If a new **original KSDSU** winter page arrives, refit bijas against Jul **and** that page; no Mithila 2027.
+1. Do **not** retune apogee/manda/EoT (grid 2026-09-20). Winter tithi needs a fuller Makaranda spashta table, not a 1-D bija. No Mithila 2027.
 2. Keep servers: `mvn spring-boot:run` + `frontend npm run dev`.
 3. Do not revert SIDDHANTIC to Meeus to chase Drik-like websites (kundligpt, Deccan Chronicle).
