@@ -7,7 +7,7 @@ import {
 import BirthForm from "../components/BirthForm";
 import KundaliChart from "../components/KundaliChart";
 import PlaceSearch from "../components/PlaceSearch";
-import { api, defaultBirth } from "../api";
+import { api, defaultBirth, fetchPdf, triggerDownload } from "../api";
 import { useApp } from "../state";
 import { useI18n } from "../i18n";
 import { grahaName, nakName, dignityName, rashiName, yogaName, yogaText, yogaType, gemPhrase, prashnaVerdict, articleTitle, articleBody, astroBio } from "../jyotishLabels";
@@ -76,6 +76,38 @@ export function KundaliPage() {
   const [panch, setPanch] = useState<any>(null);
   const [chalit, setChalit] = useState<any>(null);
   const [gochar, setGochar] = useState<any>(null);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [pdfErr, setPdfErr] = useState("");
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const makePdf = async () => {
+    setPdfBusy(true);
+    setPdfErr("");
+    try {
+      const blob = await fetchPdf("/api/v1/jyotish/report", birth);
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+      const url = triggerDownload(blob, "makaranda-kundali.pdf");
+      setPdfUrl(url);
+    } catch (e: any) {
+      setPdfErr(e.message || t("pdf_fail"));
+    } finally {
+      setPdfBusy(false);
+    }
+  };
+  const pdfBar = (
+    <Box sx={{ mt: 2 }}>
+      <Button variant="contained" disabled={pdfBusy} onClick={makePdf}>
+        {pdfBusy ? t("pdf_wait") : t("pdf")}
+      </Button>
+      {pdfErr && <Alert severity="error" sx={{ mt: 1 }}>{t("pdf_fail")}: {pdfErr}</Alert>}
+      {pdfUrl && (
+        <Box sx={{ mt: 2 }}>
+          <Button href={pdfUrl} target="_blank" rel="noopener" sx={{ mb: 1 }}>{t("pdf_open")}</Button>
+          <Box component="iframe" title="makaranda-pdf" src={pdfUrl}
+            sx={{ width: "100%", height: 640, border: "1px solid rgba(232,197,71,0.25)", borderRadius: 1, bgcolor: "#111" }} />
+        </Box>
+      )}
+    </Box>
+  );
   useEffect(() => { if (!chart) loadChart().catch(() => {}); }, []);
   useEffect(() => {
     const d = String(birth.dateTime || "").slice(0, 10);
@@ -163,6 +195,7 @@ export function KundaliPage() {
                   </GlassCard>
                 </Grid>
               )}
+              <Grid item xs={12}>{pdfBar}</Grid>
             </Grid>
           )}
           {tab === 1 && (
@@ -212,15 +245,7 @@ export function KundaliPage() {
                   </TableBody>
                 </Table>
                 </Box>
-                <Button sx={{ mt: 2 }} variant="outlined" onClick={async () => {
-                  const res: any = await fetch("/api/v1/jyotish/report.pdf", {
-                    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(birth)
-                  });
-                  const blob = await res.blob();
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url; a.download = "makaranda-kundali.pdf"; a.click();
-                }}>{t("pdf")}</Button>
+                {pdfBar}
               </Grid>
               {chart.interpretation && (
                 <Grid item xs={12}>
@@ -919,6 +944,34 @@ export function AdminPage() {
     <Box>
       <PageHero title={t("admin_title")} />
       <Grid container spacing={2}>
+        {[[t("users"), dash.users], [t("astrologers"), dash.astrologers], [t("consultations"), dash.consultations], [t("articles"), dash.articles]].map(([k, v]) => (
+          <Grid item xs={6} md={3} key={k as string}><Card><CardContent><Typography color="primary">{k}</Typography><Typography variant="h4">{v}</Typography></CardContent></Card></Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+}
+
+export function LoginPage() {
+  const { login } = useApp();
+  const { t } = useI18n();
+  const [email, setEmail] = useState("user@makaranda.app");
+  const [password, setPassword] = useState("user123");
+  const [err, setErr] = useState("");
+  return (
+    <Box sx={{ maxWidth: 440, mx: "auto", mt: 4 }}>
+      <GlassCard>
+        <PageHero title={t("signin")} sub={t("demo_accounts")} />
+        <TextField fullWidth label={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} sx={{ mb: 2 }} />
+        <TextField fullWidth type="password" label={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} sx={{ mb: 2 }} />
+        {err && <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert>}
+        <Button fullWidth variant="contained" onClick={() => login(email, password).catch((e) => setErr(e.message))}>{t("enter")}</Button>
+        <Typography variant="body2" sx={{ mt: 2 }} color="text.secondary">user123 · astro123 · admin123</Typography>
+      </GlassCard>
+    </Box>
+  );
+}
+   <Grid container spacing={2}>
         {[[t("users"), dash.users], [t("astrologers"), dash.astrologers], [t("consultations"), dash.consultations], [t("articles"), dash.articles]].map(([k, v]) => (
           <Grid item xs={6} md={3} key={k as string}><Card><CardContent><Typography color="primary">{k}</Typography><Typography variant="h4">{v}</Typography></CardContent></Card></Grid>
         ))}

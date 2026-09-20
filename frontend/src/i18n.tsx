@@ -228,6 +228,9 @@ const HI: Record<string, string> = {
   avastha: "बालादि",
   dms: "अंश",
   vakra: "वक्र",
+  pdf_wait: "प्रतिवेदन बन रहा है…",
+  pdf_fail: "पीडीएफ नहीं बना",
+  pdf_open: "प्रतिवेदन देखें",
   chart_d1: "लग्न कुंडली (D1)",
   chart_chandra: "चन्द्र कुंडली",
   chart_surya: "सूर्य कुंडली",
@@ -462,6 +465,15 @@ const EN: Record<string, string> = {
   direction: "Direction",
   palabha: "Palabha",
   no_places: "No places found",
+  pdf_wait: "Preparing report…",
+  pdf_fail: "PDF failed",
+  pdf_open: "View report",
+  chart_d1: "Lagna chart (D1)",
+  chart_chandra: "Chandra kundali",
+  chart_surya: "Surya kundali",
+  chart_chalit: "Bhava chalit (Sripati)",
+  chart_gochar: "Today's gochar",
+  chalit_help: "Chalit uses Sripati bhavas; it does not change the default whole-sign kundali. Chandra/Surya recount the same grahas from Moon or Sun.",
 };
 
 const dict: Record<Lang, Record<string, string>> = { hi: HI, en: EN };

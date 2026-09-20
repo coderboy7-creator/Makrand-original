@@ -34,6 +34,42 @@ export const api = {
   del: (p: string) => req(p, { method: "DELETE" }),
 };
 
+/** POST a birth payload and return a PDF blob. Throws if the API is down or returns JSON error. */
+export async function fetchPdf(path: string, body: any): Promise<Blob> {
+  const headers: any = { "Content-Type": "application/json" };
+  const tok = getToken();
+  if (tok) headers.Authorization = "Bearer " + tok;
+  let res: Response;
+  const payload = { ...(body || {}) };
+  if (typeof payload.dateTime === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(payload.dateTime)) {
+    payload.dateTime = payload.dateTime + ":00";
+  }
+  try {
+    res = await fetch(path, { method: "POST", headers, body: JSON.stringify(payload) });
+  } catch {
+    throw new Error("API unreachable — start Spring Boot on port 8080");
+  }
+  const ct = res.headers.get("content-type") || "";
+  if (!res.ok || !ct.toLowerCase().includes("pdf")) {
+    const data = await res.json().catch(() => ({} as any));
+    throw new Error(data.error || data.message || `PDF HTTP ${res.status}`);
+  }
+  return res.blob();
+}
+
+export function triggerDownload(blob: Blob, filename: string): string {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.rel = "noopener";
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  return url;
+}
+
 export function defaultBirth() {
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");

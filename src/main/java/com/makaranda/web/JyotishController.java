@@ -134,12 +134,13 @@ public class JyotishController {
         return jyotish.muhurtaBundle(req);
     }
 
-    @PostMapping(value = "/report.pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    @PostMapping(value = { "/report", "/report.pdf" }, produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> report(@RequestBody BirthRequest req) {
         byte[] bytes = pdf.kundaliReport(req);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=makaranda-kundali.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
+                .contentLength(bytes.length)
                 .body(bytes);
     }
 }
