@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: makaranda-jyotish
+  datasource:
+    url: jdbc:h2:file:./data/makaranda;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+makaranda:
+  jwt-secret: MakarandaMithilaJyotishSecretKey2026ForHS256TokensMustBeLongEnough!!
+  jwt-expiry-hours: 72
+  default-place: Darbhanga, Bihar, India (KSDS अक्षांश २६।३५)
+  default-lat: 26.5833
+  default-lon: 85.268
+  default-tz: Asia/Kolkata
+  default-ayanamsa: SURYA_SIDDHANTA_MAKARANDA
+  default-panchang-mode: SIDDHANTIC
+  nominatim-url: https://nominatim.openstreetmap.org
+  llm:
+    enabled: false
+    base-url: ${MAKARANDA_LLM_URL:}
+    api-key: ${MAKARANDA_LLM_KEY:}
+    model: ${MAKARANDA_LLM_MODEL:gpt-4o-mini}
+
+springdoc:
+  api-docs:
+    path: /api/docs
+  swagger-ui:
+    path: /api/swagger
+
+logging:
+  level:
+    com.makaranda: INFO
+    org.springframework.security: WARN

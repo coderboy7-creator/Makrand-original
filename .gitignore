@@ -1,0 +1,13 @@
+target/
+data/
+.idea/
+*.iml
+.arena/
+.cache/
+.local/
+frontend/node_modules/
+mobile/node_modules/
+src/main/resources/static/assets/
+tmp_panji/
+*.log
+.DS_Store

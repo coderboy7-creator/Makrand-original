@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Makaranda Jyotish",
+    "slug": "makaranda-jyotish",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "makaranda",
+    "userInterfaceStyle": "dark",
+    "ios": { "bundleIdentifier": "app.makaranda.jyotish", "supportsTablet": true },
+    "android": { "package": "app.makaranda.jyotish" },
+    "web": { "bundler": "metro" }
+  }
+}

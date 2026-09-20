@@ -1,0 +1,9 @@
+{
+  "name": "Makaranda Jyotish",
+  "short_name": "Makaranda",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1026",
+  "theme_color": "#7B1E3A",
+  "description": "Mithilanchal Vedic astrology — Kundali, Panchang, Milan, Consult"
+}
