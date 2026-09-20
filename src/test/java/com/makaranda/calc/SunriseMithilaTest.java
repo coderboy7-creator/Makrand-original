@@ -70,7 +70,7 @@ class SunriseMithilaTest {
         LocalDateTime end = LocalDateTime.parse(iso);
         LocalDateTime want = LocalDateTime.of(2022, 8, 12, 7, 27);
         long min = Math.abs(java.time.Duration.between(end, want).toMinutes());
-        assertTrue(min <= 25, "purnima end " + iso + " want 07:27, Δ=" + min + " min");
+        assertTrue(min <= 22, "purnima end " + iso + " want 07:27, Δ=" + min + " min");
     }
 
     @Test

@@ -2,7 +2,7 @@
 
 Internal continuity for humans and agents. Workspace files are the source of truth; this file stores **decisions, gold numbers, and dead ends** that are easy to lose.
 
-**Last updated:** 2026-09-20  
+**Last updated:** 2026-09-20 (P0 tests; bijas unchanged)  
 
 ---
 

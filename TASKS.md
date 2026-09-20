@@ -15,7 +15,8 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 - [x] Nominatim proxy, India-biased search
 - [x] JWT roles, CRM/consult/admin/learn spines, OpenPDF one-pager, Swagger
 - [x] Tests: `AstroMathTest`, `PanchangLimbTest`, `SunriseMithilaTest` (2022-07-29 / 08-12 / 2016-07-20 tithi)
-- [x] Repo on GitHub `coderboy7-creator/Makrand-original` (`main` / `d86f3bb`)
+- [x] Repo on GitHub `coderboy7-creator/Makrand-original` (`main`)
+- [x] Golden tests lock Jul 2016 / Jul–Aug 2022 KSDSU (do not retune bijas without a winter KSDSU page)
 
 ## Now / P0 — correctness
 
