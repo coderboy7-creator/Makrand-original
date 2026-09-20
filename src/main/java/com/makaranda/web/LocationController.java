@@ -16,7 +16,7 @@ public class LocationController {
     }
 
     @GetMapping("/search")
-    public Object search(@RequestParam(defaultValue = "Darbhanga") String q) {
+    public Object search(@RequestParam(defaultValue = "") String q) {
         return locations.search(q);
     }
 }
