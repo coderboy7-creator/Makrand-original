@@ -34,17 +34,33 @@ public class CrmController {
     public ClientProfile save(@AuthenticationPrincipal User user, @RequestBody ClientProfile body) {
         if (body.getId() != null) {
             ClientProfile existing = clients.findById(body.getId()).orElseThrow();
+            assertOwns(user, existing);
             body.setCreatedAt(existing.getCreatedAt());
+            body.setOwnerUserId(existing.getOwnerUserId());
+            body.setAstrologerId(existing.getAstrologerId());
+        } else {
+            body.setOwnerUserId(user.getId());
+            if (user.getRole() == User.Role.ASTROLOGER) body.setAstrologerId(user.getId());
         }
-        body.setOwnerUserId(user.getId());
-        if (user.getRole() == User.Role.ASTROLOGER) body.setAstrologerId(user.getId());
         body.setUpdatedAt(Instant.now());
         return clients.save(body);
     }
 
     @DeleteMapping("/clients/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(@AuthenticationPrincipal User user, @PathVariable Long id) {
+        ClientProfile existing = clients.findById(id).orElseThrow();
+        assertOwns(user, existing);
         clients.deleteById(id);
+    }
+
+    private static void assertOwns(User user, ClientProfile c) {
+        if (user.getRole() == User.Role.ADMIN) return;
+        boolean astro = user.getRole() == User.Role.ASTROLOGER && user.getId().equals(c.getAstrologerId());
+        boolean owner = user.getId().equals(c.getOwnerUserId());
+        if (!astro && !owner) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "Not your client");
+        }
     }
 
     @GetMapping("/charts")

@@ -50,8 +50,9 @@ public class ConsultController {
     }
 
     @PostMapping("/{id}/pay")
-    public Consultation pay(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public Consultation pay(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody Map<String, String> body) {
         Consultation c = bookings.findById(id).orElseThrow();
+        assertParty(user, c);
         c.setPaymentRef(body.getOrDefault("paymentRef", "MOCK-" + UUID.randomUUID().toString().substring(0, 8)));
         c.setStatus(Consultation.Status.PAID);
         c.setStatus(Consultation.Status.CONFIRMED);
@@ -59,10 +60,18 @@ public class ConsultController {
     }
 
     @PostMapping("/{id}/status")
-    public Consultation status(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public Consultation status(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody Map<String, String> body) {
         Consultation c = bookings.findById(id).orElseThrow();
+        assertParty(user, c);
         c.setStatus(Consultation.Status.valueOf(body.get("status")));
         if (body.containsKey("notes")) c.setNotes(body.get("notes"));
         return bookings.save(c);
+    }
+
+    private static void assertParty(User user, Consultation c) {
+        if (user.getRole() == User.Role.ADMIN) return;
+        if (user.getId().equals(c.getClientUserId()) || user.getId().equals(c.getAstrologerId())) return;
+        throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.FORBIDDEN, "Not your consultation");
     }
 }
