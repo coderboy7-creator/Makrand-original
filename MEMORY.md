@@ -2,7 +2,7 @@
 
 Internal continuity for humans and agents. Workspace files are the source of truth; this file stores **decisions, gold numbers, and dead ends** that are easy to lose.
 
-**Last updated:** 2026-09-20 (winter manda/EoT grid: no joint fit; bijas unchanged)  
+**Last updated:** 2026-09-20 (Drik Swiss Eph wired; SIDDHANTIC bijas unchanged)  
 
 ---
 
@@ -10,10 +10,10 @@ Internal continuity for humans and agents. Workspace files are the source of tru
 
 - App is a runnable monolith. Preview: Vite `:5173`, API `:8080`.
 - SIDDHANTIC panchang = **SS spashta + Makaranda bijas** (not Meeus).
-- DRIK = Meeus Sun/Moon **without** −8.2′ bija.
+- DRIK = Swiss Ephemeris (`sepl_18.se1` + `semo_18.se1`, 1800–2400) when files load; else Meeus Sun/Moon **without** −8.2′ bija. SIDDHANTIC never calls SE.
 - Default place **KSDS 26.5833°N 85.268°E** (२६।३५ / ०१।३५ / पल्लभा ६).
 - GitHub: `https://github.com/coderboy7-creator/Makrand-original` branch `main`.
-- **Unfinished:** original KSDSU winter tithi 45–140 min early (photos in hand); Swiss Eph not wired; mobile stub.
+- **Unfinished:** original KSDSU winter tithi 45–140 min early (photos in hand); mobile stub. Swiss Eph is Drik-only.
 
 ## Gold vs not-gold
 
@@ -80,7 +80,7 @@ Convention: दि. 11।55 = 11:55 AM; दि. 2।17 = 2:17 PM; रा. 2।43
 
 | Path | Why |
 |---|---|
-| `src/main/java/com/makaranda/calc/ephemeris/EphemerisEngine.java` | SS bijas, EoT sunrise, Drik moon |
+| `src/main/java/com/makaranda/calc/ephemeris/EphemerisEngine.java` | SS bijas, EoT sunrise, Drik→SwissEphAdapter |
 | `.../panchang/PanchangCalculator.java` | KSDS constants, limb bisection, दि./रा./सां. |
 | `.../ephemeris/AyanamsaSystem.java` | Makaranda ≈ Lahiri for modern printed rashi |
 | `frontend/src/pages/Pages.tsx` | Almost all screens |
@@ -93,3 +93,4 @@ Convention: दि. 11।55 = 11:55 AM; दि. 2।17 = 2:17 PM; रा. 2।43
 1. Do **not** retune apogee/manda/EoT (grid 2026-09-20). Winter tithi needs a fuller Makaranda spashta table, not a 1-D bija. No Mithila 2027.
 2. Keep servers: `mvn spring-boot:run` + `frontend npm run dev`.
 3. Do not revert SIDDHANTIC to Meeus to chase Drik-like websites (kundligpt, Deccan Chronicle).
+4. Swiss Eph Java port is GPL dual-license (`third_party/swisseph`). Drik only.

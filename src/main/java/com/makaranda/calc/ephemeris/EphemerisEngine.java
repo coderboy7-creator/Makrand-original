@@ -8,9 +8,10 @@ import java.util.Map;
 /**
  * Dual-mode planetary engine.
  * <ul>
- *   <li>DRIK — JPL Keplerian elements (1800–2050) + Meeus lunar theory</li>
+ *   <li>DRIK — Swiss Ephemeris when sepl/semo files are present; else Meeus + JPL Kepler</li>
  *   <li>SIDDHANTIC — Surya Siddhanta mean motions from Kali Yuga with manda/sighra</li>
  * </ul>
+ * Swiss Eph is never used for SIDDHANTIC.
  */
 public final class EphemerisEngine {
 
@@ -25,6 +26,11 @@ public final class EphemerisEngine {
             return siddhantic(jdUt, lonEast);
         }
         return drik(jdUt);
+    }
+
+    /** Drik tropical grahas: Swiss Eph when loaded, otherwise Meeus/Kepler. */
+    public String drikBackend() {
+        return SwissEphAdapter.available() ? SwissEphAdapter.backend() : "meeus-fallback";
     }
 
     public double obliquity(double jdUt) {
@@ -160,9 +166,16 @@ public final class EphemerisEngine {
         return 4 * Math.toDegrees(E); // minutes of time
     }
 
-    /* ======================== DRIK (JPL + Meeus) ======================== */
+    /* ======================== DRIK (Swiss Eph, else JPL + Meeus) ======================== */
 
     private Map<String, GeoPos> drik(double jdUt) {
+        if (SwissEphAdapter.available()) {
+            try {
+                return SwissEphAdapter.planets(jdUt);
+            } catch (RuntimeException ignored) {
+                // keep Meeus/Kepler so Drik still answers if a date is outside se1 coverage
+            }
+        }
         double t = AstroMath.centuriesJ2000(jdUt);
         double[] earth = helio(t, EARTH);
         Map<String, GeoPos> out = new LinkedHashMap<>();
