@@ -10,7 +10,7 @@ import PlaceSearch from "../components/PlaceSearch";
 import { api, defaultBirth } from "../api";
 import { useApp } from "../state";
 import { useI18n } from "../i18n";
-import { grahaName, nakName, dignityName, rashiName } from "../jyotishLabels";
+import { grahaName, nakName, dignityName, rashiName, yogaName, yogaText, yogaType, gemPhrase, prashnaVerdict, articleTitle, articleBody, astroBio } from "../jyotishLabels";
 import { GlassCard, GoldTitle, LimbTile, MetaRow, PageHero, ScoreHero } from "../ui";
 
 export function HomePage() {
@@ -121,7 +121,7 @@ export function KundaliPage() {
                       <MetaRow k={t("sunrise")} v={panch.sunrise} />
                       <MetaRow k={t("sunset")} v={panch.sunset} />
                     </>
-                  ) : <Typography variant="body2">{hi ? "गणना हो रही है…" : "Loading…"}</Typography>}
+                  ) : <Typography variant="body2">{t("loading")}</Typography>}
                 </GlassCard>
               </Grid>
             </Grid>
@@ -189,7 +189,7 @@ export function KundaliPage() {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography color="primary" sx={{ mb: 1 }}>D9</Typography>
-                {v9Chart ? <KundaliChart chart={v9Chart} style={style} /> : <Typography variant="body2">{hi ? "वर्ग उपलब्ध नहीं" : "Vargas not loaded"}</Typography>}
+                {v9Chart ? <KundaliChart chart={v9Chart} style={style} /> : <Typography variant="body2">{t("vargas_missing")}</Typography>}
               </Grid>
             </Grid>
           )}
@@ -198,7 +198,7 @@ export function KundaliPage() {
               {(chart?.dasha?.periods || []).slice(0, 4).map((p: any) => (
                 <Card key={p.lord + p.start} sx={{ mb: 1 }}>
                   <CardContent>
-                    <Typography variant="h6" color="primary">{grahaName(p.lord, hi)} {hi ? "महादशा" : "Mahadasha"}</Typography>
+                    <Typography variant="h6" color="primary">{grahaName(p.lord, hi)} {t("mahadasha")}</Typography>
                     <Typography variant="body2">{p.start} → {p.end}</Typography>
                   </CardContent>
                 </Card>
@@ -240,10 +240,10 @@ export function VargasPage() {
             {(v.bodies || []).map((b: any) => (
               <Typography key={b.name} variant="body2">{grahaName(b.name, hi)} — {hi ? (b.signHi || b.signSa) : b.sign} · {t("bhava")} {b.house} · {dignityName(b.dignity, hi)}</Typography>
             ))}
-            <Typography sx={{ mt: 2 }} variant="subtitle2">Vimshopaka</Typography>
+            <Typography sx={{ mt: 2 }} variant="subtitle2">{t("vimshopaka")}</Typography>
             {Object.entries(chart.vimshopaka || {}).map(([k, val]: any) => (
               <Box key={k} sx={{ mb: 0.5 }}>
-                <Typography variant="caption">{k} {val}/20</Typography>
+                <Typography variant="caption">{grahaName(k, hi)} {val}/20</Typography>
                 <LinearProgress variant="determinate" value={(Number(val) / 20) * 100} />
               </Box>
             ))}
@@ -310,7 +310,7 @@ export function PanchangPage() {
           </Grid>
           <Grid item xs={12} md={6}>
             <GlassCard>
-              <Typography variant="h6" color="primary" sx={{ mb: 1 }}>{hi ? "काल" : "Kala"}</Typography>
+              <Typography variant="h6" color="primary" sx={{ mb: 1 }}>{t("kala")}</Typography>
               <MetaRow k={t("rahu")} v={`${data.muhurta?.rahuKalam?.start || "—"}–${data.muhurta?.rahuKalam?.end || ""}`} />
               <MetaRow k={t("yamaganda")} v={`${data.muhurta?.yamaganda?.start || "—"}–${data.muhurta?.yamaganda?.end || ""}`} />
               <MetaRow k={t("gulika")} v={`${data.muhurta?.gulika?.start || "—"}–${data.muhurta?.gulika?.end || ""}`} />
@@ -322,7 +322,7 @@ export function PanchangPage() {
             <Typography variant="body2" color="text.secondary">{data.makarandaNote}</Typography>
             {(data.akshansh || data.deshantar) && (
               <Typography variant="caption" display="block" color="text.secondary">
-                {t("lat")} {data.akshansh} · {t("lon")} {data.deshantar} · पल्लभा {data.palabha}
+                {t("lat")} {data.akshansh} · {t("lon")} {data.deshantar} · {t("palabha")} {data.palabha}
                 {data.placeLat != null ? ` · ${Number(data.placeLat).toFixed(4)}°N ${Number(data.placeLon).toFixed(4)}°E` : ""}
               </Typography>
             )}
@@ -336,7 +336,7 @@ export function PanchangPage() {
 export function MilanPage() {
   const { t } = useI18n();
   const [boy, setBoy] = useState(defaultBirth());
-  const [girl, setGirl] = useState({ ...defaultBirth(), name: "Bride" });
+  const [girl, setGirl] = useState({ ...defaultBirth(), name: "" });
   const [res, setRes] = useState<any>(null);
   const [err, setErr] = useState("");
   const run = () => {
@@ -390,16 +390,16 @@ export function DashaPage() {
   useEffect(() => { if (!chart) loadChart().catch(() => {}); }, []);
   return (
     <Box>
-      <GoldTitle sub={hi ? "महादशा · अन्तरदशा · प्रत्यन्तरदशा" : "Mahadasha · Antardasha · Pratyantardasha"}>{t("dasha_title")}</GoldTitle>
+      <GoldTitle sub={t("dasha_sub")}>{t("dasha_title")}</GoldTitle>
       <BirthForm />
       {(chart?.dasha?.periods || []).map((p: any) => (
         <Card key={p.lord + p.start} sx={{ mb: 1 }}>
           <CardContent>
-            <Typography variant="h6" color="primary">{grahaName(p.lord, hi)} {hi ? "महादशा" : "Mahadasha"}</Typography>
-            <Typography variant="body2">{p.start} → {p.end} ({Number(p.years).toFixed(2)} {hi ? "वर्ष" : "yrs"})</Typography>
+            <Typography variant="h6" color="primary">{grahaName(p.lord, hi)} {t("mahadasha")}</Typography>
+            <Typography variant="body2">{p.start} → {p.end} ({Number(p.years).toFixed(2)} {t("yrs")})</Typography>
             {(p.children || []).slice(0, 9).map((a: any) => (
               <Box key={a.lord + a.start} sx={{ pl: 2, py: 0.5 }}>
-                <Typography variant="body2">{grahaName(a.lord, hi)} {hi ? "अन्तर" : "antar"} · {String(a.start).slice(0, 10)} – {String(a.end).slice(0, 10)}</Typography>
+                <Typography variant="body2">{grahaName(a.lord, hi)} {t("antar")} · {String(a.start).slice(0, 10)} – {String(a.end).slice(0, 10)}</Typography>
               </Box>
             ))}
           </CardContent>
@@ -419,13 +419,13 @@ export function HoroscopePage() {
   useEffect(() => { api.get("/api/v1/jyotish/horoscope").then(setData); }, []);
   return (
     <Box>
-      <PageHero title={t("horoscope_title")} sub={hi ? "राशि अनुसार शुभ रंग व अंक" : "Rashi-wise with lucky colour & number"} />
+      <PageHero title={t("horoscope_title")} sub={t("horoscope_sub")} />
       <Grid container spacing={2}>
         {(data?.rashis || []).map((r: any) => (
           <Grid item xs={12} md={4} key={r.sign}>
             <Card><CardContent>
-              <Typography variant="h6" color="primary">{r.hindi} {hi ? "" : r.sanskrit}</Typography>
-              <Typography variant="caption">{hi ? r.hindi : r.sign} · {hi ? "शुभ रंग" : "Lucky"} {hi ? (r.luckyColourHi || r.luckyColour) : r.luckyColour} · {hi ? "अंक" : "No."} {r.luckyNumber}</Typography>
+              <Typography variant="h6" color="primary">{hi ? r.hindi : (r.sign || r.sanskrit)}</Typography>
+              <Typography variant="caption">{hi ? r.hindi : r.sign} · {t("lucky_colour")} {hi ? (r.luckyColourHi || r.luckyColour) : r.luckyColour} · {t("lucky_no")} {r.luckyNumber}</Typography>
               <Typography sx={{ mt: 1 }} variant="body2">{hi ? (r.predictionHi || r.prediction) : r.prediction}</Typography>
             </CardContent></Card>
           </Grid>
@@ -436,30 +436,31 @@ export function HoroscopePage() {
 }
 
 export function YogasPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const hi = lang !== "en";
   const { chart, loadChart } = useApp();
   useEffect(() => { if (!chart) loadChart().catch(() => {}); }, []);
   const y = chart?.yogas || {};
   return (
     <Box>
-      <PageHero title={t("yogas_title")} sub="Rajyoga, Dhana, Mangal, Kaal Sarp, Pitra" />
+      <PageHero title={t("yogas_title")} sub={t("yogas_sub")} />
       <BirthForm />
       <Grid container spacing={2} sx={{ mt: 1 }}>
         <Grid item xs={12} md={6}>
           {(y.yogas || []).map((g: any) => (
             <Card key={g.name} sx={{ mb: 1 }}><CardContent>
-              <Chip size="small" color="success" label={g.type} />
-              <Typography variant="h6">{g.name}</Typography>
-              <Typography variant="body2">{g.text}</Typography>
+              <Chip size="small" color="success" label={yogaType(g.type, hi)} />
+              <Typography variant="h6">{yogaName(g.name, hi)}</Typography>
+              <Typography variant="body2">{yogaText(g.name, g.text, hi)}</Typography>
             </CardContent></Card>
           ))}
         </Grid>
         <Grid item xs={12} md={6}>
           {(y.doshas || []).map((g: any) => (
             <Card key={g.name} sx={{ mb: 1 }}><CardContent>
-              <Chip size="small" color="warning" label={g.type} />
-              <Typography variant="h6">{g.name}</Typography>
-              <Typography variant="body2">{g.text}</Typography>
+              <Chip size="small" color="warning" label={yogaType(g.type, hi)} />
+              <Typography variant="h6">{yogaName(g.name, hi)}</Typography>
+              <Typography variant="body2">{yogaText(g.name, g.text, hi)}</Typography>
             </CardContent></Card>
           ))}
         </Grid>
@@ -475,13 +476,13 @@ export function NakshatraPage() {
   useEffect(() => { api.get("/api/v1/learn/encyclopedia").then(setEnc); }, []);
   return (
     <Box>
-      <PageHero title={t("nak_title")} sub={hi ? "देवता, पद, गण, योनि, नाड़ी" : "Deity, pada, gana, yoni, nadi"} />
+      <PageHero title={t("nak_title")} sub={t("nak_sub")} />
       <Grid container spacing={2}>
         {(enc?.nakshatras || []).map((n: any) => (
           <Grid item xs={12} md={4} key={n.name}>
             <Card><CardContent>
               <Typography variant="h6" color="primary">{n.index}. {hi ? (n.nameHi || n.name) : n.name}</Typography>
-              <Typography variant="body2">{hi ? "स्वामी" : "Lord"} {hi ? (n.lordHi || grahaName(n.lord, true)) : n.lord} · {hi ? "देवता" : "Deity"} {hi ? (n.deityHi || n.deity) : n.deity}</Typography>
+              <Typography variant="body2">{t("lord")} {hi ? (n.lordHi || grahaName(n.lord, true)) : n.lord} · {t("deity")} {hi ? (n.deityHi || n.deity) : n.deity}</Typography>
               <Typography variant="caption">{hi ? (n.ganaHi || n.gana) : n.gana} · {hi ? (n.yoniHi || n.yoni) : n.yoni} · {hi ? (n.nadiHi || n.nadi) : n.nadi} · {n.span}</Typography>
               <Typography sx={{ mt: 1 }} variant="body2">{hi ? (n.characterHi || n.character) : n.character}</Typography>
             </CardContent></Card>
@@ -504,7 +505,7 @@ export function RashiPage() {
         {(enc?.rashis || []).map((r: any) => (
           <Grid item xs={12} md={4} key={r.name}>
             <Card><CardContent>
-              <Typography variant="h6" color="primary">{r.hindi} {hi ? "" : r.sanskrit}</Typography>
+              <Typography variant="h6" color="primary">{hi ? r.hindi : (r.name || r.sanskrit)}</Typography>
               <Typography variant="body2">{hi ? (r.lordHi || grahaName(r.lord, true)) : r.lord} · {hi ? (r.elementHi || r.element) : r.element} · {hi ? (r.qualityHi || r.quality) : r.quality} · {hi ? (r.bodyHi || r.body) : r.body}</Typography>
               <Typography sx={{ mt: 1 }}>{hi ? (r.natureHi || r.nature) : r.nature}</Typography>
             </CardContent></Card>
@@ -577,7 +578,7 @@ export function MuhurtaPage() {
       )}
       <Button variant="contained" onClick={() => run().catch((e) => alert(e.message))}>{t("find_days")}</Button>
       {meta?.directionHi && (
-        <Alert sx={{ mt: 2 }}>{lang === "hi" ? "दिशा" : "Direction"}: {meta.directionHi}
+        <Alert sx={{ mt: 2 }}>{t("direction")}: {lang === "hi" ? (meta.directionHi || meta.direction) : (meta.direction || meta.directionHi)}
           {meta.bearingDeg != null ? ` · ${meta.bearingDeg}°` : ""} — {meta.fromPlace} → {meta.toPlace || meta.directionHi}</Alert>
       )}
       <Card sx={{ mt: 2 }}>
@@ -586,7 +587,7 @@ export function MuhurtaPage() {
             <TableCell>{t("date")}</TableCell><TableCell>{t("grade")}</TableCell>
             <TableCell>{t("tithi")}</TableCell><TableCell>{t("nakshatra")}</TableCell>
             <TableCell>{t("score")}</TableCell>
-            {purpose === "TRAVEL" && <TableCell>{lang === "hi" ? "टिप्पणी" : "Note"}</TableCell>}
+            {purpose === "TRAVEL" && <TableCell>{t("note")}</TableCell>}
           </TableRow></TableHead>
           <TableBody>
             {rows.map((r) => (
@@ -615,16 +616,16 @@ export function GocharPage() {
   useEffect(() => { run(); }, []);
   return (
     <Box>
-      <PageHero title={t("gochar_title")} sub={hi ? "साढ़ेसाती, कण्टक शनि, गुरु गोचर" : "Sade Sati, Kantaka Shani, Guru gochar"} />
+      <PageHero title={t("gochar_title")} sub={t("gochar_sub")} />
       <BirthForm onSubmit={run} submitLabel={t("compute")} />
       {data && (
         <>
-          <Alert sx={{ my: 2 }} severity={data.sadeSati?.active ? "warning" : "success"}>{data.sadeSati?.phase} — {data.sadeSati?.remedy}</Alert>
-          <Alert severity={data.jupiter?.auspicious ? "success" : "info"}>{data.jupiter?.note}</Alert>
+          <Alert sx={{ my: 2 }} severity={data.sadeSati?.active ? "warning" : "success"}>{hi ? (data.sadeSati?.phaseHi || data.sadeSati?.phase) : data.sadeSati?.phase} — {hi ? (data.sadeSati?.remedyHi || data.sadeSati?.remedy) : data.sadeSati?.remedy}</Alert>
+          <Alert severity={data.jupiter?.auspicious ? "success" : "info"}>{hi ? (data.jupiter?.noteHi || data.jupiter?.note) : data.jupiter?.note}</Alert>
           <Card sx={{ mt: 2 }}>
             <Table size="small">
               <TableHead><TableRow>
-                <TableCell>{t("graha")}</TableCell><TableCell>{t("rashi")}</TableCell><TableCell>{hi ? "चन्द्र से" : "From Moon"}</TableCell><TableCell>{hi ? "लग्न से" : "From Lagna"}</TableCell><TableCell>{hi ? "फल" : "Effect"}</TableCell>
+                <TableCell>{t("graha")}</TableCell><TableCell>{t("rashi")}</TableCell><TableCell>{t("from_moon")}</TableCell><TableCell>{t("from_lagna")}</TableCell><TableCell>{t("effect")}</TableCell>
               </TableRow></TableHead>
               <TableBody>
                 {(data.planets || []).map((p: any) => (
@@ -633,7 +634,7 @@ export function GocharPage() {
                     <TableCell>{typeof p.signIndex === "number" ? rashiName(p.signIndex, hi) : (hi ? nakName(p.sign, hi) : p.sign)}</TableCell>
                     <TableCell>{p.houseFromMoon}</TableCell>
                     <TableCell>{p.houseFromLagna}</TableCell>
-                    <TableCell>{p.effect}</TableCell>
+                    <TableCell>{hi ? (p.effectHi || p.effect) : p.effect}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -647,6 +648,7 @@ export function GocharPage() {
 
 export function GemsPage() {
   const { t, lang } = useI18n();
+  const hi = lang !== "en";
   const { chart, loadChart } = useApp();
   useEffect(() => { if (!chart) loadChart().catch(() => {}); }, []);
   const g = chart?.gemstones;
@@ -656,10 +658,10 @@ export function GemsPage() {
       <BirthForm />
       {g && (
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} md={4}><LimbTile label={lang === "hi" ? "जीवन रत्न" : "Life stone"} value={g.lifeStone} extra={<Typography variant="caption">{lang === "hi" ? "लग्नेश" : "Lagnesh"} {grahaName(g.lagnesh, lang !== "en")}</Typography>} /></Grid>
-          <Grid item xs={12} md={4}><LimbTile label={lang === "hi" ? "सहायक रत्न" : "Support stone"} value={g.luckyStone} extra={<Typography variant="caption">{grahaName(g.weakestPlanet, lang !== "en")} · {g.weakestScore}</Typography>} /></Grid>
-          <Grid item xs={12} md={4}><LimbTile label={lang === "hi" ? "धातु / रंग" : "Metal / colour"} value={`${g.metal} · ${g.colour}`} /></Grid>
-          <Grid item xs={12}><Alert severity="warning">{g.warning}</Alert></Grid>
+          <Grid item xs={12} md={4}><LimbTile label={t("life_stone")} value={gemPhrase(g.lifeStone, hi)} extra={<Typography variant="caption">{t("lagnesh")} {grahaName(g.lagnesh, hi)}</Typography>} /></Grid>
+          <Grid item xs={12} md={4}><LimbTile label={t("support_stone")} value={gemPhrase(g.luckyStone, hi)} extra={<Typography variant="caption">{grahaName(g.weakestPlanet, hi)} · {g.weakestScore}</Typography>} /></Grid>
+          <Grid item xs={12} md={4}><LimbTile label={t("metal_colour")} value={`${gemPhrase(g.metal, hi)} · ${gemPhrase(g.colour, hi)}`} /></Grid>
+          <Grid item xs={12}><Alert severity="warning">{gemPhrase(g.warning, hi)}</Alert></Grid>
         </Grid>
       )}
     </Box>
@@ -667,22 +669,23 @@ export function GemsPage() {
 }
 
 export function VarshaPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const hi = lang !== "en";
   const { birth } = useApp();
   const [year, setYear] = useState(new Date().getFullYear());
   const [data, setData] = useState<any>(null);
   const run = () => api.post("/api/v1/jyotish/varshaphal?year=" + year, birth).then(setData);
   return (
     <Box>
-      <PageHero title={t("varsha_title")} sub="Annual solar return" />
-      <BirthForm onSubmit={run} submitLabel="Cast solar return" />
-      <TextField type="number" label="Year" value={year} onChange={(e) => setYear(Number(e.target.value))} sx={{ ml: 2, mt: 2 }} />
+      <PageHero title={t("varsha_title")} sub={t("varsha_sub")} />
+      <BirthForm onSubmit={run} submitLabel={t("cast_return")} />
+      <TextField type="number" label={t("year")} value={year} onChange={(e) => setYear(Number(e.target.value))} sx={{ ml: 2, mt: 2 }} />
       {data && (
         <Card sx={{ mt: 2 }}><CardContent>
-          <Typography>Return time: {data.solarReturnTime}</Typography>
-          <Typography>Varsha Lagna: {data.varshaLagna}</Typography>
-          <Typography>Muntha: {data.muntha}</Typography>
-          <Typography>{data.yearTheme}</Typography>
+          <Typography>{t("return_time")}: {data.solarReturnTime}</Typography>
+          <Typography>{t("varsha_lagna")}: {data.varshaLagna}</Typography>
+          <Typography>{t("muntha")}: {data.muntha}</Typography>
+          <Typography>{hi ? (data.yearThemeHi || data.yearTheme) : data.yearTheme}</Typography>
           <Box sx={{ mt: 2 }}><KundaliChart chart={data.chart} /></Box>
         </CardContent></Card>
       )}
@@ -691,9 +694,10 @@ export function VarshaPage() {
 }
 
 export function PrashnaPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const hi = lang !== "en";
   const { birth, setBirth } = useApp();
-  const [q, setQ] = useState("Will this work succeed?");
+  const [q, setQ] = useState("");
   const [data, setData] = useState<any>(null);
   const now = () => {
     const d = defaultBirth();
@@ -702,15 +706,18 @@ export function PrashnaPage() {
   const run = () => api.post("/api/v1/jyotish/prashna?question=" + encodeURIComponent(q), birth).then(setData);
   return (
     <Box>
-      <PageHero title={t("prashna_title")} sub="Horary chart of the question moment" />
-      <TextField fullWidth label="Question" value={q} onChange={(e) => setQ(e.target.value)} sx={{ mb: 2 }} />
-      <Button onClick={now} sx={{ mr: 1 }}>Use now (Darbhanga)</Button>
-      <Button variant="contained" onClick={run}>Cast Prashna</Button>
+      <PageHero title={t("prashna_title")} sub={t("prashna_sub")} />
+      <TextField fullWidth label={t("question")} value={q} onChange={(e) => setQ(e.target.value)}
+        placeholder={hi ? "क्या यह कार्य सिद्ध होगा?" : "Will this work succeed?"} sx={{ mb: 2 }} />
+      <Button onClick={now} sx={{ mr: 1 }}>{t("use_now")}</Button>
+      <Button variant="contained" onClick={run}>{t("cast_prashna")}</Button>
       {data && (
         <Card sx={{ mt: 2 }}><CardContent>
-          <Typography variant="h6">{data.verdict}</Typography>
-          <Typography>Lagna {data.lagna} · Moon in house {data.moonHouse}</Typography>
-          <Typography variant="body2">{data.tajikaNote}</Typography>
+          <Typography variant="h6">{prashnaVerdict(data.verdict, hi)}</Typography>
+          <Typography>{t("lagna")} {data.lagna} · {t("moon_in_house")} {data.moonHouse}</Typography>
+          <Typography variant="body2">{hi
+            ? "चन्द्र प्रश्न का कारक; लग्न प्रश्नकर्ता; सप्तम दूसरा पक्ष। मिथिला प्रश्न में ज्योतिषी की श्वास (वाम/दक्षिण नाड़ी) भी टिप्पणी में लिखें।"
+            : data.tajikaNote}</Typography>
           <Box sx={{ mt: 2 }}><KundaliChart chart={data.chart} style="EAST" /></Box>
         </CardContent></Card>
       )}
@@ -719,7 +726,8 @@ export function PrashnaPage() {
 }
 
 export function LearnPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const hi = lang !== "en";
   const [tab, setTab] = useState(0);
   const [enc, setEnc] = useState<any>({});
   const [arts, setArts] = useState<any[]>([]);
@@ -729,28 +737,40 @@ export function LearnPage() {
   }, []);
   const keys = ["houses", "planets", "rashis", "nakshatras"];
   const list = enc[keys[tab]] || [];
+  const heading = (item: any) => {
+    if (tab === 0) return `${t("house_n")} ${item.number} · ${hi ? (item.titleHi || item.title) : item.title}`;
+    if (tab === 1) return hi ? (item.hindi || item.sanskrit || item.name) : (item.name || item.sanskrit);
+    if (tab === 2) return hi ? (item.hindi || item.sanskrit) : (item.name || item.sanskrit);
+    return hi ? (item.nameHi || item.name) : item.name;
+  };
+  const body = (item: any) => {
+    if (tab === 0) return hi ? (item.textHi || item.text) : item.text;
+    if (tab === 1) return hi ? (item.karakaHi || item.karaka) : item.karaka;
+    if (tab === 2) return hi ? (item.natureHi || item.nature) : item.nature;
+    return hi ? (item.characterHi || item.character) : item.character;
+  };
   return (
     <Box>
-      <PageHero title={t("learn_title")} sub="For beginners and intern Jyotishis" />
+      <PageHero title={t("learn_title")} sub={t("learn_sub")} />
       <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable">
-        <Tab label="Bhavas" /><Tab label="Grahas" /><Tab label="Rashis" /><Tab label="Nakshatras" />
+        <Tab label={t("tab_bhavas")} /><Tab label={t("tab_grahas")} /><Tab label={t("tab_rashis")} /><Tab label={t("tab_naks")} />
       </Tabs>
       <Grid container spacing={2} sx={{ mt: 1 }}>
         {list.map((item: any, i: number) => (
           <Grid item xs={12} md={6} key={i}>
             <Card><CardContent>
-              <Typography variant="h6" color="primary">{item.title || item.name || item.sanskrit || ("House " + item.number)}</Typography>
-              <Typography variant="body2">{item.text || item.nature || item.karaka || item.character}</Typography>
+              <Typography variant="h6" color="primary">{heading(item)}</Typography>
+              <Typography variant="body2">{body(item)}</Typography>
             </CardContent></Card>
           </Grid>
         ))}
       </Grid>
-      <Typography variant="h5" color="primary" sx={{ mt: 4 }}>Articles</Typography>
+      <Typography variant="h5" color="primary" sx={{ mt: 4 }}>{t("articles")}</Typography>
       {arts.map((a) => (
         <Card key={a.id} sx={{ mt: 1 }}><CardContent>
           <Chip size="small" label={a.category} />
-          <Typography variant="h6">{a.title}</Typography>
-          <Typography>{a.body}</Typography>
+          <Typography variant="h6">{articleTitle(a, hi)}</Typography>
+          <Typography>{articleBody(a, hi)}</Typography>
         </CardContent></Card>
       ))}
     </Box>
@@ -758,42 +778,45 @@ export function LearnPage() {
 }
 
 export function ConsultPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const hi = lang !== "en";
   const { user } = useApp();
   const [astros, setAstros] = useState<any[]>([]);
   const [mine, setMine] = useState<any[]>([]);
-  const [topic, setTopic] = useState("Career and marriage");
+  const [topic, setTopic] = useState("");
   useEffect(() => {
     api.get("/api/v1/public/astrologers").then(setAstros);
     if (user) api.get("/api/v1/consult/mine").then(setMine).catch(() => {});
   }, [user]);
   const book = async (id: number) => {
-    if (!user) { alert("Login first (user@makaranda.app / user123)"); return; }
+    if (!user) { alert(t("login_first_user")); return; }
     const c = await api.post("/api/v1/consult/book", { astrologerId: id, topic, mode: "VIDEO" });
     await api.post(`/api/v1/consult/${c.id}/pay`, { paymentRef: "UPI-DEMO" });
     setMine(await api.get("/api/v1/consult/mine"));
   };
+  const bio = (a: any) => hi ? (a.bioHi || a.bio) : (a.bioEn || a.bio);
   return (
     <Box>
-      <PageHero title={t("consult_title")} sub="Slots, video (Jitsi), mock UPI/Razorpay" />
-      <TextField fullWidth label="Topic" value={topic} onChange={(e) => setTopic(e.target.value)} sx={{ mb: 2 }} />
+      <PageHero title={t("consult_title")} sub={t("consult_sub")} />
+      <TextField fullWidth label={t("topic")} value={topic} onChange={(e) => setTopic(e.target.value)}
+        placeholder={hi ? "कर्म व विवाह" : "Career and marriage"} sx={{ mb: 2 }} />
       <Grid container spacing={2}>
         {astros.map((a) => (
           <Grid item xs={12} md={6} key={a.id}>
             <Card><CardContent>
               <Typography variant="h6">{a.name}</Typography>
-              <Typography variant="body2">{a.bio}</Typography>
-              <Typography sx={{ my: 1 }}>₹{a.consultationFeeInr} · {a.experienceYears} yrs · ★ {a.rating}</Typography>
-              <Button variant="contained" onClick={() => book(a.id)}>Book video · Pay</Button>
+              <Typography variant="body2">{bio(a)}</Typography>
+              <Typography sx={{ my: 1 }}>₹{a.consultationFeeInr} · {a.experienceYears} {t("yrs")} · ★ {a.rating}</Typography>
+              <Button variant="contained" onClick={() => book(a.id)}>{t("book_pay")}</Button>
             </CardContent></Card>
           </Grid>
         ))}
       </Grid>
-      <Typography variant="h5" sx={{ mt: 3 }} color="primary">My sessions</Typography>
+      <Typography variant="h5" sx={{ mt: 3 }} color="primary">{t("my_sessions")}</Typography>
       {mine.map((c) => (
         <Card key={c.id} sx={{ mt: 1 }}><CardContent>
           <Typography>{c.topic} · {c.status} · {c.slotStart}</Typography>
-          <Button href={c.meetUrl} target="_blank">Join video</Button>
+          <Button href={c.meetUrl} target="_blank">{t("join_video")}</Button>
         </CardContent></Card>
       ))}
     </Box>
@@ -807,16 +830,16 @@ export function CrmPage() {
   const [name, setName] = useState("");
   const load = () => api.get("/api/v1/crm/clients").then(setRows);
   useEffect(() => { if (user) load().catch(() => {}); }, [user]);
-  if (!user) return <Alert severity="info">Login as astrologer (astro@makaranda.app / astro123) to use CRM.</Alert>;
+  if (!user) return <Alert severity="info">{t("login_astro")}</Alert>;
   return (
     <Box>
-      <PageHero title={t("crm_title")} sub="Client history, charts, notes" />
+      <PageHero title={t("crm_title")} sub={t("crm_sub")} />
       <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-        <TextField label="Client name" value={name} onChange={(e) => setName(e.target.value)} />
+        <TextField label={t("client_name")} value={name} onChange={(e) => setName(e.target.value)} />
         <Button variant="contained" onClick={async () => {
-          await api.post("/api/v1/crm/clients", { name, birthDateTime: birth.dateTime, place: birth.place, latitude: birth.latitude, longitude: birth.longitude, notes: "Added from CRM" });
+          await api.post("/api/v1/crm/clients", { name, birthDateTime: birth.dateTime, place: birth.place, latitude: birth.latitude, longitude: birth.longitude, notes: t("add") });
           setName(""); load();
-        }}>Add</Button>
+        }}>{t("add")}</Button>
       </Box>
       {rows.map((c) => (
         <Card key={c.id} sx={{ mb: 1 }}><CardContent>
@@ -833,13 +856,13 @@ export function AdminPage() {
   const { user } = useApp();
   const [dash, setDash] = useState<any>(null);
   useEffect(() => { if (user) api.get("/api/v1/admin/dashboard").then(setDash).catch(() => {}); }, [user]);
-  if (!user) return <Alert>Login as admin@makaranda.app / admin123</Alert>;
-  if (!dash) return <Alert severity="info">Admin dashboard loads for ROLE_ADMIN.</Alert>;
+  if (!user) return <Alert>{t("login_admin")}</Alert>;
+  if (!dash) return <Alert severity="info">{t("admin_loads")}</Alert>;
   return (
     <Box>
       <PageHero title={t("admin_title")} />
       <Grid container spacing={2}>
-        {[["Users", dash.users], ["Astrologers", dash.astrologers], ["Consultations", dash.consultations], ["Articles", dash.articles]].map(([k, v]) => (
+        {[[t("users"), dash.users], [t("astrologers"), dash.astrologers], [t("consultations"), dash.consultations], [t("articles"), dash.articles]].map(([k, v]) => (
           <Grid item xs={6} md={3} key={k as string}><Card><CardContent><Typography color="primary">{k}</Typography><Typography variant="h4">{v}</Typography></CardContent></Card></Grid>
         ))}
       </Grid>
@@ -856,7 +879,7 @@ export function LoginPage() {
   return (
     <Box sx={{ maxWidth: 440, mx: "auto", mt: 4 }}>
       <GlassCard>
-        <PageHero title={t("signin")} sub="Demo: user@ / astro@ / admin@ makaranda.app" />
+        <PageHero title={t("signin")} sub={t("demo_accounts")} />
         <TextField fullWidth label={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} sx={{ mb: 2 }} />
         <TextField fullWidth type="password" label={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} sx={{ mb: 2 }} />
         {err && <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert>}

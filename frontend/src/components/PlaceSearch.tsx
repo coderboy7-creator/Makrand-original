@@ -76,7 +76,7 @@ export default function PlaceSearch({
         }}>
           {empty && (
             <Typography variant="body2" sx={{ px: 1.5, py: 1 }} color="text.secondary">
-              {lang === "hi" ? "कोई स्थान नहीं मिला" : "No places found"}
+              {t("no_places")}
             </Typography>
           )}
           {places.map((p, i) => (
