@@ -15,11 +15,13 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 - [x] Nominatim proxy, India-biased search
 - [x] JWT roles, CRM/consult/admin/learn spines, OpenPDF one-pager, Swagger
 - [x] Tests: `AstroMathTest`, `PanchangLimbTest`, `SunriseMithilaTest` (2022-07-29 / 08-12 / 2016-07-20 tithi)
-- [x] Repo on GitHub `coderboy7-creator/Makrand-original` (`main` / `d86f3bb`)
+- [x] Repo on GitHub `coderboy7-creator/Makrand-original` (`main`)
+- [x] Golden tests lock Jul 2016 / Jul–Aug 2022 KSDSU
+- [x] Original KSDSU Kartika/Magha 2016–17 and 2022–23 pages transcribed; winter identity + residual floors in `KsdsuGoldenTest`
 
 ## Now / P0 — correctness
 
-- [ ] **Seasonal सिद्धान्तिक lock** — Oct–Jan KSDSU rows run early (10 Jan 2026 tithi ~−2 h). Retune **manda/apsides only**; do not break Jul 2016 / Jul 2022. Need one original KSDSU Magha/Pausha page.
+- [ ] **Seasonal सिद्धान्तिक lock** — original KSDSU Kartika/Magha tithi 45–140 min early; Jan SR already ~5 min; Oct SR ~20 min. Next: **sun apogee / manda only** on a new branch; July fixtures must stay.
 - [ ] More golden tests: 24 Jul 2016 10:14 PM; 27 Jul 2022 Chaturdashi; 12 Aug 2022 purnima Δ≤15 min.
 - [ ] Tighten 12 Aug 2022 purnima (app ~7:47 vs book 7:27).
 - [ ] Swiss Ephemeris adapter for **Drik only** (keep SS path).
