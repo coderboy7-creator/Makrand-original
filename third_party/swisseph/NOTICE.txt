@@ -1,0 +1,9 @@
+Vendored Java port of Swiss Ephemeris Free Edition 2.00.00
+(Thomas Mack, from kim-dam-petersen/swisseph-module).
+
+Swiss Ephemeris is dual-licensed:
+  a) GNU GPL v2 or later
+  b) Swiss Ephemeris Professional License (Astrodienst)
+
+Used here only for Drik (drigganita) tropical positions.
+Surya Siddhanta / Makaranda (SIDDHANTIC) does not call this code.

@@ -184,9 +184,10 @@ public final class PanchangCalculator {
         m.put("palabha", "06");
         m.put("ksdsLat", KSDS_AKSHANSH_DEG);
         m.put("ksdsLon", Math.round(KSDS_LON * 10000.0) / 10000.0);
+        m.put("drikEngine", mode == PanchangMode.DRIK ? engine.drikBackend() : "siddhantic");
         m.put("makarandaNote", mode == PanchangMode.SIDDHANTIC
                 ? "मकरन्द / सूर्य सिद्धान्त (मिथिला, KSDSU)। अक्षांश २६।३५, देशान्तर १।३५, पल्लभा ६। समय तक = घं.मि. (दि./सां./रा.) व घटिका सूर्योदय से।"
-                : "Drik (apparent) ganita comparison — not the default Makaranda panchang.");
+                : "Drik (apparent) ganita — Swiss Ephemeris when files are present, else Meeus. Not the default Makaranda panchang.");
         return m;
     }
 
