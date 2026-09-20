@@ -41,7 +41,8 @@ export default function PlaceSearch({
   return (
     <Box>
       <TextField fullWidth label={label || t("place")} value={text} onChange={(e) => search(e.target.value)}
-        helperText={helper || t("place_help")} autoComplete="off" />
+        helperText={helper === "" ? undefined : (helper || t("place_help"))} autoComplete="off"
+        sx={{ "& .MuiOutlinedInput-root": { height: 42 } }} />
       {places.length > 0 && (
         <Box sx={{ mt: 0.5, maxHeight: 180, overflow: "auto", border: "1px solid rgba(201,162,39,0.25)", borderRadius: 1 }}>
           {places.map((p, i) => (

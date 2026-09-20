@@ -36,3 +36,29 @@ export function MetaRow({ k, v }: { k: string; v: React.ReactNode }) {
     </Box>
   );
 }
+
+export function LimbTile({ label, value, until, extra }: { label: string; value: React.ReactNode; until?: React.ReactNode; extra?: React.ReactNode }) {
+  return (
+    <Card sx={{ height: "100%" }}>
+      <CardContent>
+        <Typography variant="caption" sx={{ letterSpacing: 1.6, color: "primary.main", textTransform: "uppercase" }}>{label}</Typography>
+        <Typography variant="h6" sx={{ mt: 0.5, lineHeight: 1.3 }}>{value}</Typography>
+        {until && <Typography sx={{ mt: 0.75, fontWeight: 700 }}>{until}</Typography>}
+        {extra}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ScoreHero({ score, max, label }: { score: number; max: number; label: React.ReactNode }) {
+  const pct = Math.max(0, Math.min(100, (score / max) * 100));
+  return (
+    <Box sx={{ textAlign: "center", py: 1 }}>
+      <Typography variant="h2" sx={{ color: "#F3D36A", lineHeight: 1 }}>{score}<Typography component="span" variant="h5" color="text.secondary"> / {max}</Typography></Typography>
+      <Typography sx={{ mt: 1 }}>{label}</Typography>
+      <Box sx={{ mt: 2, height: 10, borderRadius: 99, bgcolor: "rgba(232,197,71,0.12)", overflow: "hidden" }}>
+        <Box sx={{ width: `${pct}%`, height: "100%", background: "linear-gradient(90deg,#F3D36A,#E0A020)" }} />
+      </Box>
+    </Box>
+  );
+}

@@ -11,7 +11,7 @@ import { api, defaultBirth } from "../api";
 import { useApp } from "../state";
 import { useI18n } from "../i18n";
 import { grahaName, nakName, dignityName, rashiName } from "../jyotishLabels";
-import { GlassCard, GoldTitle, MetaRow, PageHero } from "../ui";
+import { GlassCard, GoldTitle, LimbTile, MetaRow, PageHero, ScoreHero } from "../ui";
 
 export function HomePage() {
   const { config } = useApp();
@@ -283,50 +283,49 @@ export function PanchangPage() {
   );
   return (
     <Box>
-      <GoldTitle sub={t("panchang_sub")}>{t("panchang_title")}</GoldTitle>
+      <PageHero title={t("panchang_title")} sub={t("panchang_sub")} />
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{t("panchang_time_help")}</Typography>
-      <Box sx={{ display: "flex", gap: 2, mb: 2, flexWrap: "wrap" }}>
-        <TextField type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-        <Button variant="contained" onClick={load}>{t("compute")}</Button>
-      </Box>
+      <GlassCard sx={{ mb: 2 }}>
+        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "center" }}>
+          <TextField type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <Button variant="contained" onClick={load}>{t("compute")}</Button>
+        </Box>
+      </GlassCard>
       {err && <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert>}
       {data && (
         <Grid container spacing={2}>
-          {[
-            [t("tithi"), `${hi ? data.pakshaHi : data.paksha} ${hi ? data.tithiHi : data.tithi}`, limb(data.tithiStart, data.tithiEnd, hi ? data.tithiNextHi : data.tithiNext)],
-            [t("nakshatra"), `${hi ? data.nakshatraHi : data.nakshatra} ${data.nakshatraPada}`, limb(data.nakshatraStart, data.nakshatraEnd, hi ? data.nakshatraNextHi : data.nakshatraNext)],
-            [t("yoga"), hi ? data.yogaHi : data.yoga, limb(data.yogaStart, data.yogaEnd, hi ? data.yogaNextHi : data.yogaNext)],
-            [t("karana"), hi ? data.karanaHi : data.karana, limb(data.karanaStart, data.karanaEnd, hi ? data.karanaNextHi : data.karanaNext)],
-          ].map(([k, v, sub]) => (
-            <Grid item xs={6} md={4} key={k as string}><Card><CardContent>
-              <Typography color="primary">{k}</Typography>
-              <Typography variant="h6">{v}</Typography>
-              {sub}
-            </CardContent></Card></Grid>
-          ))}
-          {[
-            [t("vara"), hi ? data.varaHi : data.vara, ""],
-            [t("ritu"), hi ? data.rituHi : data.ritu, hi ? data.ayanaHi : data.ayana],
-          ].map(([k, v, sub]) => (
-            <Grid item xs={6} md={4} key={k}><Card><CardContent>
-              <Typography color="primary">{k}</Typography>
-              <Typography variant="h6">{v}</Typography>
-              {sub && <Typography variant="caption" display="block">{sub}</Typography>}
-            </CardContent></Card></Grid>
-          ))}
+          <Grid item xs={6} md={4}><LimbTile label={t("tithi")} value={`${hi ? data.pakshaHi : data.paksha} ${hi ? data.tithiHi : data.tithi}`} until={limb(data.tithiStart, data.tithiEnd, hi ? data.tithiNextHi : data.tithiNext)} /></Grid>
+          <Grid item xs={6} md={4}><LimbTile label={t("nakshatra")} value={`${hi ? data.nakshatraHi : data.nakshatra} ${data.nakshatraPada || ""}`} until={limb(data.nakshatraStart, data.nakshatraEnd, hi ? data.nakshatraNextHi : data.nakshatraNext)} /></Grid>
+          <Grid item xs={6} md={4}><LimbTile label={t("yoga")} value={hi ? data.yogaHi : data.yoga} until={limb(data.yogaStart, data.yogaEnd, hi ? data.yogaNextHi : data.yogaNext)} /></Grid>
+          <Grid item xs={6} md={4}><LimbTile label={t("karana")} value={hi ? data.karanaHi : data.karana} until={limb(data.karanaStart, data.karanaEnd, hi ? data.karanaNextHi : data.karanaNext)} /></Grid>
+          <Grid item xs={6} md={4}><LimbTile label={t("vara")} value={hi ? data.varaHi : data.vara} /></Grid>
+          <Grid item xs={6} md={4}><LimbTile label={t("ritu")} value={hi ? data.rituHi : data.ritu} extra={<Typography variant="caption" color="text.secondary">{hi ? data.ayanaHi : data.ayana}</Typography>} /></Grid>
+          <Grid item xs={12} md={6}>
+            <GlassCard>
+              <Typography variant="h6" color="primary" sx={{ mb: 1 }}>{t("sunrise")} / {t("sunset")}</Typography>
+              <MetaRow k={t("sunrise")} v={data.sunrise} />
+              <MetaRow k={t("noon")} v={data.solarNoon} />
+              <MetaRow k={t("sunset")} v={data.sunset} />
+            </GlassCard>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <GlassCard>
+              <Typography variant="h6" color="primary" sx={{ mb: 1 }}>{hi ? "काल" : "Kala"}</Typography>
+              <MetaRow k={t("rahu")} v={`${data.muhurta?.rahuKalam?.start || "—"}–${data.muhurta?.rahuKalam?.end || ""}`} />
+              <MetaRow k={t("yamaganda")} v={`${data.muhurta?.yamaganda?.start || "—"}–${data.muhurta?.yamaganda?.end || ""}`} />
+              <MetaRow k={t("gulika")} v={`${data.muhurta?.gulika?.start || "—"}–${data.muhurta?.gulika?.end || ""}`} />
+              <MetaRow k={t("abhijit")} v={`${data.abhijit?.start || "—"}–${data.abhijit?.end || ""}`} />
+              <MetaRow k={t("brahma")} v={`${data.brahmaMuhurta?.start || "—"}–${data.brahmaMuhurta?.end || ""}`} />
+            </GlassCard>
+          </Grid>
           <Grid item xs={12}>
-            <Card><CardContent>
-              <Typography>{t("sunrise")} {data.sunrise} · {t("noon")} {data.solarNoon} · {t("sunset")} {data.sunset}</Typography>
-              <Typography>{t("rahu")} {data.muhurta?.rahuKalam?.start}–{data.muhurta?.rahuKalam?.end} · {t("yamaganda")} {data.muhurta?.yamaganda?.start}–{data.muhurta?.yamaganda?.end} · {t("gulika")} {data.muhurta?.gulika?.start}–{data.muhurta?.gulika?.end}</Typography>
-              <Typography>{t("abhijit")} {data.abhijit?.start}–{data.abhijit?.end} · {t("brahma")} {data.brahmaMuhurta?.start}–{data.brahmaMuhurta?.end}</Typography>
-              <Typography variant="body2" sx={{ mt: 1 }}>{data.makarandaNote}</Typography>
-              {(data.akshansh || data.deshantar) && (
-                <Typography variant="caption" display="block" color="text.secondary">
-                  {t("lat")} {data.akshansh} · {t("lon")} {data.deshantar} · पल्लभा {data.palabha}
-                  {data.placeLat != null ? ` · ${Number(data.placeLat).toFixed(4)}°N ${Number(data.placeLon).toFixed(4)}°E` : ""}
-                </Typography>
-              )}
-            </CardContent></Card>
+            <Typography variant="body2" color="text.secondary">{data.makarandaNote}</Typography>
+            {(data.akshansh || data.deshantar) && (
+              <Typography variant="caption" display="block" color="text.secondary">
+                {t("lat")} {data.akshansh} · {t("lon")} {data.deshantar} · पल्लभा {data.palabha}
+                {data.placeLat != null ? ` · ${Number(data.placeLat).toFixed(4)}°N ${Number(data.placeLon).toFixed(4)}°E` : ""}
+              </Typography>
+            )}
           </Grid>
         </Grid>
       )}
@@ -339,40 +338,46 @@ export function MilanPage() {
   const [boy, setBoy] = useState(defaultBirth());
   const [girl, setGirl] = useState({ ...defaultBirth(), name: "Bride" });
   const [res, setRes] = useState<any>(null);
-  const run = () => api.post("/api/v1/jyotish/match", { boy, girl }).then(setRes);
+  const [err, setErr] = useState("");
+  const run = () => {
+    setErr("");
+    return api.post("/api/v1/jyotish/match", { boy, girl }).then(setRes).catch((e) => setErr(e.message));
+  };
   return (
     <Box>
-      <GoldTitle sub={t("milan_sub")}>{t("milan_title")}</GoldTitle>
+      <PageHero title={t("milan_title")} sub={t("milan_sub")} />
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <Typography color="primary">{t("var")}</Typography>
-          <TextField fullWidth sx={{ my: 1 }} type="datetime-local" value={boy.dateTime} onChange={(e) => setBoy({ ...boy, dateTime: e.target.value })} />
-          <TextField fullWidth label="Place" value={boy.place} onChange={(e) => setBoy({ ...boy, place: e.target.value })} />
+          <GlassCard>
+            <Typography variant="h6" color="primary" sx={{ mb: 1 }}>{t("var")}</Typography>
+            <TextField fullWidth sx={{ my: 1 }} type="datetime-local" value={boy.dateTime} onChange={(e) => setBoy({ ...boy, dateTime: e.target.value })} />
+            <TextField fullWidth label={t("place")} value={boy.place} onChange={(e) => setBoy({ ...boy, place: e.target.value })} />
+          </GlassCard>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Typography color="primary">{t("vadhu")}</Typography>
-          <TextField fullWidth sx={{ my: 1 }} type="datetime-local" value={girl.dateTime} onChange={(e) => setGirl({ ...girl, dateTime: e.target.value })} />
-          <TextField fullWidth label="Place" value={girl.place} onChange={(e) => setGirl({ ...girl, place: e.target.value })} />
+          <GlassCard>
+            <Typography variant="h6" color="primary" sx={{ mb: 1 }}>{t("vadhu")}</Typography>
+            <TextField fullWidth sx={{ my: 1 }} type="datetime-local" value={girl.dateTime} onChange={(e) => setGirl({ ...girl, dateTime: e.target.value })} />
+            <TextField fullWidth label={t("place")} value={girl.place} onChange={(e) => setGirl({ ...girl, place: e.target.value })} />
+          </GlassCard>
         </Grid>
       </Grid>
       <Button sx={{ my: 2 }} variant="contained" onClick={run}>{t("match")}</Button>
+      {err && <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert>}
       {res && (
-        <Card>
-          <CardContent>
-            <Typography variant="h5">{res.total} / 36 — {res.verdict}</Typography>
-            <LinearProgress variant="determinate" value={res.percent} sx={{ my: 1 }} />
-            <Table size="small">
-              <TableBody>
-                {(res.kootas || []).map((k: any) => (
-                  <TableRow key={k.name}><TableCell>{k.name}</TableCell><TableCell>{k.score}/{k.max}</TableCell><TableCell>{k.meaning}</TableCell></TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <Alert sx={{ mt: 2 }} severity={res.mangalDosha?.cancelled ? "success" : res.mangalDosha?.boyManglik || res.mangalDosha?.girlManglik ? "warning" : "info"}>
-              {res.mangalDosha?.note}
-            </Alert>
-          </CardContent>
-        </Card>
+        <GlassCard>
+          <ScoreHero score={Number(res.total) || 0} max={36} label={res.verdict} />
+          <Table size="small" sx={{ mt: 2 }}>
+            <TableBody>
+              {(res.kootas || []).map((k: any) => (
+                <TableRow key={k.name}><TableCell>{k.name}</TableCell><TableCell>{k.score}/{k.max}</TableCell><TableCell>{k.meaning}</TableCell></TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Alert sx={{ mt: 2 }} severity={res.mangalDosha?.cancelled ? "success" : res.mangalDosha?.boyManglik || res.mangalDosha?.girlManglik ? "warning" : "info"}>
+            {res.mangalDosha?.note}
+          </Alert>
+        </GlassCard>
       )}
     </Box>
   );
@@ -414,7 +419,7 @@ export function HoroscopePage() {
   useEffect(() => { api.get("/api/v1/jyotish/horoscope").then(setData); }, []);
   return (
     <Box>
-      <GoldTitle sub={hi ? "राशि अनुसार शुभ रंग व अंक" : "Rashi-wise with lucky colour & number"}>{t("horoscope_title")}</GoldTitle>
+      <PageHero title={t("horoscope_title")} sub={hi ? "राशि अनुसार शुभ रंग व अंक" : "Rashi-wise with lucky colour & number"} />
       <Grid container spacing={2}>
         {(data?.rashis || []).map((r: any) => (
           <Grid item xs={12} md={4} key={r.sign}>
@@ -437,7 +442,7 @@ export function YogasPage() {
   const y = chart?.yogas || {};
   return (
     <Box>
-      <GoldTitle sub="Rajyoga, Dhana, Mangal, Kaal Sarp, Pitra">{t("yogas_title")}</GoldTitle>
+      <PageHero title={t("yogas_title")} sub="Rajyoga, Dhana, Mangal, Kaal Sarp, Pitra" />
       <BirthForm />
       <Grid container spacing={2} sx={{ mt: 1 }}>
         <Grid item xs={12} md={6}>
@@ -470,7 +475,7 @@ export function NakshatraPage() {
   useEffect(() => { api.get("/api/v1/learn/encyclopedia").then(setEnc); }, []);
   return (
     <Box>
-      <GoldTitle sub={hi ? "देवता, पद, गण, योनि, नाड़ी" : "Deity, pada, gana, yoni, nadi"}>{t("nak_title")}</GoldTitle>
+      <PageHero title={t("nak_title")} sub={hi ? "देवता, पद, गण, योनि, नाड़ी" : "Deity, pada, gana, yoni, nadi"} />
       <Grid container spacing={2}>
         {(enc?.nakshatras || []).map((n: any) => (
           <Grid item xs={12} md={4} key={n.name}>
@@ -494,7 +499,7 @@ export function RashiPage() {
   useEffect(() => { api.get("/api/v1/learn/encyclopedia").then(setEnc); }, []);
   return (
     <Box>
-      <GoldTitle>{t("rashi_title")}</GoldTitle>
+      <PageHero title={t("rashi_title")} />
       <Grid container spacing={2}>
         {(enc?.rashis || []).map((r: any) => (
           <Grid item xs={12} md={4} key={r.name}>
@@ -544,12 +549,12 @@ export function MuhurtaPage() {
   const dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
   return (
     <Box>
-      <GoldTitle sub={t("muhurta_sub")}>{t("muhurta_title")}</GoldTitle>
-      <TextField select label={t("purpose")} value={purpose} onChange={(e) => setPurpose(e.target.value)} sx={{ mr: 2, minWidth: 220, mb: 2 }}>
+      <PageHero title={t("muhurta_title")} sub={t("muhurta_sub")} />
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
         {["MARRIAGE", "BUSINESS", "TRAVEL", "PROPERTY", "EDUCATION", "NAMAKARANA", "GENERAL"].map((p) => (
-          <MenuItem key={p} value={p}>{t(p)}</MenuItem>
+          <Chip key={p} label={t(p)} color={purpose === p ? "primary" : "default"} onClick={() => setPurpose(p)} />
         ))}
-      </TextField>
+      </Box>
       {purpose === "TRAVEL" && (
         <Box sx={{ mb: 2 }}>
           <Grid container spacing={2}>
@@ -570,31 +575,33 @@ export function MuhurtaPage() {
           <Typography variant="caption" display="block" sx={{ mt: 1 }}>{t("travel_help")}</Typography>
         </Box>
       )}
-      <Button variant="contained" onClick={run}>{t("find_days")}</Button>
+      <Button variant="contained" onClick={() => run().catch((e) => alert(e.message))}>{t("find_days")}</Button>
       {meta?.directionHi && (
         <Alert sx={{ mt: 2 }}>{lang === "hi" ? "दिशा" : "Direction"}: {meta.directionHi}
           {meta.bearingDeg != null ? ` · ${meta.bearingDeg}°` : ""} — {meta.fromPlace} → {meta.toPlace || meta.directionHi}</Alert>
       )}
-      <Table sx={{ mt: 2 }} size="small">
-        <TableHead><TableRow>
-          <TableCell>{t("date")}</TableCell><TableCell>{t("grade")}</TableCell>
-          <TableCell>{t("tithi")}</TableCell><TableCell>{t("nakshatra")}</TableCell>
-          <TableCell>{t("score")}</TableCell>
-          {purpose === "TRAVEL" && <TableCell>{lang === "hi" ? "टिप्पणी" : "Note"}</TableCell>}
-        </TableRow></TableHead>
-        <TableBody>
-          {rows.map((r) => (
-            <TableRow key={r.date} sx={{ opacity: r.dishaShool ? 0.55 : 1 }}>
-              <TableCell>{r.date}</TableCell>
-              <TableCell>{r.grade}{r.dishaShool ? " ⚠" : ""}</TableCell>
-              <TableCell>{r.tithi}{r.tithiEnd ? ` · ${t("until")} ${r.tithiEnd}` : ""}</TableCell>
-              <TableCell>{r.nakshatra}{r.nakshatraEnd ? ` · ${t("until")} ${r.nakshatraEnd}` : ""}</TableCell>
-              <TableCell>{r.score}</TableCell>
-              {purpose === "TRAVEL" && <TableCell>{r.reason}</TableCell>}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <Card sx={{ mt: 2 }}>
+        <Table size="small">
+          <TableHead><TableRow>
+            <TableCell>{t("date")}</TableCell><TableCell>{t("grade")}</TableCell>
+            <TableCell>{t("tithi")}</TableCell><TableCell>{t("nakshatra")}</TableCell>
+            <TableCell>{t("score")}</TableCell>
+            {purpose === "TRAVEL" && <TableCell>{lang === "hi" ? "टिप्पणी" : "Note"}</TableCell>}
+          </TableRow></TableHead>
+          <TableBody>
+            {rows.map((r) => (
+              <TableRow key={r.date} sx={{ opacity: r.dishaShool ? 0.55 : 1 }}>
+                <TableCell>{r.date}</TableCell>
+                <TableCell>{r.grade}{r.dishaShool ? " ⚠" : ""}</TableCell>
+                <TableCell>{r.tithi}{r.tithiEnd ? ` · ${t("until")} ${r.tithiEnd}` : ""}</TableCell>
+                <TableCell>{r.nakshatra}{r.nakshatraEnd ? ` · ${t("until")} ${r.nakshatraEnd}` : ""}</TableCell>
+                <TableCell>{r.score}</TableCell>
+                {purpose === "TRAVEL" && <TableCell>{r.reason}</TableCell>}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
     </Box>
   );
 }
@@ -608,28 +615,30 @@ export function GocharPage() {
   useEffect(() => { run(); }, []);
   return (
     <Box>
-      <GoldTitle sub={hi ? "साढ़ेसाती, कण्टक शनि, गुरु गोचर" : "Sade Sati, Kantaka Shani, Guru gochar"}>{t("gochar_title")}</GoldTitle>
+      <PageHero title={t("gochar_title")} sub={hi ? "साढ़ेसाती, कण्टक शनि, गुरु गोचर" : "Sade Sati, Kantaka Shani, Guru gochar"} />
       <BirthForm onSubmit={run} submitLabel={t("compute")} />
       {data && (
         <>
           <Alert sx={{ my: 2 }} severity={data.sadeSati?.active ? "warning" : "success"}>{data.sadeSati?.phase} — {data.sadeSati?.remedy}</Alert>
           <Alert severity={data.jupiter?.auspicious ? "success" : "info"}>{data.jupiter?.note}</Alert>
-          <Table size="small" sx={{ mt: 2 }}>
-            <TableHead><TableRow>
-              <TableCell>{t("graha")}</TableCell><TableCell>{t("rashi")}</TableCell><TableCell>{hi ? "चन्द्र से" : "From Moon"}</TableCell><TableCell>{hi ? "लग्न से" : "From Lagna"}</TableCell><TableCell>{hi ? "फल" : "Effect"}</TableCell>
-            </TableRow></TableHead>
-            <TableBody>
-              {(data.planets || []).map((p: any) => (
-                <TableRow key={p.planet}>
-                  <TableCell>{grahaName(p.planet, hi)}{p.retrograde ? (hi ? " वक्र" : " R") : ""}</TableCell>
-                  <TableCell>{typeof p.signIndex === "number" ? rashiName(p.signIndex, hi) : (hi ? nakName(p.sign, hi) : p.sign)}</TableCell>
-                  <TableCell>{p.houseFromMoon}</TableCell>
-                  <TableCell>{p.houseFromLagna}</TableCell>
-                  <TableCell>{p.effect}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <Card sx={{ mt: 2 }}>
+            <Table size="small">
+              <TableHead><TableRow>
+                <TableCell>{t("graha")}</TableCell><TableCell>{t("rashi")}</TableCell><TableCell>{hi ? "चन्द्र से" : "From Moon"}</TableCell><TableCell>{hi ? "लग्न से" : "From Lagna"}</TableCell><TableCell>{hi ? "फल" : "Effect"}</TableCell>
+              </TableRow></TableHead>
+              <TableBody>
+                {(data.planets || []).map((p: any) => (
+                  <TableRow key={p.planet}>
+                    <TableCell>{grahaName(p.planet, hi)}{p.retrograde ? (hi ? " वक्र" : " R") : ""}</TableCell>
+                    <TableCell>{typeof p.signIndex === "number" ? rashiName(p.signIndex, hi) : (hi ? nakName(p.sign, hi) : p.sign)}</TableCell>
+                    <TableCell>{p.houseFromMoon}</TableCell>
+                    <TableCell>{p.houseFromLagna}</TableCell>
+                    <TableCell>{p.effect}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
         </>
       )}
     </Box>
@@ -643,15 +652,15 @@ export function GemsPage() {
   const g = chart?.gemstones;
   return (
     <Box>
-      <GoldTitle>{t("gems_title")}</GoldTitle>
+      <PageHero title={t("gems_title")} />
       <BirthForm />
       {g && (
-        <Card sx={{ mt: 2 }}><CardContent>
-          <Typography variant="h6">{lang === "hi" ? "जीवन रत्न" : "Life stone"} ({lang === "hi" ? "लग्नेश" : "Lagnesh"} {grahaName(g.lagnesh, lang !== "en")}): {g.lifeStone}</Typography>
-          <Typography>{lang === "hi" ? "सहायक रत्न" : "Support stone"} ({lang === "hi" ? "दुर्बल" : "weakest"} {grahaName(g.weakestPlanet, lang !== "en")} {lang === "hi" ? "विंशोपक" : "vimshopaka"} {g.weakestScore}): {g.luckyStone}</Typography>
-          <Typography>{lang === "hi" ? "धातु" : "Metal"} {g.metal} · {lang === "hi" ? "रंग" : "Colour"} {g.colour}</Typography>
-          <Alert sx={{ mt: 2 }} severity="warning">{g.warning}</Alert>
-        </CardContent></Card>
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid item xs={12} md={4}><LimbTile label={lang === "hi" ? "जीवन रत्न" : "Life stone"} value={g.lifeStone} extra={<Typography variant="caption">{lang === "hi" ? "लग्नेश" : "Lagnesh"} {grahaName(g.lagnesh, lang !== "en")}</Typography>} /></Grid>
+          <Grid item xs={12} md={4}><LimbTile label={lang === "hi" ? "सहायक रत्न" : "Support stone"} value={g.luckyStone} extra={<Typography variant="caption">{grahaName(g.weakestPlanet, lang !== "en")} · {g.weakestScore}</Typography>} /></Grid>
+          <Grid item xs={12} md={4}><LimbTile label={lang === "hi" ? "धातु / रंग" : "Metal / colour"} value={`${g.metal} · ${g.colour}`} /></Grid>
+          <Grid item xs={12}><Alert severity="warning">{g.warning}</Alert></Grid>
+        </Grid>
       )}
     </Box>
   );
@@ -665,7 +674,7 @@ export function VarshaPage() {
   const run = () => api.post("/api/v1/jyotish/varshaphal?year=" + year, birth).then(setData);
   return (
     <Box>
-      <GoldTitle sub="Annual solar return">{t("varsha_title")}</GoldTitle>
+      <PageHero title={t("varsha_title")} sub="Annual solar return" />
       <BirthForm onSubmit={run} submitLabel="Cast solar return" />
       <TextField type="number" label="Year" value={year} onChange={(e) => setYear(Number(e.target.value))} sx={{ ml: 2, mt: 2 }} />
       {data && (
@@ -693,7 +702,7 @@ export function PrashnaPage() {
   const run = () => api.post("/api/v1/jyotish/prashna?question=" + encodeURIComponent(q), birth).then(setData);
   return (
     <Box>
-      <GoldTitle sub="Horary chart of the question moment">{t("prashna_title")}</GoldTitle>
+      <PageHero title={t("prashna_title")} sub="Horary chart of the question moment" />
       <TextField fullWidth label="Question" value={q} onChange={(e) => setQ(e.target.value)} sx={{ mb: 2 }} />
       <Button onClick={now} sx={{ mr: 1 }}>Use now (Darbhanga)</Button>
       <Button variant="contained" onClick={run}>Cast Prashna</Button>
@@ -722,7 +731,7 @@ export function LearnPage() {
   const list = enc[keys[tab]] || [];
   return (
     <Box>
-      <GoldTitle sub="For beginners and intern Jyotishis">{t("learn_title")}</GoldTitle>
+      <PageHero title={t("learn_title")} sub="For beginners and intern Jyotishis" />
       <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable">
         <Tab label="Bhavas" /><Tab label="Grahas" /><Tab label="Rashis" /><Tab label="Nakshatras" />
       </Tabs>
@@ -766,7 +775,7 @@ export function ConsultPage() {
   };
   return (
     <Box>
-      <GoldTitle sub="Slots, video (Jitsi), mock UPI/Razorpay">{t("consult_title")}</GoldTitle>
+      <PageHero title={t("consult_title")} sub="Slots, video (Jitsi), mock UPI/Razorpay" />
       <TextField fullWidth label="Topic" value={topic} onChange={(e) => setTopic(e.target.value)} sx={{ mb: 2 }} />
       <Grid container spacing={2}>
         {astros.map((a) => (
@@ -801,7 +810,7 @@ export function CrmPage() {
   if (!user) return <Alert severity="info">Login as astrologer (astro@makaranda.app / astro123) to use CRM.</Alert>;
   return (
     <Box>
-      <GoldTitle sub="Client history, charts, notes">{t("crm_title")}</GoldTitle>
+      <PageHero title={t("crm_title")} sub="Client history, charts, notes" />
       <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
         <TextField label="Client name" value={name} onChange={(e) => setName(e.target.value)} />
         <Button variant="contained" onClick={async () => {
@@ -828,7 +837,7 @@ export function AdminPage() {
   if (!dash) return <Alert severity="info">Admin dashboard loads for ROLE_ADMIN.</Alert>;
   return (
     <Box>
-      <GoldTitle>{t("admin_title")}</GoldTitle>
+      <PageHero title={t("admin_title")} />
       <Grid container spacing={2}>
         {[["Users", dash.users], ["Astrologers", dash.astrologers], ["Consultations", dash.consultations], ["Articles", dash.articles]].map(([k, v]) => (
           <Grid item xs={6} md={3} key={k as string}><Card><CardContent><Typography color="primary">{k}</Typography><Typography variant="h4">{v}</Typography></CardContent></Card></Grid>
@@ -845,13 +854,15 @@ export function LoginPage() {
   const [password, setPassword] = useState("user123");
   const [err, setErr] = useState("");
   return (
-    <Box sx={{ maxWidth: 420 }}>
-      <GoldTitle sub="Demo: user@ / astro@ / admin@ makaranda.app">{t("signin")}</GoldTitle>
-      <TextField fullWidth label={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} sx={{ mb: 2 }} />
-      <TextField fullWidth type="password" label={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} sx={{ mb: 2 }} />
-      {err && <Alert severity="error">{err}</Alert>}
-      <Button variant="contained" onClick={() => login(email, password).catch((e) => setErr(e.message))}>{t("enter")}</Button>
-      <Typography variant="body2" sx={{ mt: 2 }}>user123 · astro123 · admin123</Typography>
+    <Box sx={{ maxWidth: 440, mx: "auto", mt: 4 }}>
+      <GlassCard>
+        <PageHero title={t("signin")} sub="Demo: user@ / astro@ / admin@ makaranda.app" />
+        <TextField fullWidth label={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} sx={{ mb: 2 }} />
+        <TextField fullWidth type="password" label={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} sx={{ mb: 2 }} />
+        {err && <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert>}
+        <Button fullWidth variant="contained" onClick={() => login(email, password).catch((e) => setErr(e.message))}>{t("enter")}</Button>
+        <Typography variant="body2" sx={{ mt: 2 }} color="text.secondary">user123 · astro123 · admin123</Typography>
+      </GlassCard>
     </Box>
   );
 }
