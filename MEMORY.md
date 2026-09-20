@@ -2,7 +2,7 @@
 
 Internal continuity for humans and agents. Workspace files are the source of truth; this file stores **decisions, gold numbers, and dead ends** that are easy to lose.
 
-**Last updated:** 2026-09-20 (P0 tests; bijas unchanged)  
+**Last updated:** 2026-09-20 (original KSDSU Kartika/Magha photos; bijas unchanged)  
 
 ---
 
@@ -13,7 +13,7 @@ Internal continuity for humans and agents. Workspace files are the source of tru
 - DRIK = Meeus Sun/Moon **without** −8.2′ bija.
 - Default place **KSDS 26.5833°N 85.268°E** (२६।३५ / ०१।३५ / पल्लभा ६).
 - GitHub: `https://github.com/coderboy7-creator/Makrand-original` branch `main`.
-- **Unfinished:** winter/Oct tithi early vs some printed rows; Mithila panji ≠ KSDSU; Swiss Eph not wired; mobile stub.
+- **Unfinished:** original KSDSU winter tithi 45–140 min early (photos in hand); Swiss Eph not wired; mobile stub.
 
 ## Gold vs not-gold
 
@@ -22,6 +22,7 @@ Internal continuity for humans and agents. Workspace files are the source of tru
 - 2016–17 PDF (workspace historically under uploads; do not map filenames to dates).
 - Photo **29 Jul–12 Aug 2022** Shukla 1–15 (user confirmed original KSDSU).
 - 20 Jul 2016 कृष्ण प्रतिपदा रा. 4:03; 24 Jul 2016 कृष्ण पंचमी रा. 10:16.
+- Original KSDSU scans: Kartika 17–30 Oct 2016, 31 Oct–14 Nov 2016, Pausha 30 Dec 2016–12 Jan 2017, Magha 13–27 Jan 2017; Kartika 26 Oct–8 Nov 2022, Pausha 24 Dec 2022–6 Jan 2023, Magha Krishna 7–21 Jan 2023.
 
 **Not gold:** Mithila panchang 2025–27 (colour books + 2027 ज्येष्ठ/चैत्र/माघ typeset). Owner: “Makaranda anusar but **not** original KSDSU.” Do not fit Feb 19 2027 9:26 AM Magha trayodashi into SIDDHANTIC.
 
@@ -51,7 +52,7 @@ Sunrise: NOAA EoT, depression **−0.8333°**.
 | 2016-07-20 T16 | रा. 4:03 | 4:10 AM |
 | 2016-07-24 T5 | रा. 10:16 पू.भा. दि. 3:04 SR 5:18 | **10:14 PM**, 2:53 PM, 5:21 / 6:52 |
 
-Eight-row owner table (mixed seasons): names/vara match; **Jul good**; **5 Oct 2025 / 10 Jan 2026 tithi early** (−68 min / −2 h). Treat as seasonal residual, not a weekday bug.
+Original winter vs app (SIDDHANTIC, KSDS): **tithi 45–140 min early**; **nakshatra often ≤30 min** (1 Nov 2022 UAs 7:34 vs 7:27; 1 Jan 2023 Ashwini 4:37 vs 4:38). Jan SR ~1–8 min; Kartika SR ~16–20 min early. Do not fit Mithila 2025–27.
 
 Convention: दि. 11।55 = 11:55 AM; दि. 2।17 = 2:17 PM; रा. 2।43 = 2:43 AM; सां. 5।28 = 5:28 PM. घटिका checksum when द.प. is read right.
 

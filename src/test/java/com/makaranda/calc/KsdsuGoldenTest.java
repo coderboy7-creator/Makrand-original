@@ -14,9 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Original KSDSU fixtures must never regress. Winter/Oct printed rows are
- * recorded as residual floors (do not get earlier) until an original
- * Magha/Pausha KSDSU page is supplied — those clocks may be Mithila, not KSDSU.
+ * Original KSDSU विश्वविद्यालय पञ्चांग fixtures. July 2016/2022 must stay tight.
+ * Kartika/Magha 2016–17 and 2022–23 photos are gold for identity + residual
+ * floors. Do not retune mean bijas here: winter tithi is 45–140 min early while
+ * July is 2–20 min; a constant moon bija cannot fit both.
  */
 class KsdsuGoldenTest {
     private static final double LAT = PanchangCalculator.KSDS_AKSHANSH_DEG;
@@ -105,22 +106,72 @@ class KsdsuGoldenTest {
         assertSrSs("2025-07-11", "5:14 AM", "6:46 PM", 12);
     }
 
-    /**
-     * Winter/Oct printed times (owner 8-row). App is early. Lock a floor so a
-     * future fit cannot silently make them worse; do not require book match yet.
-     */
     @Test
-    void winterResidualMustNotGetEarlier() {
-        Map<String, Object> oct = panji("2025-10-05");
-        assertEquals(13, oct.get("tithiNumber"));
-        assertEquals("Shatabhisha", oct.get("nakshatra"));
-        assertTrue(!end(oct, "tithiLimb").isBefore(LocalDateTime.of(2025, 10, 5, 11, 40)),
-                "Oct tithi slipped earlier: " + oct.get("tithiEnd"));
+    void kartika2016ShuklaPratipada() {
+        Map<String, Object> p = panji("2016-10-31");
+        assertEquals("Shukla", p.get("paksha"));
+        assertEquals(1, p.get("tithiNumber"));
+        assertEquals("Swati", p.get("nakshatra"));
+        // Book रा. 12:01 (1 Nov); app ~10:13 PM 31 Oct.
+        assertTrue(!end(p, "tithiLimb").isBefore(LocalDateTime.of(2016, 10, 31, 22, 0)),
+                "Kartika 2016 T1 slipped: " + p.get("tithiEnd"));
+        assertTrue(absMin(end(p, "nakshatraLimb"), LocalDateTime.of(2016, 10, 31, 11, 45)) <= 45,
+                "nak " + p.get("nakshatraEnd"));
+        assertSrSs("2016-10-31", "6:28 AM", "5:32 PM", 25);
+    }
 
-        Map<String, Object> jan = panji("2026-01-10");
-        assertEquals(22, jan.get("tithiNumber"));
-        assertEquals("Hasta", jan.get("nakshatra"));
-        assertTrue(!end(jan, "tithiLimb").isBefore(LocalDateTime.of(2026, 1, 10, 8, 50)),
-                "Jan tithi slipped earlier: " + jan.get("tithiEnd"));
+    @Test
+    void magha2017KrishnaPratipada() {
+        Map<String, Object> p = panji("2017-01-13");
+        assertEquals("Krishna", p.get("paksha"));
+        assertEquals(16, p.get("tithiNumber"));
+        assertEquals("Pushya", p.get("nakshatra"));
+        // Book दि. 4:06; app ~3:04 PM.
+        assertTrue(!end(p, "tithiLimb").isBefore(LocalDateTime.of(2017, 1, 13, 14, 50)),
+                "Magha 2017 T1 slipped: " + p.get("tithiEnd"));
+        assertTrue(absMin(end(p, "nakshatraLimb"), LocalDateTime.of(2017, 1, 14, 1, 45)) <= 40,
+                "nak " + p.get("nakshatraEnd"));
+        assertSrSs("2017-01-13", "6:45 AM", "5:35 PM", 12);
+    }
+
+    @Test
+    void kartika2022ShuklaAshtami() {
+        Map<String, Object> p = panji("2022-11-01");
+        assertEquals("Shukla", p.get("paksha"));
+        assertEquals(8, p.get("tithiNumber"));
+        assertEquals("Uttara Ashadha", p.get("nakshatra"));
+        // Book रा. 1:20 (2 Nov); app ~12:33 AM. Nak book दि. 7:27 is already close.
+        assertTrue(!end(p, "tithiLimb").isBefore(LocalDateTime.of(2022, 11, 2, 0, 20)),
+                "Kartika 2022 T8 slipped: " + p.get("tithiEnd"));
+        assertTrue(absMin(end(p, "nakshatraLimb"), LocalDateTime.of(2022, 11, 1, 7, 27)) <= 15,
+                "nak " + p.get("nakshatraEnd"));
+        assertSrSs("2022-11-01", "6:29 AM", "5:31 PM", 25);
+    }
+
+    @Test
+    void pausha2023ShuklaDashami() {
+        Map<String, Object> p = panji("2023-01-01");
+        assertEquals(10, p.get("tithiNumber"));
+        assertEquals("Ashwini", p.get("nakshatra"));
+        // Book रा. 10:28; app ~8:52 PM. Nak book दि. 4:38 is essentially exact.
+        assertTrue(!end(p, "tithiLimb").isBefore(LocalDateTime.of(2023, 1, 1, 20, 40)),
+                "Pausha 2023 T10 slipped: " + p.get("tithiEnd"));
+        assertTrue(absMin(end(p, "nakshatraLimb"), LocalDateTime.of(2023, 1, 1, 16, 38)) <= 10,
+                "nak " + p.get("nakshatraEnd"));
+        assertSrSs("2023-01-01", "6:49 AM", "5:22 PM", 12);
+    }
+
+    @Test
+    void magha2023KrishnaTritiya() {
+        Map<String, Object> p = panji("2023-01-10");
+        assertEquals("Krishna", p.get("paksha"));
+        assertEquals(18, p.get("tithiNumber"));
+        assertEquals("Ashlesha", p.get("nakshatra"));
+        // Book दि. 9:48; app ~8:16 AM.
+        assertTrue(!end(p, "tithiLimb").isBefore(LocalDateTime.of(2023, 1, 10, 8, 0)),
+                "Magha 2023 T3 slipped: " + p.get("tithiEnd"));
+        assertTrue(absMin(end(p, "nakshatraLimb"), LocalDateTime.of(2023, 1, 10, 7, 22)) <= 20,
+                "nak " + p.get("nakshatraEnd"));
+        assertSrSs("2023-01-10", "6:46 AM", "5:36 PM", 12);
     }
 }
