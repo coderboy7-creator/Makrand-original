@@ -10,7 +10,11 @@ export default function BirthForm({ onSubmit, submitLabel }: { onSubmit?: () => 
   const set = (k: string, v: any) => setBirth({ ...birth, [k]: v });
 
   return (
-    <Box>
+    <Box sx={{
+      p: 2, mb: 1, borderRadius: 3,
+      border: "1px solid rgba(232,197,71,0.16)",
+      background: "linear-gradient(160deg, rgba(255,200,90,0.08), rgba(10,8,16,0.45))",
+    }}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           <TextField fullWidth label={t("name")} value={birth.name} onChange={(e) => set("name", e.target.value)} />

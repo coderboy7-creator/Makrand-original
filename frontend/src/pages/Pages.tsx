@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Alert, Box, Button, Card, CardContent, Chip, Grid, LinearProgress, MenuItem,
   Tab, Tabs, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography
@@ -10,15 +11,7 @@ import { api, defaultBirth } from "../api";
 import { useApp } from "../state";
 import { useI18n } from "../i18n";
 import { grahaName, nakName, dignityName, rashiName } from "../jyotishLabels";
-
-function GoldTitle({ children, sub }: { children: React.ReactNode; sub?: string }) {
-  return (
-    <Box sx={{ mb: 2 }}>
-      <Typography variant="h4" color="primary">{children}</Typography>
-      {sub && <Typography color="text.secondary">{sub}</Typography>}
-    </Box>
-  );
-}
+import { GlassCard, GoldTitle, MetaRow, PageHero } from "../ui";
 
 export function HomePage() {
   const { config } = useApp();
@@ -27,8 +20,10 @@ export function HomePage() {
   useEffect(() => { api.get("/api/v1/jyotish/panchang").then(setPanch).catch(() => {}); }, []);
   return (
     <Box>
-      <GoldTitle sub={t("home_sub")}>{t("home_title")}</GoldTitle>
-      <Typography sx={{ maxWidth: 720, mb: 3 }}>{t("home_blurb")}</Typography>
+      <PageHero title={t("home_title")} sub={t("home_sub")}>
+        <Typography sx={{ maxWidth: 680, mx: { md: "auto" }, mt: 1.5 }}>{t("home_blurb")}</Typography>
+        <Button component={RouterLink} to="/kundali" variant="contained" sx={{ mt: 2 }}>{t("cast")}</Button>
+      </PageHero>
       <Grid container spacing={2}>
         {[
           [t("home_k"), "/kundali", t("home_k_d")],
@@ -37,10 +32,10 @@ export function HomePage() {
           [t("home_c"), "/consult", t("home_c_d")],
         ].map(([title, href, d]) => (
           <Grid item xs={12} md={3} key={href}>
-            <Card component="a" href={href} sx={{ display: "block", textDecoration: "none", height: "100%" }}>
+            <Card component={RouterLink} to={href} sx={{ display: "block", textDecoration: "none", height: "100%", transition: "transform .2s", "&:hover": { transform: "translateY(-4px)" } }}>
               <CardContent>
                 <Typography variant="h6" color="primary">{title}</Typography>
-                <Typography variant="body2">{d}</Typography>
+                <Typography variant="body2" color="text.secondary">{d}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -74,66 +69,141 @@ export function KundaliPage() {
   const { t, lang } = useI18n();
   const hi = lang !== "en";
   const [style, setStyle] = useState("NORTH");
+  const [tab, setTab] = useState(0);
+  const [panch, setPanch] = useState<any>(null);
   useEffect(() => { if (!chart) loadChart().catch(() => {}); }, []);
+  useEffect(() => {
+    const d = String(birth.dateTime || "").slice(0, 10);
+    if (!d) return;
+    api.get(`/api/v1/jyotish/panchang?date=${d}&lat=${birth.latitude}&lon=${birth.longitude}&ayanamsa=${birth.ayanamsa}&mode=${birth.panchangMode}`)
+      .then(setPanch).catch(() => {});
+  }, [birth.dateTime, birth.latitude, birth.longitude, birth.ayanamsa, birth.panchangMode]);
+  const v9 = chart?.vargas?.[9];
+  const v9Chart = v9 ? {
+    lagna: { signIndex: v9.bodies?.[0]?.signIndex || 0 },
+    planets: Object.fromEntries((v9.bodies || []).filter((b: any) => b.name !== "Lagna").map((b: any) => [b.name, b])),
+  } : null;
   return (
     <Box>
       <GoldTitle sub={t("kundali_sub")}>{t("kundali_title")}</GoldTitle>
       <BirthForm />
       {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
       {chart && (
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} md={6}>
-            <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-              {[["NORTH", t("style_n")], ["SOUTH", t("style_s")], ["EAST", t("style_e")]].map(([s, lab]) => (
-                <Chip key={s} label={lab} onClick={() => setStyle(s)} color={style === s ? "primary" : "default"} />
-              ))}
-            </Box>
-            <KundaliChart chart={chart} style={style} />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography variant="h6" color="primary">{t("lagna")} {hi ? (chart.lagna?.signHi || chart.lagna?.signSa) : chart.lagna?.sign} — {chart.lagna?.signDegree}</Typography>
-            <Typography variant="body2" sx={{ mb: 1 }}>
-              {t("ayanamsa")} {chart.ayanamsaLabel} = {Number(chart.ayanamsaDeg).toFixed(4)}° · {chart.panchangMode}
-            </Typography>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t("graha")}</TableCell><TableCell>{t("rashi")}</TableCell><TableCell>{t("bhava")}</TableCell>
-                  <TableCell>{t("nakshatra")}</TableCell><TableCell>{t("dignity")}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {Object.values(chart.planets || {}).map((p: any) => (
-                  <TableRow key={p.name}>
-                    <TableCell>{p.glyph} {grahaName(p.name, hi)}{p.retrograde ? (hi ? " वक्र" : " R") : ""}</TableCell>
-                    <TableCell>{hi ? (p.signHi || p.signSa) : p.sign}</TableCell>
-                    <TableCell>{p.house}</TableCell>
-                    <TableCell>{nakName(p.nakshatra, hi)} {p.pada}</TableCell>
-                    <TableCell>{dignityName(p.dignity, hi)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <Button sx={{ mt: 2 }} variant="outlined" onClick={async () => {
-              const res: any = await fetch("/api/v1/jyotish/report.pdf", {
-                method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(birth)
-              });
-              const blob = await res.blob();
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url; a.download = "makaranda-kundali.pdf"; a.click();
-            }}>{t("pdf")}</Button>
-          </Grid>
-          {chart.interpretation && (
-            <Grid item xs={12}>
-              <Card><CardContent>
-                <Typography variant="h6" color="primary">{t("reading")}</Typography>
-                <Typography>{chart.interpretation.summary}</Typography>
-                <Typography sx={{ mt: 1 }}>{chart.interpretation.personality}</Typography>
-              </CardContent></Card>
+        <>
+          <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" sx={{ mt: 2, mb: 2, borderBottom: "1px solid rgba(232,197,71,0.16)" }}>
+            <Tab label={t("tab_basic")} /><Tab label={t("tab_kundali")} /><Tab label={t("tab_charts")} /><Tab label={t("tab_dasha")} />
+          </Tabs>
+          {tab === 0 && (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <GlassCard>
+                  <Typography variant="h6" color="primary" sx={{ mb: 1 }}>{t("birth_details")}</Typography>
+                  <MetaRow k={t("name")} v={birth.name} />
+                  <MetaRow k={t("date")} v={String(birth.dateTime || "").replace("T", " ")} />
+                  <MetaRow k={t("place")} v={birth.place} />
+                  <MetaRow k={t("lat")} v={`${Number(birth.latitude).toFixed(4)}°`} />
+                  <MetaRow k={t("lon")} v={`${Number(birth.longitude).toFixed(4)}°`} />
+                  <MetaRow k={t("timezone")} v="GMT +05:30" />
+                  <MetaRow k={t("ayanamsa")} v={chart.ayanamsaLabel} />
+                </GlassCard>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <GlassCard>
+                  <Typography variant="h6" color="primary" sx={{ mb: 1 }}>{t("panchang_card")}</Typography>
+                  {panch ? (
+                    <>
+                      <MetaRow k={t("tithi")} v={`${hi ? panch.pakshaHi : panch.paksha} ${hi ? panch.tithiHi : panch.tithi}${panch.tithiEnd ? ` · ${t("until")} ${panch.tithiEnd}` : ""}`} />
+                      <MetaRow k={t("nakshatra")} v={`${hi ? panch.nakshatraHi : panch.nakshatra}${panch.nakshatraEnd ? ` · ${t("until")} ${panch.nakshatraEnd}` : ""}`} />
+                      <MetaRow k={t("yoga")} v={hi ? panch.yogaHi : panch.yoga} />
+                      <MetaRow k={t("karana")} v={hi ? panch.karanaHi : panch.karana} />
+                      <MetaRow k={t("sunrise")} v={panch.sunrise} />
+                      <MetaRow k={t("sunset")} v={panch.sunset} />
+                    </>
+                  ) : <Typography variant="body2">{hi ? "गणना हो रही है…" : "Loading…"}</Typography>}
+                </GlassCard>
+              </Grid>
             </Grid>
           )}
-        </Grid>
+          {tab === 1 && (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+                  {[["NORTH", t("style_n")], ["SOUTH", t("style_s")], ["EAST", t("style_e")]].map(([s, lab]) => (
+                    <Chip key={s} label={lab} onClick={() => setStyle(s)} color={style === s ? "primary" : "default"} />
+                  ))}
+                </Box>
+                <KundaliChart chart={chart} style={style} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" color="primary">{t("lagna")} {hi ? (chart.lagna?.signHi || chart.lagna?.signSa) : chart.lagna?.sign} — {chart.lagna?.signDegree}</Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  {t("ayanamsa")} {chart.ayanamsaLabel} = {Number(chart.ayanamsaDeg).toFixed(4)}° · {chart.panchangMode}
+                </Typography>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>{t("graha")}</TableCell><TableCell>{t("rashi")}</TableCell><TableCell>{t("bhava")}</TableCell>
+                      <TableCell>{t("nakshatra")}</TableCell><TableCell>{t("dignity")}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {Object.values(chart.planets || {}).map((p: any) => (
+                      <TableRow key={p.name}>
+                        <TableCell>{p.glyph} {grahaName(p.name, hi)}{p.retrograde ? (hi ? " वक्र" : " R") : ""}</TableCell>
+                        <TableCell>{hi ? (p.signHi || p.signSa) : p.sign}</TableCell>
+                        <TableCell>{p.house}</TableCell>
+                        <TableCell>{nakName(p.nakshatra, hi)} {p.pada}</TableCell>
+                        <TableCell>{dignityName(p.dignity, hi)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <Button sx={{ mt: 2 }} variant="outlined" onClick={async () => {
+                  const res: any = await fetch("/api/v1/jyotish/report.pdf", {
+                    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(birth)
+                  });
+                  const blob = await res.blob();
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url; a.download = "makaranda-kundali.pdf"; a.click();
+                }}>{t("pdf")}</Button>
+              </Grid>
+              {chart.interpretation && (
+                <Grid item xs={12}>
+                  <Card><CardContent>
+                    <Typography variant="h6" color="primary">{t("reading")}</Typography>
+                    <Typography>{chart.interpretation.summary}</Typography>
+                    <Typography sx={{ mt: 1 }}>{chart.interpretation.personality}</Typography>
+                  </CardContent></Card>
+                </Grid>
+              )}
+            </Grid>
+          )}
+          {tab === 2 && (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Typography color="primary" sx={{ mb: 1 }}>D1</Typography>
+                <KundaliChart chart={chart} style={style} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography color="primary" sx={{ mb: 1 }}>D9</Typography>
+                {v9Chart ? <KundaliChart chart={v9Chart} style={style} /> : <Typography variant="body2">{hi ? "वर्ग उपलब्ध नहीं" : "Vargas not loaded"}</Typography>}
+              </Grid>
+            </Grid>
+          )}
+          {tab === 3 && (
+            <Box>
+              {(chart?.dasha?.periods || []).slice(0, 4).map((p: any) => (
+                <Card key={p.lord + p.start} sx={{ mb: 1 }}>
+                  <CardContent>
+                    <Typography variant="h6" color="primary">{grahaName(p.lord, hi)} {hi ? "महादशा" : "Mahadasha"}</Typography>
+                    <Typography variant="body2">{p.start} → {p.end}</Typography>
+                  </CardContent>
+                </Card>
+              ))}
+            </Box>
+          )}
+        </>
       )}
     </Box>
   );

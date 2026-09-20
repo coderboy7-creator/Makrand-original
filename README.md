@@ -97,6 +97,17 @@ Set `MAKARANDA_LLM_URL`, `MAKARANDA_LLM_KEY`, `MAKARANDA_LLM_MODEL`. The interpr
 
 Drik mode uses NASA JPL approximate Keplerian elements (typical error tens of arcminutes for 1900–2050; Moon ~0.1–0.5° with truncated ELP). This is sufficient for rashi/nakshatra work and is structured behind `EphemerisEngine` so Swiss Ephemeris files can be dropped in later for NASA-level arcseconds. Siddhantic mode is *intentionally* different — that is the Makaranda product.
 
+## Product docs
+
+| File | What |
+|---|---|
+| [PRD.md](PRD.md) | Product requirements, gold standard, defaults |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Monolith, ganita flow, API |
+| [RULES.md](RULES.md) | Standing constraints (KSDSU vs Mithila, no date hacks) |
+| [DESIGN.md](DESIGN.md) | Mithila UI, 12-hour घं.मि., Hindi kundali |
+| [TASKS.md](TASKS.md) | Done / P0 / P1 backlog |
+| [MEMORY.md](MEMORY.md) | Fitted bijas, verified clocks, dead ends |
+
 ## Layout
 
 ```

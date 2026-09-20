@@ -44,14 +44,19 @@ function North({ chart, size, hi }: { chart: any; size: number; hi: boolean }) {
     12: { x: s * 0.72, y: s * 0.12 },
   };
   return (
-    <svg width="100%" viewBox={`0 0 ${s} ${s}`} style={{ maxWidth: s, background: "#1A1208" }}>
-      <rect x={m} y={m} width={s - 2 * m} height={s - 2 * m} fill="#1A1208" stroke="#C9A227" strokeWidth="2" />
-      <line x1={m} y1={m} x2={s - m} y2={s - m} stroke="#C9A227" strokeWidth="1.2" />
-      <line x1={s - m} y1={m} x2={m} y2={s - m} stroke="#C9A227" strokeWidth="1.2" />
-      <line x1={s / 2} y1={m} x2={m} y2={s / 2} stroke="#C9A227" strokeWidth="1.2" />
-      <line x1={s / 2} y1={m} x2={s - m} y2={s / 2} stroke="#C9A227" strokeWidth="1.2" />
-      <line x1={s / 2} y1={s - m} x2={m} y2={s / 2} stroke="#C9A227" strokeWidth="1.2" />
-      <line x1={s / 2} y1={s - m} x2={s - m} y2={s / 2} stroke="#C9A227" strokeWidth="1.2" />
+    <svg width="100%" viewBox={`0 0 ${s} ${s}`} style={{ maxWidth: s, background: "transparent" }}>
+      <defs>
+        <linearGradient id="goldStrokeN" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#F6E27A" /><stop offset="100%" stopColor="#C47A12" />
+        </linearGradient>
+      </defs>
+      <rect x={m} y={m} width={s - 2 * m} height={s - 2 * m} rx="10" fill="#05040A" stroke="url(#goldStrokeN)" strokeWidth="2.4" />
+      <line x1={m} y1={m} x2={s - m} y2={s - m} stroke="#E8C547" strokeWidth="1.15" />
+      <line x1={s - m} y1={m} x2={m} y2={s - m} stroke="#E8C547" strokeWidth="1.15" />
+      <line x1={s / 2} y1={m} x2={m} y2={s / 2} stroke="#E8C547" strokeWidth="1.15" />
+      <line x1={s / 2} y1={m} x2={s - m} y2={s / 2} stroke="#E8C547" strokeWidth="1.15" />
+      <line x1={s / 2} y1={s - m} x2={m} y2={s / 2} stroke="#E8C547" strokeWidth="1.15" />
+      <line x1={s / 2} y1={s - m} x2={s - m} y2={s / 2} stroke="#E8C547" strokeWidth="1.15" />
       {Object.entries(pos).map(([h, p]) => (
         <g key={h}>
           <text x={p.x} y={p.y - 14} textAnchor="middle" fill="#E07A2F" fontSize="12" fontFamily={FONT}>
@@ -77,12 +82,12 @@ function South({ chart, size, hi }: { chart: any; size: number; hi: boolean }) {
   const cell = size / 4;
   const houseOfSign = (sign: number) => ((sign - lagnaSign + 12) % 12) + 1;
   return (
-    <svg width="100%" viewBox={`0 0 ${size} ${size}`} style={{ maxWidth: size, background: "#1A1208" }}>
-      <rect x="1" y="1" width={size - 2} height={size - 2} fill="#1A1208" stroke="#C9A227" strokeWidth="2" />
+    <svg width="100%" viewBox={`0 0 ${size} ${size}`} style={{ maxWidth: size, background: "transparent" }}>
+      <rect x="1" y="1" width={size - 2} height={size - 2} rx="10" fill="#05040A" stroke="#E8C547" strokeWidth="2.2" />
       {[1, 2, 3].map((i) => (
         <g key={i}>
-          <line x1={i * cell} y1={0} x2={i * cell} y2={size} stroke="#C9A227" strokeWidth="1" />
-          <line x1={0} y1={i * cell} x2={size} y2={i * cell} stroke="#C9A227" strokeWidth="1" />
+          <line x1={i * cell} y1={0} x2={i * cell} y2={size} stroke="#E8C547" strokeWidth="1" />
+          <line x1={0} y1={i * cell} x2={size} y2={i * cell} stroke="#E8C547" strokeWidth="1" />
         </g>
       ))}
       {cells.map((c) => {
@@ -107,14 +112,14 @@ function East({ chart, size, hi }: { chart: any; size: number; hi: boolean }) {
   const { houses, lagnaSign } = occupants(chart, hi);
   const cell = size / 4;
   return (
-    <svg width="100%" viewBox={`0 0 ${size} ${size}`} style={{ maxWidth: size, background: "#1A1208" }}>
-      <rect x="2" y="2" width={size - 4} height={size - 4} fill="#1A1208" stroke="#C9A227" strokeWidth="2" />
-      <line x1={cell} y1={0} x2={cell} y2={size} stroke="#C9A227" />
-      <line x1={3 * cell} y1={0} x2={3 * cell} y2={size} stroke="#C9A227" />
-      <line x1={0} y1={cell} x2={size} y2={cell} stroke="#C9A227" />
-      <line x1={0} y1={3 * cell} x2={size} y2={3 * cell} stroke="#C9A227" />
-      <line x1={cell} y1={cell} x2={3 * cell} y2={3 * cell} stroke="#C9A227" />
-      <line x1={3 * cell} y1={cell} x2={cell} y2={3 * cell} stroke="#C9A227" />
+    <svg width="100%" viewBox={`0 0 ${size} ${size}`} style={{ maxWidth: size, background: "transparent" }}>
+      <rect x="2" y="2" width={size - 4} height={size - 4} rx="10" fill="#05040A" stroke="#E8C547" strokeWidth="2.2" />
+      <line x1={cell} y1={0} x2={cell} y2={size} stroke="#E8C547" />
+      <line x1={3 * cell} y1={0} x2={3 * cell} y2={size} stroke="#E8C547" />
+      <line x1={0} y1={cell} x2={size} y2={cell} stroke="#E8C547" />
+      <line x1={0} y1={3 * cell} x2={size} y2={3 * cell} stroke="#E8C547" />
+      <line x1={cell} y1={cell} x2={3 * cell} y2={3 * cell} stroke="#E8C547" />
+      <line x1={3 * cell} y1={cell} x2={cell} y2={3 * cell} stroke="#E8C547" />
       {[
         { h: 1, x: size / 2, y: cell * 0.55 },
         { h: 2, x: cell * 3.5, y: cell * 0.55 },
