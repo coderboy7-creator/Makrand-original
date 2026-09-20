@@ -33,6 +33,7 @@ const LINKS: NavItem[] = [
 ];
 
 function Logo() {
+  const { lang } = useI18n();
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, textDecoration: "none", color: "inherit", flexShrink: 0 }} component={Link} to="/">
       <Box sx={{
@@ -44,9 +45,11 @@ function Logo() {
       }}>म</Box>
       <Box>
         <Typography sx={{ fontFamily: "Georgia, 'Noto Serif Devanagari', serif", fontWeight: 700, lineHeight: 1, fontSize: 20, color: "#F6E27A" }}>
-          Makaranda
+          {lang === "hi" ? "मकरन्द" : "Makaranda"}
         </Typography>
-        <Typography variant="caption" sx={{ letterSpacing: 2, color: "text.secondary", display: "block", mt: -0.2 }}>JYOTISH</Typography>
+        <Typography variant="caption" sx={{ letterSpacing: 2, color: "text.secondary", display: "block", mt: -0.2 }}>
+          {lang === "hi" ? "ज्योतिष" : "JYOTISH"}
+        </Typography>
       </Box>
     </Box>
   );
@@ -120,7 +123,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               onClick={() => setLang(lang === "hi" ? "en" : "hi")}
               sx={{ borderColor: "rgba(232,197,71,0.35)", color: "#F6E27A", borderRadius: 999 }}
             >
-              {lang === "hi" ? "हिन्दी" : "ENG"}
+              {lang === "hi" ? "English" : "हिन्दी"}
             </Button>
             {user ? (
               <>

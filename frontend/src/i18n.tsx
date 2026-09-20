@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 export type Lang = "hi" | "en";
 
@@ -152,6 +152,67 @@ const HI: Record<string, string> = {
   password: "पासवर्ड",
   enter: "अंदर जाएँ",
   lagna: "लग्न",
+  kala: "काल",
+  vimshopaka: "विंशोपक",
+  mahadasha: "महादशा",
+  antar: "अन्तरदशा",
+  dasha_sub: "महादशा · अन्तरदशा · प्रत्यन्तरदशा",
+  yrs: "वर्ष",
+  horoscope_sub: "राशि अनुसार शुभ रंग व अंक",
+  lucky_colour: "शुभ रंग",
+  lucky_no: "अंक",
+  yogas_sub: "राजयोग, धन, मंगल, कालसर्प, पितृ",
+  nak_sub: "देवता, पद, गण, योनि, नाड़ी",
+  lord: "स्वामी",
+  deity: "देवता",
+  from_moon: "चन्द्र से",
+  from_lagna: "लग्न से",
+  effect: "फल",
+  gochar_sub: "साढ़ेसाती, कण्टक शनि, गुरु गोचर",
+  note: "टिप्पणी",
+  life_stone: "जीवन रत्न",
+  support_stone: "सहायक रत्न",
+  metal_colour: "धातु / रंग",
+  lagnesh: "लग्नेश",
+  varsha_sub: "वार्षिक सूर्य-प्रत्यावर्तन",
+  cast_return: "सूर्य प्रत्यावर्तन बनाएँ",
+  year: "वर्ष",
+  return_time: "प्रत्यावर्तन काल",
+  varsha_lagna: "वर्ष लग्न",
+  muntha: "मुन्था",
+  prashna_sub: "प्रश्न-क्षण की कुंडली",
+  question: "प्रश्न",
+  use_now: "अभी का समय (दरभंगा)",
+  cast_prashna: "प्रश्न कुंडली बनाएँ",
+  moon_in_house: "चन्द्र भाव",
+  learn_sub: "आरम्भिक पाठक व अन्तेवासी ज्योतिषी के लिए",
+  tab_bhavas: "भाव",
+  tab_grahas: "ग्रह",
+  tab_rashis: "राशि",
+  tab_naks: "नक्षत्र",
+  articles: "लेख",
+  house_n: "भाव",
+  consult_sub: "समय-खण्ड, वीडियो (Jitsi), डेमो UPI",
+  topic: "विषय",
+  book_pay: "वीडियो बुक करें · भुगतान",
+  my_sessions: "मेरे सत्र",
+  join_video: "वीडियो में जुड़ें",
+  login_first_user: "पहले प्रवेश करें (user@makaranda.app / user123)",
+  crm_sub: "ग्राहक इतिहास, कुंडली, टिप्पणी",
+  client_name: "ग्राहक का नाम",
+  add: "जोड़ें",
+  login_astro: "ग्राहक सूची के लिए ज्योतिषी के रूप में प्रवेश करें (astro@makaranda.app / astro123)।",
+  users: "उपयोगकर्ता",
+  astrologers: "ज्योतिषी",
+  consultations: "परामर्श",
+  login_admin: "admin@makaranda.app / admin123 से प्रवेश करें",
+  admin_loads: "प्रशासन पटल ROLE_ADMIN के लिए खुलता है।",
+  demo_accounts: "डेमो: user@ / astro@ / admin@ makaranda.app",
+  vargas_missing: "वर्ग उपलब्ध नहीं",
+  loading: "गणना हो रही है…",
+  direction: "दिशा",
+  palabha: "पल्लभा",
+  no_places: "कोई स्थान नहीं मिला",
 };
 
 const EN: Record<string, string> = {
@@ -321,8 +382,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLangState(l);
     document.documentElement.lang = l === "hi" ? "hi" : "en";
   };
-  const t = (k: string) => dict[lang][k] || dict.en[k] || k;
-  const value = useMemo(() => ({ lang, setLang, t }), [lang]);
+  const t = useCallback((k: string) => dict[lang][k] || dict.en[k] || k, [lang]);
+  const value = useMemo(() => ({ lang, setLang, t }), [lang, t]);
   return <C.Provider value={value}>{children}</C.Provider>;
 }
 
