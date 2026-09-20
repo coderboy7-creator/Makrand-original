@@ -32,12 +32,14 @@ export function HomePage() {
           [t("home_c"), "/consult", t("home_c_d")],
         ].map(([title, href, d]) => (
           <Grid item xs={12} md={3} key={href}>
-            <Card component={RouterLink} to={href} sx={{ display: "block", textDecoration: "none", height: "100%", transition: "transform .2s", "&:hover": { transform: "translateY(-4px)" } }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">{title}</Typography>
-                <Typography variant="body2" color="text.secondary">{d}</Typography>
-              </CardContent>
-            </Card>
+            <RouterLink to={href} style={{ textDecoration: "none", color: "inherit", display: "block", height: "100%" }}>
+              <Card sx={{ height: "100%", transition: "transform .2s", "&:hover": { transform: "translateY(-4px)" } }}>
+                <CardContent>
+                  <Typography variant="h6" color="primary">{title}</Typography>
+                  <Typography variant="body2" color="text.secondary">{d}</Typography>
+                </CardContent>
+              </Card>
+            </RouterLink>
           </Grid>
         ))}
       </Grid>
@@ -257,8 +259,13 @@ export function PanchangPage() {
   const { t, lang } = useI18n();
   const hi = lang !== "en";
   const [data, setData] = useState<any>(null);
+  const [err, setErr] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
-  const load = () => api.get(`/api/v1/jyotish/panchang?date=${date}&lat=${birth.latitude}&lon=${birth.longitude}&ayanamsa=${birth.ayanamsa}&mode=${birth.panchangMode}`).then(setData);
+  const load = () => {
+    setErr("");
+    return api.get(`/api/v1/jyotish/panchang?date=${date}&lat=${birth.latitude}&lon=${birth.longitude}&ayanamsa=${birth.ayanamsa}&mode=${birth.panchangMode}`)
+      .then(setData).catch((e) => setErr(e.message));
+  };
   useEffect(() => { load(); }, []);
   /** Printed panchang: the clock is END (until). Start is previous sandhi. */
   const limb = (start?: string, until?: string, next?: string) => (
@@ -282,6 +289,7 @@ export function PanchangPage() {
         <TextField type="date" value={date} onChange={(e) => setDate(e.target.value)} />
         <Button variant="contained" onClick={load}>{t("compute")}</Button>
       </Box>
+      {err && <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert>}
       {data && (
         <Grid container spacing={2}>
           {[

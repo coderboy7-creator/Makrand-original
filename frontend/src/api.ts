@@ -12,14 +12,19 @@ async function req(path: string, init: RequestInit = {}) {
   const headers: any = { "Content-Type": "application/json", ...(init.headers || {}) };
   const tok = getToken();
   if (tok) headers.Authorization = "Bearer " + tok;
-  const res = await fetch(path, { ...init, headers });
+  let res: Response;
+  try {
+    res = await fetch(path, { ...init, headers });
+  } catch {
+    throw new Error("API unreachable — start Spring Boot on port 8080");
+  }
   if (res.status === 401) {
     setToken("");
   }
   const ct = res.headers.get("content-type") || "";
   if (ct.includes("application/pdf")) return res;
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || res.statusText);
+  if (!res.ok) throw new Error(data.error || data.message || res.statusText || `HTTP ${res.status}`);
   return data;
 }
 

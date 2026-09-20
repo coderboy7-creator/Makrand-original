@@ -15,6 +15,7 @@ type Ctx = {
   loadChart: () => Promise<any>;
   loading: boolean;
   error: string;
+  apiOk: boolean | null;
 };
 
 const C = createContext<Ctx>(null as any);
@@ -26,9 +27,12 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [chart, setChart] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [apiOk, setApiOk] = useState<boolean | null>(null);
 
   useEffect(() => {
-    api.get("/api/v1/public/config").then(setConfig).catch(() => {});
+    api.get("/api/v1/public/config")
+      .then((c) => { setConfig(c); setApiOk(true); })
+      .catch(() => setApiOk(false));
     if (getToken()) api.get("/api/v1/auth/me").then(setUser).catch(() => setToken(""));
   }, []);
 
@@ -58,8 +62,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   };
 
   const value = useMemo(
-    () => ({ birth, setBirth, config, user, setUser, login, logout, chart, loadChart, loading, error }),
-    [birth, config, user, chart, loading, error]
+    () => ({ birth, setBirth, config, user, setUser, login, logout, chart, loadChart, loading, error, apiOk }),
+    [birth, config, user, chart, loading, error, apiOk]
   );
   return <C.Provider value={value}>{children}</C.Provider>;
 }
