@@ -7,7 +7,13 @@ function occupants(chart: any, hi: boolean): { houses: Record<number, string[]>;
   for (let i = 1; i <= 12; i++) houses[i] = [];
   if (!chart) return { houses, lagnaSign: 0 };
   const lagnaSign = chart.lagna?.signIndex ?? 0;
-  houses[1].push(grahaShort("Lagna", hi));
+  if (chart.markLagnaInHouse1 !== false) {
+    houses[1].push(grahaShort("Lagna", hi));
+  }
+  if (typeof chart.birthLagnaSignIndex === "number") {
+    const h = ((chart.birthLagnaSignIndex - lagnaSign + 12) % 12) + 1;
+    houses[h].push(grahaShort("Lagna", hi));
+  }
   Object.values(chart.planets || {}).forEach((p: any) => {
     const h = p.house || 1;
     houses[h].push(grahaShort(p.name, hi) + (p.retrograde ? (hi ? "व" : "R") : ""));

@@ -228,6 +228,12 @@ const HI: Record<string, string> = {
   avastha: "बालादि",
   dms: "अंश",
   vakra: "वक्र",
+  chart_d1: "लग्न कुंडली (D1)",
+  chart_chandra: "चन्द्र कुंडली",
+  chart_surya: "सूर्य कुंडली",
+  chart_chalit: "भाव चलित (श्रीपति)",
+  chart_gochar: "आज का गोचर",
+  chalit_help: "चलित श्रीपति भाव प्रयोग करता है; मूल कुंडली की राशि-पद्धति नहीं बदलती। चन्द्र/सूर्य कुंडली उन्हीं ग्रहों को चन्द्र या सूर्य राशि से गिनती हैं।",
 };
 
 const EN: Record<string, string> = {

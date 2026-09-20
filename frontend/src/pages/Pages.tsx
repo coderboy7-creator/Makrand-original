@@ -12,6 +12,7 @@ import { useApp } from "../state";
 import { useI18n } from "../i18n";
 import { grahaName, nakName, dignityName, rashiName, yogaName, yogaText, yogaType, gemPhrase, prashnaVerdict, articleTitle, articleBody, astroBio } from "../jyotishLabels";
 import { GlassCard, GoldTitle, LimbTile, MetaRow, PageHero, ScoreHero } from "../ui";
+import { chartFromOrigin, gocharAsChart, VARGA_MEANING } from "../chartViews";
 
 export function HomePage() {
   const { config } = useApp();
@@ -73,6 +74,8 @@ export function KundaliPage() {
   const [style, setStyle] = useState("NORTH");
   const [tab, setTab] = useState(0);
   const [panch, setPanch] = useState<any>(null);
+  const [chalit, setChalit] = useState<any>(null);
+  const [gochar, setGochar] = useState<any>(null);
   useEffect(() => { if (!chart) loadChart().catch(() => {}); }, []);
   useEffect(() => {
     const d = String(birth.dateTime || "").slice(0, 10);
@@ -80,6 +83,11 @@ export function KundaliPage() {
     api.get(`/api/v1/jyotish/panchang?date=${d}&lat=${birth.latitude}&lon=${birth.longitude}&ayanamsa=${birth.ayanamsa}&mode=${birth.panchangMode}`)
       .then(setPanch).catch(() => {});
   }, [birth.dateTime, birth.latitude, birth.longitude, birth.ayanamsa, birth.panchangMode]);
+  useEffect(() => {
+    if (!chart) return;
+    api.post("/api/v1/jyotish/kundali", { ...birth, houseSystem: "SRIPATI" }).then(setChalit).catch(() => setChalit(null));
+    api.post("/api/v1/jyotish/gochar", birth).then(setGochar).catch(() => setGochar(null));
+  }, [chart, birth.dateTime, birth.latitude, birth.longitude, birth.ayanamsa, birth.panchangMode]);
   const v9 = chart?.vargas?.[9];
   const v9Chart = v9 ? {
     lagna: { signIndex: v9.bodies?.[0]?.signIndex || 0 },
@@ -107,6 +115,8 @@ export function KundaliPage() {
                   <MetaRow k={t("lon")} v={`${Number(birth.longitude).toFixed(4)}°`} />
                   <MetaRow k={t("timezone")} v="GMT +05:30" />
                   <MetaRow k={t("ayanamsa")} v={chart.ayanamsaLabel} />
+                  <MetaRow k={t("lagna")} v={`${hi ? (chart.lagna?.signHi || chart.lagna?.signSa) : chart.lagna?.sign} ${chart.lagna?.signDegree || ""}`} />
+                  <MetaRow k={t("lagnesh")} v={grahaName(chart.avakahada?.lagnesh || chart.lagna?.rashiLord, hi)} />
                 </GlassCard>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -124,6 +134,35 @@ export function KundaliPage() {
                   ) : <Typography variant="body2">{t("loading")}</Typography>}
                 </GlassCard>
               </Grid>
+              {chart.avakahada && (
+                <Grid item xs={12}>
+                  <GlassCard>
+                    <Typography variant="h6" color="primary" sx={{ mb: 1 }}>{t("avakahada")}</Typography>
+                    <Grid container spacing={1}>
+                      {[
+                        [t("varna"), hi ? chart.avakahada.varnaHi : chart.avakahada.varna],
+                        [t("vashya"), hi ? chart.avakahada.vashyaHi : chart.avakahada.vashya],
+                        [t("yoni"), hi ? chart.avakahada.yoniHi : chart.avakahada.yoni],
+                        [t("gana"), hi ? chart.avakahada.ganaHi : chart.avakahada.gana],
+                        [t("nadi"), hi ? chart.avakahada.nadiHi : chart.avakahada.nadi],
+                        [t("rashi"), hi ? chart.avakahada.rashiHi : chart.avakahada.rashi],
+                        [t("rashi_lord"), grahaName(chart.avakahada.rashiLord, hi)],
+                        [t("nakshatra"), hi ? chart.avakahada.nakshatraHi : chart.avakahada.nakshatra],
+                        [t("nak_lord"), grahaName(chart.avakahada.nakLord, hi)],
+                        [t("charan"), chart.avakahada.pada],
+                        [t("tattva"), hi ? chart.avakahada.tattvaHi : chart.avakahada.tattva],
+                        [t("namakshara"), chart.avakahada.namakshara],
+                        [t("paya"), hi ? chart.avakahada.payaHi : chart.avakahada.paya],
+                      ].map(([k, v]) => (
+                        <Grid item xs={6} sm={4} md={3} key={String(k)}>
+                          <Typography variant="caption" color="text.secondary">{k}</Typography>
+                          <Typography variant="body2">{v}</Typography>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </GlassCard>
+                </Grid>
+              )}
             </Grid>
           )}
           {tab === 1 && (
@@ -237,7 +276,12 @@ export function VargasPage() {
       <BirthForm />
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, my: 2 }}>
         {[1, 2, 3, 4, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60].map((d) => (
-          <Chip key={d} label={"D" + d} onClick={() => setDiv(d)} color={div === d ? "primary" : "default"} />
+          <Chip
+            key={d}
+            label={`D${d} · ${hi ? VARGA_MEANING[d].hi : VARGA_MEANING[d].en}`}
+            onClick={() => setDiv(d)}
+            color={div === d ? "primary" : "default"}
+          />
         ))}
       </Box>
       {v && (
