@@ -260,9 +260,26 @@ export function KundaliPage() {
           )}
           {tab === 2 && (
             <Grid container spacing={2}>
+              <Grid item xs={12}><Typography variant="body2" color="text.secondary">{t("chalit_help")}</Typography></Grid>
               <Grid item xs={12} md={6}>
-                <Typography color="primary" sx={{ mb: 1 }}>D1</Typography>
+                <Typography color="primary" sx={{ mb: 1 }}>{t("chart_d1")}</Typography>
                 <KundaliChart chart={chart} style={style} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography color="primary" sx={{ mb: 1 }}>{t("chart_chandra")}</Typography>
+                <KundaliChart chart={chartFromOrigin(chart, "Moon")} style={style} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography color="primary" sx={{ mb: 1 }}>{t("chart_surya")}</Typography>
+                <KundaliChart chart={chartFromOrigin(chart, "Sun")} style={style} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography color="primary" sx={{ mb: 1 }}>{t("chart_chalit")}</Typography>
+                {chalit ? <KundaliChart chart={chalit} style={style} /> : <Typography variant="body2">{t("loading")}</Typography>}
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography color="primary" sx={{ mb: 1 }}>{t("chart_gochar")}</Typography>
+                {gochar ? <KundaliChart chart={gochar} style={style} /> : <Typography variant="body2">{t("loading")}</Typography>}
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography color="primary" sx={{ mb: 1 }}>D9</Typography>
@@ -944,34 +961,6 @@ export function AdminPage() {
     <Box>
       <PageHero title={t("admin_title")} />
       <Grid container spacing={2}>
-        {[[t("users"), dash.users], [t("astrologers"), dash.astrologers], [t("consultations"), dash.consultations], [t("articles"), dash.articles]].map(([k, v]) => (
-          <Grid item xs={6} md={3} key={k as string}><Card><CardContent><Typography color="primary">{k}</Typography><Typography variant="h4">{v}</Typography></CardContent></Card></Grid>
-        ))}
-      </Grid>
-    </Box>
-  );
-}
-
-export function LoginPage() {
-  const { login } = useApp();
-  const { t } = useI18n();
-  const [email, setEmail] = useState("user@makaranda.app");
-  const [password, setPassword] = useState("user123");
-  const [err, setErr] = useState("");
-  return (
-    <Box sx={{ maxWidth: 440, mx: "auto", mt: 4 }}>
-      <GlassCard>
-        <PageHero title={t("signin")} sub={t("demo_accounts")} />
-        <TextField fullWidth label={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} sx={{ mb: 2 }} />
-        <TextField fullWidth type="password" label={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} sx={{ mb: 2 }} />
-        {err && <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert>}
-        <Button fullWidth variant="contained" onClick={() => login(email, password).catch((e) => setErr(e.message))}>{t("enter")}</Button>
-        <Typography variant="body2" sx={{ mt: 2 }} color="text.secondary">user123 · astro123 · admin123</Typography>
-      </GlassCard>
-    </Box>
-  );
-}
-   <Grid container spacing={2}>
         {[[t("users"), dash.users], [t("astrologers"), dash.astrologers], [t("consultations"), dash.consultations], [t("articles"), dash.articles]].map(([k, v]) => (
           <Grid item xs={6} md={3} key={k as string}><Card><CardContent><Typography color="primary">{k}</Typography><Typography variant="h4">{v}</Typography></CardContent></Card></Grid>
         ))}
