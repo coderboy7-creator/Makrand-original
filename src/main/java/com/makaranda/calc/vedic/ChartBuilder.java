@@ -38,7 +38,9 @@ public final class ChartBuilder {
             int house, String dignity, boolean retrograde,
             int nakshatraIndex, String nakshatra, int pada, String nakLord,
             String dms, String signDegree,
-            String nameHi, String signHi, String nakshatraHi, String dignityHi
+            String nameHi, String signHi, String nakshatraHi, String dignityHi,
+            String rashiLord, String rashiLordHi, String nakLordHi,
+            String avastha, String avasthaHi
     ) {}
 
     public record FullChart(
@@ -51,7 +53,8 @@ public final class ChartBuilder {
             Map<String, PlanetBody> planets,
             double[] houseCuspsSidereal,
             Map<Integer, Map<String, Object>> vargas,
-            Map<String, Double> vimshopaka
+            Map<String, Double> vimshopaka,
+            Map<String, Object> avakahada
     ) {}
 
     public FullChart build(BirthInput in) {
@@ -157,7 +160,14 @@ public final class ChartBuilder {
             vimshopaka.put(name, Math.round(score * 100.0) / 100.0);
         }
 
-        return new FullChart(in, jd, ay, aySys.label, mode.name(), lagna, planets, cusps, vargas, vimshopaka);
+        Map<String, Object> avakahada = Avakahada.fromMoon(planets.get("Moon").siderealLon());
+        String lagnesh = VedicConstants.SIGN_LORDS[lagnaSign];
+        avakahada.put("lagnesh", lagnesh);
+        avakahada.put("lagneshHi", VedicConstants.planetHi(lagnesh));
+        avakahada.put("lagnaRashi", VedicConstants.SIGNS_EN[lagnaSign]);
+        avakahada.put("lagnaRashiHi", VedicConstants.SIGNS_HI[lagnaSign]);
+
+        return new FullChart(in, jd, ay, aySys.label, mode.name(), lagna, planets, cusps, vargas, vimshopaka, avakahada);
     }
 
     private PlanetBody body(String name, String sa, String glyph, double trop, double lat, double sid,
@@ -165,14 +175,18 @@ public final class ChartBuilder {
         int sign = AstroMath.signIndex(sid);
         int nak = VedicConstants.nakshatraIndex(sid);
         String dig = "Lagna".equals(name) ? "—" : VedicConstants.dignity(name, sign);
+        String rashiLord = VedicConstants.SIGN_LORDS[sign];
+        String nakLord = VedicConstants.NAK_LORDS[nak];
         return new PlanetBody(
                 name, sa, glyph, trop, sid, lat, sign,
                 VedicConstants.SIGNS_EN[sign], VedicConstants.SIGNS_SA[sign],
                 house, dig, retro, nak, VedicConstants.NAKSHATRAS[nak], VedicConstants.pada(sid),
-                VedicConstants.NAK_LORDS[nak],
+                nakLord,
                 AstroMath.dms(sid), AstroMath.signDegree(sid),
                 VedicConstants.planetHi(name), VedicConstants.SIGNS_HI[sign],
-                VedicConstants.nakHi(nak), VedicConstants.dignityHi(dig)
+                VedicConstants.nakHi(nak), VedicConstants.dignityHi(dig),
+                rashiLord, VedicConstants.planetHi(rashiLord), VedicConstants.planetHi(nakLord),
+                Avakahada.avastha(sid), Avakahada.avasthaHi(sid)
         );
     }
 
