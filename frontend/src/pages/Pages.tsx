@@ -141,25 +141,38 @@ export function KundaliPage() {
                 <Typography variant="body2" sx={{ mb: 1 }}>
                   {t("ayanamsa")} {chart.ayanamsaLabel} = {Number(chart.ayanamsaDeg).toFixed(4)}° · {chart.panchangMode}
                 </Typography>
+                <Box sx={{ overflowX: "auto" }}>
                 <Table size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell>{t("graha")}</TableCell><TableCell>{t("rashi")}</TableCell><TableCell>{t("bhava")}</TableCell>
-                      <TableCell>{t("nakshatra")}</TableCell><TableCell>{t("dignity")}</TableCell>
+                      <TableCell>{t("graha")}</TableCell>
+                      <TableCell>{t("rashi")}</TableCell>
+                      <TableCell>{t("rashi_lord")}</TableCell>
+                      <TableCell>{t("bhava")}</TableCell>
+                      <TableCell>{t("nakshatra")}</TableCell>
+                      <TableCell>{t("nak_lord")}</TableCell>
+                      <TableCell>{t("dms")}</TableCell>
+                      <TableCell>{t("dignity")}</TableCell>
+                      <TableCell>{t("avastha")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {Object.values(chart.planets || {}).map((p: any) => (
+                    {[chart.lagna, ...Object.values(chart.planets || {})].filter(Boolean).map((p: any) => (
                       <TableRow key={p.name}>
-                        <TableCell>{p.glyph} {grahaName(p.name, hi)}{p.retrograde ? (hi ? " वक्र" : " R") : ""}</TableCell>
+                        <TableCell>{p.glyph} {grahaName(p.name, hi)}{p.retrograde ? ` ${t("vakra")}` : ""}</TableCell>
                         <TableCell>{hi ? (p.signHi || p.signSa) : p.sign}</TableCell>
+                        <TableCell>{grahaName(p.rashiLord, hi)}</TableCell>
                         <TableCell>{p.house}</TableCell>
                         <TableCell>{nakName(p.nakshatra, hi)} {p.pada}</TableCell>
+                        <TableCell>{grahaName(p.nakLord, hi)}</TableCell>
+                        <TableCell>{p.signDegree || p.dms}</TableCell>
                         <TableCell>{dignityName(p.dignity, hi)}</TableCell>
+                        <TableCell>{hi ? (p.avasthaHi || p.avastha) : p.avastha}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
+                </Box>
                 <Button sx={{ mt: 2 }} variant="outlined" onClick={async () => {
                   const res: any = await fetch("/api/v1/jyotish/report.pdf", {
                     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(birth)
