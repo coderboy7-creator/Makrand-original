@@ -18,6 +18,7 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 - [x] Repo on GitHub `coderboy7-creator/Makrand-original` (`main`)
 - [x] Golden tests lock Jul 2016 / Jul–Aug 2022 KSDSU
 - [x] Original KSDSU Kartika/Magha 2016–17 and 2022–23 pages transcribed; winter identity + residual floors in `KsdsuGoldenTest`
+- [x] KSDSU graha-spaṣṭa CSV lock (2023 + 2025–26) — `panji-accuracy/`, `GrahaSpashtaBandGoldTest` (Chunk 1; no engine change)
 
 ## Now / P0 — correctness
 
@@ -57,6 +58,7 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 
 | ID | Ticket | Lane |
 |---|---|---|
+| T0 | Outer-graha śīghra invert (Śani/Guru/Mangal leave Sūrya) | `calc/graha-sighra-outer` — Chunk 2 |
 | T1 | Winter KSDSU page → spashta residual fit | Java `calc/ephemeris` |
 | T2 | Golden tests for the 8-row validation table | `SunriseMithilaTest` |
 | T3 | Month calendar UI | React |
