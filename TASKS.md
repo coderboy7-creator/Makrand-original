@@ -20,6 +20,7 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 - [x] Original KSDSU Kartika/Magha 2016–17 and 2022–23 pages transcribed; winter identity + residual floors in `KsdsuGoldenTest`
 - [x] KSDSU graha-spaṣṭa CSV lock (2023 + 2025–26) — `panji-accuracy/`, `GrahaSpashtaBandGoldTest` (Chunk 1; no engine change)
 - [x] Outer-graha śīghra epicycle (Chunk 2) — Śani/Guru leave Sūrya; July SR/SS unchanged
+- [x] SIDDHANTIC Rāhu/Ketu +180° vs DRIK/panji (Chunk 3)
 
 ## Now / P0 — correctness
 
@@ -59,7 +60,7 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 
 | ID | Ticket | Lane |
 |---|---|---|
-| T0 | Rāhu/Ketu 180° vs panji/DRIK (Chunk 3) | `calc/graha-nodes` |
+| T0 | Re-measure Śani panji−SIDD; bija only if bar met (Chunk 4) | calc, new branch |
 | T1 | Winter KSDSU page → spashta residual fit | Java `calc/ephemeris` |
 | T2 | Golden tests for the 8-row validation table | `SunriseMithilaTest` |
 | T3 | Month calendar UI | React |

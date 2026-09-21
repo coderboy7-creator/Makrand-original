@@ -39,6 +39,11 @@ public final class MakarandaSpashta {
     public static final double REV_VEN = 7_022_376.0;
     public static final double REV_SAT = 146_568.0;
     public static final double REV_RAHU = -232_238.0;
+    /**
+     * SS {@code REV_RAHU} mean sits on DRIK/panji <b>Ketu</b> (2023–26 gold).
+     * +180° makes {@code rahu} the ascending node. Chunk 3; not a bija.
+     */
+    public static final double RAHU_MEAN_OFFSET = 180.0;
     public static final double REV_APSIDES_MOON = 488_203.0;
 
     /**
@@ -84,7 +89,7 @@ public final class MakarandaSpashta {
         double jupMean = rev(REV_JUP, ah);
         double venMean = rev(REV_VEN, ah);
         double satMean = rev(REV_SAT, ah);
-        double rahuMean = rev(REV_RAHU, ah);
+        double rahuMean = AstroMath.norm360(rev(REV_RAHU, ah) + RAHU_MEAN_OFFSET);
         double moonApsis = AstroMath.norm360(rev(REV_APSIDES_MOON, ah) + MOON_APSIS_OFFSET);
         double years = ah / 365.258756;
         double sunApogee = AstroMath.norm360(SUN_APOGEE_KALI + years * 11.4 / 3600.0 + SUN_APOGEE_OFFSET);
