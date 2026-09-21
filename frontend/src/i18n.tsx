@@ -241,6 +241,17 @@ const HI: Record<string, string> = {
   sav: "सर्वाष्टकवर्ग",
   bindu: "बिन्दु",
   ashtaka_help: "पराशर भिन्नाष्टकवर्ग — प्रत्येक राशि में ०–८ बिन्दु (अशोधित)। सर्वाष्टकवर्ग योग ३३७। राहु-केतु नहीं। त्रिकोण/एकाधिपत्य शोधन बाद में।",
+  shadbala: "षड्बल",
+  bhava_bala: "भावबल",
+  rupa: "रूप",
+  sthana: "स्थान",
+  dig: "दिक्",
+  kala_bala: "काल",
+  chesta: "चेष्टा",
+  naisargika: "नैसर्गिक",
+  drik_bala: "दृक्",
+  required: "न्यूनतम",
+  shadbala_help: "पराशर षड्बल विरूप में (६० = १ रूप)। न्यूनतम: सूर्य ३९०, चन्द्र ३६०, मंगल ३००, बुध ४२०, गुरु ३९०, शुक्र ३३०, शनि ३००। Astrotalk अंक नहीं।",
 };
 
 const EN: Record<string, string> = {
@@ -482,6 +493,17 @@ const EN: Record<string, string> = {
   sav: "Sarvashtakavarga",
   bindu: "Bindu",
   ashtaka_help: "Parashara Bhinna-ashtakavarga — 0–8 unsodhita bindus per rashi. SAV totals 337. Rahu/Ketu omitted. Trikona/ekadhipatya reduction is later.",
+  shadbala: "Shadbala",
+  bhava_bala: "Bhava bala",
+  rupa: "Rupa",
+  sthana: "Sthana",
+  dig: "Dig",
+  kala_bala: "Kala",
+  chesta: "Chesta",
+  naisargika: "Naisargika",
+  drik_bala: "Drik",
+  required: "Required",
+  shadbala_help: "Parashara ṣaḍbala in virūpa (60 = 1 rūpa). Minima: Sun 390, Moon 360, Mars 300, Mercury 420, Jupiter 390, Venus 330, Saturn 300. Not Astrotalk numbers.",
 };
 
 const dict: Record<Lang, Record<string, string>> = { hi: HI, en: EN };

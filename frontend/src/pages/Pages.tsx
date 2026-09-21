@@ -388,6 +388,72 @@ export function VargasPage() {
           </Table>
         </Box>
       )}
+      {chart?.shadbala && (
+        <Box sx={{ mt: 3, overflowX: "auto" }}>
+          <Typography variant="h6" color="primary">{t("shadbala")}</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{t("shadbala_help")}</Typography>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>{t("graha")}</TableCell>
+                <TableCell align="right">{t("sthana")}</TableCell>
+                <TableCell align="right">{t("dig")}</TableCell>
+                <TableCell align="right">{t("kala_bala")}</TableCell>
+                <TableCell align="right">{t("chesta")}</TableCell>
+                <TableCell align="right">{t("naisargika")}</TableCell>
+                <TableCell align="right">{t("drik_bala")}</TableCell>
+                <TableCell align="right">{t("score")}</TableCell>
+                <TableCell align="right">{t("rupa")}</TableCell>
+                <TableCell align="right">{t("required")}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"].map((g) => {
+                const row = chart.shadbala.grahas?.[g];
+                if (!row) return null;
+                const full = !!row.full;
+                return (
+                  <TableRow key={g}>
+                    <TableCell>{grahaName(g, hi)}</TableCell>
+                    <TableCell align="right">{row.sthana}</TableCell>
+                    <TableCell align="right">{row.dig}</TableCell>
+                    <TableCell align="right">{row.kala}</TableCell>
+                    <TableCell align="right">{row.chesta}</TableCell>
+                    <TableCell align="right">{row.naisargika}</TableCell>
+                    <TableCell align="right">{row.drik}</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 700, color: full ? "success.main" : "warning.main" }}>{row.totalVirupa}</TableCell>
+                    <TableCell align="right">{row.rupa}</TableCell>
+                    <TableCell align="right">{row.requiredVirupa}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+          <Typography variant="h6" color="primary" sx={{ mt: 3 }}>{t("bhava_bala")}</Typography>
+          <Table size="small" sx={{ mt: 1 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>{t("bhava")}</TableCell>
+                <TableCell>{t("rashi")}</TableCell>
+                <TableCell>{t("lord")}</TableCell>
+                <TableCell align="right">{t("score")}</TableCell>
+                <TableCell align="right">{t("rupa")}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {(chart.shadbala.bhavas || []).map((b: any) => (
+                <TableRow key={b.house}>
+                  <TableCell>{b.house}</TableCell>
+                  <TableCell>{hi ? b.signHi : b.sign}</TableCell>
+                  <TableCell>{grahaName(b.lord, hi)}</TableCell>
+                  <TableCell align="right">{b.totalVirupa}</TableCell>
+                  <TableCell align="right">{b.rupa}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+      )}
     </Box>
   );
 }
