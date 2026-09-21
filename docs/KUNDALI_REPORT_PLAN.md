@@ -85,8 +85,8 @@ Rudrākṣa by nakṣatra (extend gems). Life-stone already exists. Never auto-s
 ### P12 — Standing copy: winter honesty *(done on `ui/p12-winter-honesty`)*
 Kartika SR ~16–20m early, winter tithi 45–140m, 12 Aug 2022 pūrṇimā ~20m. «परम्परा» wording. Drik vs Siddhantic on पंचांग. **No** bija fudge.
 
-### P13 — Standing calc (later): fuller Makaranda spaṣṭa
-Only after P12. Not 1-D bija. July gold remains the gate.
+### P13 — Standing calc: fuller Makaranda spaṣṭa *(started on `calc/p13-makaranda-spashta`)*
+`MakarandaSpashta`: frozen bijas, SS jyā table, sphuṭa paridhi (tabled, not live — even-quadrant 20′ slipped 12 Aug 2022 pūrṇimā). Bhujāntara minutes computed; **not** swapped for NOAA EoT (29 Jul SS 6:45 vs 6:50). Not 1-D bija. July gold remains the gate.
 
 ### P14 — Mobile RN
 After web report is usable. Same APIs.

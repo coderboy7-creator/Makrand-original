@@ -50,7 +50,7 @@ public final class PanchangCalculator {
 
         double jdNoon = AstroMath.julianDayUt(date.getYear(), date.getMonthValue(), date.getDayOfMonth(),
                 12, 0, 0, tzHours);
-        double[] riseSet = engine.sunriseSunsetLocal(jdNoon, lat, lon, tzHours);
+        double[] riseSet = engine.sunriseSunsetLocal(jdNoon, lat, lon, tzHours, mode);
         String sunrise = formatLocalHours(riseSet[0]);
         String sunset = formatLocalHours(riseSet[1]);
         String noon = formatLocalHours(riseSet[2]);

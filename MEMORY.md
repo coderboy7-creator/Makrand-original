@@ -2,7 +2,7 @@
 
 Internal continuity for humans and agents. Workspace files are the source of truth; this file stores **decisions, gold numbers, and dead ends** that are easy to lose.
 
-**Last updated:** 2026-09-20 (Drik Swiss Eph wired; SIDDHANTIC bijas unchanged)  
+**Last updated:** 2026-09-21 (P13 MakarandaSpashta extracted; bijas frozen; NOAA EoT stays)  
 
 ---
 
@@ -75,6 +75,7 @@ Convention: दि. 11।55 = 11:55 AM; दि. 2।17 = 2:17 PM; रा. 2।43
 - Dec 15 २५।०० vs दि. 3:49 checksum fail on some Mithila rows.
 - Lucky SS dEl ≈ 0 on 30 Aug / 20 Sep 2026 was coincidence before bijas.
 - **2026-09-20 winter manda grid:** sun apogee 150–200° and manda circum 10–20° — only ~174°/14° (current) keeps July gold; winter tithi sum barely moves (394 vs ~400 min). Moon apsis only −90° passes July. NOAA EoT scale 0 fixes Kartika SR (~3 min) but July 29 SS becomes 6:43 vs book 6:50 (fails 4 min). **Do not retune apogee/manda/EoT for winter.** Next lever is not a school constant (full Makaranda manda table / true SS EoT), not a 1-D bija.
+- **2026-09-21 P13:** Bhujāntara-only madhyāhna → 29 Jul 2022 SS **6:45** (fails 4 min). Applying bhujāntara to ahargana flipped July tithi identity. Sphuṭa even-paridhi 20′ pushed 12 Aug pūrṇimā to 7:50 (gate 22 min). Live manda stays frozen 14°/32°; sunrise stays NOAA. Code in `MakarandaSpashta`.
 
 ## Key paths
 

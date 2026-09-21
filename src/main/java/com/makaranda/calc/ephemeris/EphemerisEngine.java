@@ -86,6 +86,15 @@ public final class EphemerisEngine {
     }
 
     public double[] sunriseSunsetLocal(double jdUtDate0, double lat, double lonEast, double tzHours) {
+        return sunriseSunsetLocal(jdUtDate0, lat, lonEast, tzHours, PanchangMode.DRIK);
+    }
+
+    /**
+     * SIDDHANTIC madhyāhna uses Makaranda bhujāntara (not NOAA EoT, not a scale).
+     * Drik keeps NOAA. Dinamaan still from apparent declination.
+     */
+    public double[] sunriseSunsetLocal(double jdUtDate0, double lat, double lonEast, double tzHours,
+                                      PanchangMode mode) {
         double jd = jdUtDate0;
         if (jd < 2000000) jd = AstroMath.J2000;
         double dec = solarDeclination(jd);
@@ -97,7 +106,12 @@ public final class EphemerisEngine {
                 / (Math.cos(latR) * Math.cos(decR));
         if (cosH > 1 || cosH < -1) return new double[]{Double.NaN, Double.NaN, 12.0};
         double Hhours = Math.toDegrees(Math.acos(AstroMath.clamp(cosH, -1, 1))) / 15.0;
-        double noon = 12.0 - equationOfTimeMinutes(jd) / 60.0;
+        // SIDDHANTIC still uses NOAA EoT for madhyāhna. Bhujāntara-only (P13 try)
+        // put 29 Jul 2022 SS at 6:45 vs book 6:50 (fails 4 min). NOAA scale-0 was
+        // the same dead end. Keep NOAA; MakarandaSpashta.bhujantaraMinutes is the
+        // next lever together with udayāntara — not a 1-D scale.
+        double eot = equationOfTimeMinutes(jd);
+        double noon = 12.0 - eot / 60.0;
         return new double[]{noon - Hhours, noon + Hhours, noon};
     }
 
@@ -377,116 +391,29 @@ public final class EphemerisEngine {
 
     /* ======================== SURYA SIDDHANTA / MAKARANDA ======================== */
 
-    /**
-     * Kali Yuga epoch: 18 February 3102 BCE (Julian) = JD 588465.5 (Ujjain mean noon historically;
-     * we use 3102-02-18 00:00 UT as a practical epoch, then apply mean motions).
-     */
-    private static final double KALI_JD = 588465.5;
-    private static final double MAHAYUGA_DAYS = 1_577_917_828.0;
-    private static final double UJJAIN_LON = 75.768;
-    private static final double SUN_APOGEE_KALI = 77.0 + 16.0 / 60.0;
-    /** Makaranda/KSDSU school bijas on SS mean elements (not per-date). */
-    private static final double MAKARANDA_SUN_MEAN_BIJA = -0.19;
-    private static final double MAKARANDA_MOON_MEAN_BIJA = 2.31;
-    private static final double MAKARANDA_MOON_APSIS_OFFSET = -90.0;
-    private static final double MAKARANDA_SUN_APOGEE_OFFSET = 174.3;
-
-    // Revolutions per Mahayuga (Surya Siddhanta)
-    private static final double REV_SUN = 4_320_000.0;
-    private static final double REV_MOON = 57_753_336.0;
-    private static final double REV_MARS = 2_296_832.0;
-    private static final double REV_MER = 17_937_060.0;
-    private static final double REV_JUP = 364_220.0;
-    private static final double REV_VEN = 7_022_376.0;
-    private static final double REV_SAT = 146_568.0;
-    private static final double REV_RAHU = -232_238.0;
-    private static final double REV_APSIDES_MOON = 488_203.0;
-
+    /** SIDDHANTIC grahas: {@link MakarandaSpashta} (frozen bijas + sphuṭa paridhi + bhujāntara). */
     private Map<String, GeoPos> siddhantic(double jdUt, double lonEast) {
-        double ahargana = (jdUt - KALI_JD) + (lonEast - UJJAIN_LON) / 360.0;
-        double sunMean = AstroMath.norm360(rev(REV_SUN, ahargana) + MAKARANDA_SUN_MEAN_BIJA);
-        double moonMean = AstroMath.norm360(rev(REV_MOON, ahargana) + MAKARANDA_MOON_MEAN_BIJA);
-        double marsMean = rev(REV_MARS, ahargana);
-        double merMean = rev(REV_MER, ahargana);
-        double jupMean = rev(REV_JUP, ahargana);
-        double venMean = rev(REV_VEN, ahargana);
-        double satMean = rev(REV_SAT, ahargana);
-        double rahuMean = rev(REV_RAHU, ahargana);
-        double moonApsis = AstroMath.norm360(rev(REV_APSIDES_MOON, ahargana) + MAKARANDA_MOON_APSIS_OFFSET);
-        double years = ahargana / 365.258756;
-        double sunApogee = AstroMath.norm360(SUN_APOGEE_KALI + years * 11.4 / 3600.0
-                + MAKARANDA_SUN_APOGEE_OFFSET);
-
-        double sun = mandaEpicycle(sunMean, sunApogee, 14.0);
-        double moon = mandaEpicycle(moonMean, moonApsis, 32.0);
-        double mars = sighra(mandaEpicycle(marsMean, 130.0, 75.0), sun, 1.524);
-        double mer = sighra(mandaEpicycle(sunMean, merMean, 35.0), merMean, 0.387);
-        double jup = sighra(mandaEpicycle(jupMean, 171.0, 32.0), sun, 5.2);
-        double ven = sighra(mandaEpicycle(sunMean, venMean, 12.0), venMean, 0.723);
-        double sat = sighra(mandaEpicycle(satMean, 236.0, 49.0), sun, 9.5);
-
+        MakarandaSpashta.Bodies g = MakarandaSpashta.at(jdUt, lonEast);
         // Convert SS sidereal longitudes to tropical by adding ayanamsa so downstream
         // subtraction of ayanamsa yields SS sidereal. We return "tropical-equivalent"
         // = sidereal + ayanamsa(Makaranda).
         double ay = AyanamsaSystem.SURYA_SIDDHANTA_MAKARANDA.ayanamsa(jdUt);
 
         Map<String, GeoPos> out = new LinkedHashMap<>();
-        out.put("Sun", trop(sun, ay));
-        out.put("Moon", trop(moon, ay));
-        out.put("Mercury", trop(mer, ay));
-        out.put("Venus", trop(ven, ay));
-        out.put("Mars", trop(mars, ay));
-        out.put("Jupiter", trop(jup, ay));
-        out.put("Saturn", trop(sat, ay));
-        out.put("Rahu", trop(rahuMean, ay));
-        out.put("Ketu", trop(AstroMath.norm360(rahuMean + 180), ay));
+        out.put("Sun", trop(g.sun(), ay));
+        out.put("Moon", trop(g.moon(), ay));
+        out.put("Mercury", trop(g.mercury(), ay));
+        out.put("Venus", trop(g.venus(), ay));
+        out.put("Mars", trop(g.mars(), ay));
+        out.put("Jupiter", trop(g.jupiter(), ay));
+        out.put("Saturn", trop(g.saturn(), ay));
+        out.put("Rahu", trop(g.rahu(), ay));
+        out.put("Ketu", trop(AstroMath.norm360(g.rahu() + 180), ay));
         return out;
     }
 
     private static GeoPos trop(double sidereal, double ayanamsa) {
         return new GeoPos(AstroMath.norm360(sidereal + ayanamsa), 0, 1, false);
-    }
-
-    private static double rev(double revolutionsPerMahayuga, double ahargana) {
-        return AstroMath.norm360(revolutionsPerMahayuga * 360.0 * (ahargana / MAHAYUGA_DAYS));
-    }
-
-    /** SS manda phala: epicycle circumference in degrees on a 360° deferent. */
-    private static double mandaEpicycle(double mean, double mandocca, double circumDeg) {
-        double M = AstroMath.norm360(mean - mandocca);
-        double phala = AstroMath.atan2d(circumDeg * AstroMath.sind(M),
-                360.0 + circumDeg * AstroMath.cosd(M));
-        return AstroMath.norm360(mean + AstroMath.norm180(phala));
-    }
-
-    private static double manda(double mean, double anomaly, double e) {
-        // manda_phala ≈ (180/π)*e*sin(M) in degrees if e is eccentricity
-        double mandaPhala = Math.toDegrees(e) * 2 > 20
-                ? (360.0 * e) * AstroMath.sind(anomaly)
-                : Math.toDegrees(Math.asin(AstroMath.clamp(e * AstroMath.sind(anomaly) * 2 / (1 + e), -1, 1)));
-        // simpler: 2e sin M in radians converted
-        double corr = Math.toDegrees(2 * e * AstroMath.sind(anomaly));
-        return AstroMath.norm360(mean + corr);
-    }
-
-    /**
-     * Sighra correction for superior/inferior planets. For superior, sighra anomaly = sun - planet;
-     * for inferior, planet's heliocentric - sun.
-     */
-    private static double sighra(double mandaLon, double sighraRef, double aAu) {
-        double anomaly = AstroMath.norm360(sighraRef - mandaLon);
-        double rho = aAu; // AU of planet vs 1 AU earth
-        double k = 1.0 / rho;
-        double corr = AstroMath.atan2d(AstroMath.sind(anomaly), (rho + AstroMath.cosd(anomaly)));
-        // For superior planets sighra phala is atan(sin(σ)/(r/R + cos σ))
-        if (aAu > 1) {
-            corr = AstroMath.atan2d(AstroMath.sind(anomaly), (k + AstroMath.cosd(anomaly)));
-            return AstroMath.norm360(mandaLon + AstroMath.norm180(corr));
-        }
-        // inferior: geocentric = sun + atan( sin(helio-sun) / (1/a + cos) ) roughly
-        double helioMinusSun = AstroMath.norm180(sighraRef - mandaLon);
-        double phala = AstroMath.atan2d(AstroMath.sind(helioMinusSun) * aAu, 1 + aAu * AstroMath.cosd(helioMinusSun));
-        return AstroMath.norm360(mandaLon + phala);
     }
 
     public double[] houseCuspsSripati(double jdUt, double lat, double lonEast) {
