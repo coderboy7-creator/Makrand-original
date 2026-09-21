@@ -127,11 +127,18 @@ public final class MakarandaSpashta {
         return AstroMath.norm360(mean + mandaPhala(mean, mandocca, oddCircum));
     }
 
+    /**
+     * Śīghra (annual) equation. Inferior: spaṣṭa = Sūrya + phala with k = a/AU.
+     * Superior: spaṣṭa = manda + phala with k = 1/a. Same epicycle form as manda.
+     * The old superior form {@code atan2(sin θ, k+cos θ)} made phala ≈ θ so
+     * Mangal/Guru/Śani collapsed onto Sūrya (Chunk 2).
+     */
     static double sighra(double mandaLon, double sighraRef, double aAu) {
         double anomaly = AstroMath.norm360(sighraRef - mandaLon);
         if (aAu > 1) {
             double k = 1.0 / aAu;
-            double corr = AstroMath.atan2d(AstroMath.sind(anomaly), (k + AstroMath.cosd(anomaly)));
+            double corr = AstroMath.atan2d(k * AstroMath.sind(anomaly),
+                    1.0 + k * AstroMath.cosd(anomaly));
             return AstroMath.norm360(mandaLon + AstroMath.norm180(corr));
         }
         double helioMinusSun = AstroMath.norm180(sighraRef - mandaLon);
