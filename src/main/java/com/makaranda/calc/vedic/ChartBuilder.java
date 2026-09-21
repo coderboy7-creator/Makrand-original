@@ -77,27 +77,34 @@ public final class ChartBuilder {
         double tropAsc = engine.tropicalAscendant(jd, in.latitude, in.longitude);
         double sidAsc = AstroMath.norm360(tropAsc - ay);
 
-        PlanetBody lagna = body("Lagna", "Lagna", "Asc", tropAsc, 0, sidAsc, false, sidAsc, 1);
-
-        Map<String, PlanetBody> planets = new LinkedHashMap<>();
         int lagnaSign = AstroMath.signIndex(sidAsc);
-        for (String name : VedicConstants.PLANETS) {
-            GeoPos g = geo.get(name);
-            double sid = AstroMath.norm360(g.lon() - ay);
-            int house = AstroMath.houseFromLagna(lagnaSign, AstroMath.signIndex(sid));
-            planets.put(name, body(name, sanskrit(name), glyph(name), g.lon(), g.lat(), sid, g.retrograde(), sidAsc, house));
-        }
 
         double[] cusps = new double[13];
         String hs = in.houseSystem == null ? "WHOLE_SIGN" : in.houseSystem;
+        boolean cuspHouses = KpSystem.placidusHouses(hs);
         if ("SRIPATI".equalsIgnoreCase(hs) || "PORPHYRY".equalsIgnoreCase(hs)) {
             double[] trop = engine.houseCuspsSripati(jd, in.latitude, in.longitude);
             for (int i = 1; i <= 12; i++) cusps[i] = AstroMath.norm360(trop[i] - ay);
         } else if ("EQUAL".equalsIgnoreCase(hs)) {
             for (int i = 1; i <= 12; i++) cusps[i] = AstroMath.norm360(sidAsc + (i - 1) * 30);
+        } else if (cuspHouses) {
+            double[] trop = engine.houseCuspsPlacidus(jd, in.latitude, in.longitude);
+            for (int i = 1; i <= 12; i++) cusps[i] = AstroMath.norm360(trop[i] - ay);
         } else {
             double start = lagnaSign * 30.0;
             for (int i = 1; i <= 12; i++) cusps[i] = AstroMath.norm360(start + (i - 1) * 30);
+        }
+
+        PlanetBody lagna = body("Lagna", "Lagna", "Asc", tropAsc, 0, sidAsc, false, sidAsc, 1);
+
+        Map<String, PlanetBody> planets = new LinkedHashMap<>();
+        for (String name : VedicConstants.PLANETS) {
+            GeoPos g = geo.get(name);
+            double sid = AstroMath.norm360(g.lon() - ay);
+            int house = cuspHouses
+                    ? AstroMath.houseFromCusps(sid, cusps)
+                    : AstroMath.houseFromLagna(lagnaSign, AstroMath.signIndex(sid));
+            planets.put(name, body(name, sanskrit(name), glyph(name), g.lon(), g.lat(), sid, g.retrograde(), sidAsc, house));
         }
 
         Map<Integer, Map<String, Object>> vargas = new LinkedHashMap<>();

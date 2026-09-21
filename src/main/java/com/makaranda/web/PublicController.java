@@ -53,7 +53,7 @@ public class PublicController {
                 Map.of("id", PanchangMode.SIDDHANTIC.name(), "label", "Siddhantic / Makaranda (default)"),
                 Map.of("id", PanchangMode.DRIK.name(), "label", "Drik / Apparent (observational)")
         });
-        m.put("houseSystems", new String[]{"WHOLE_SIGN", "EQUAL", "SRIPATI"});
+        m.put("houseSystems", new String[]{"WHOLE_SIGN", "EQUAL", "SRIPATI", "PLACIDUS", "KP"});
         m.put("chartStyles", new String[]{"NORTH", "SOUTH", "EAST"});
         m.put("serverTime", Instant.now().toString());
         return m;

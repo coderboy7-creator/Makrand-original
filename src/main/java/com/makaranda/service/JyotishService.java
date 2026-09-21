@@ -14,7 +14,10 @@ import com.makaranda.calc.match.AshtakootaMatcher;
 import com.makaranda.calc.muhurta.MuhurtaCalculator;
 import com.makaranda.calc.panchang.PanchangCalculator;
 import com.makaranda.calc.transit.TransitCalculator;
+import com.makaranda.calc.AstroMath;
+import com.makaranda.calc.ephemeris.EphemerisEngine;
 import com.makaranda.calc.vedic.Ashtakavarga;
+import com.makaranda.calc.vedic.KpSystem;
 import com.makaranda.calc.vedic.Shadbala;
 import com.makaranda.calc.vedic.ChartBuilder;
 import com.makaranda.calc.vedic.ChartBuilder.BirthInput;
@@ -83,7 +86,21 @@ public class JyotishService {
         Map<String, Object> gocharNow = transits.gochar(c, LocalDate.now(),
                 c.input().ayanamsa(), PanchangMode.from(c.panchangMode()));
         m.put("doshaPanel", DoshaPanel.from(c, gocharNow));
+        m.put("kp", kpTables(c));
         return m;
+    }
+
+    public Map<String, Object> kp(BirthRequest r) {
+        return kpTables(chart(r));
+    }
+
+    private Map<String, Object> kpTables(FullChart c) {
+        double ay = c.ayanamsaDeg();
+        double[] trop = new EphemerisEngine().houseCuspsPlacidus(
+                c.julianDayUt(), c.input().latitude(), c.input().longitude());
+        double[] sid = new double[13];
+        for (int i = 1; i <= 12; i++) sid[i] = AstroMath.norm360(trop[i] - ay);
+        return KpSystem.tables(c, sid);
     }
 
     public Map<String, Object> ashtakavarga(BirthRequest r) {
