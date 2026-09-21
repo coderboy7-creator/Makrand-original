@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 import {
   Alert, Box, Button, Card, CardContent, Chip, Grid, LinearProgress, MenuItem,
-  Tab, Tabs, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography
+  Tab, Tabs, Table, TableBody, TableCell, TableHead, TableRow, TextField,
+  ToggleButton, ToggleButtonGroup, Typography
 } from "@mui/material";
 import BirthForm from "../components/BirthForm";
+import HonestyNote from "../components/HonestyNote";
 import KundaliChart from "../components/KundaliChart";
 import PanchangMonthGrid from "../components/PanchangMonthGrid";
 import PlaceSearch from "../components/PlaceSearch";
@@ -63,6 +65,7 @@ export function HomePage() {
           </CardContent>
         </Card>
       )}
+      <HonestyNote mode={config.defaultPanchangMode} />
       <Typography variant="caption" display="block" sx={{ mt: 2 }}>
         {config.defaultAyanamsa} · {config.defaultPanchangMode} · {config.defaultPlace}
       </Typography>
@@ -569,6 +572,15 @@ export function PanchangPage() {
     <Box>
       <PageHero title={t("panchang_title")} sub={t("panchang_sub")} />
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{t("panchang_time_help")}</Typography>
+      <Box sx={{ mb: 2, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1 }}>
+        <ToggleButtonGroup exclusive size="small" value={birth.panchangMode}
+          onChange={(_, v) => v && setBirth({ ...birth, panchangMode: v })}>
+          <ToggleButton value="SIDDHANTIC">{t("mode_ss")}</ToggleButton>
+          <ToggleButton value="DRIK">{t("mode_drik")}</ToggleButton>
+        </ToggleButtonGroup>
+        <Typography variant="caption" color="text.secondary">{t("mode_help")}</Typography>
+      </Box>
+      <HonestyNote mode={birth.panchangMode} />
       <GlassCard sx={{ mb: 2 }}>
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "center" }}>
           <TextField type="date" value={date} onChange={(e) => setDate(e.target.value)} />

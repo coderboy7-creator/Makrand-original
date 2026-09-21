@@ -70,6 +70,7 @@ export default function BirthForm({ onSubmit, submitLabel }: { onSubmit?: () => 
         <Button variant="contained" disabled={loading} onClick={() => (onSubmit ? onSubmit() : loadChart())}>
           {loading ? t("calculating") : (submitLabel || t("cast"))}
         </Button>
+        <Typography variant="caption" color="text.secondary">{t("mode_help")}</Typography>
       </Box>
     </Box>
   );

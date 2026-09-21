@@ -82,8 +82,8 @@ Rudrākṣa by nakṣatra (extend gems). Life-stone already exists. Never auto-s
 ### P11 — Standing UI: month panchang sheet *(done on `ui/p11-month-panchang`)*
 `/panchang/month` already has an API. Calendar grid, till-times, Hindi.
 
-### P12 — Standing copy: winter honesty
-Kartika SR ~20m early, winter tithi 45–140m, 12 Aug 2022 pūrṇimā ~20m. «परम्परा» wording. **No** bija fudge.
+### P12 — Standing copy: winter honesty *(done on `ui/p12-winter-honesty`)*
+Kartika SR ~16–20m early, winter tithi 45–140m, 12 Aug 2022 pūrṇimā ~20m. «परम्परा» wording. Drik vs Siddhantic on पंचांग. **No** bija fudge.
 
 ### P13 — Standing calc (later): fuller Makaranda spaṣṭa
 Only after P12. Not 1-D bija. July gold remains the gate.

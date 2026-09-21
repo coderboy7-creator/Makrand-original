@@ -60,7 +60,7 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 | T1 | Winter KSDSU page → spashta residual fit | Java `calc/ephemeris` |
 | T2 | Golden tests for the 8-row validation table | `SunriseMithilaTest` |
 | T3 | Month calendar UI | React |
-| T4 | Honest “parampara” label | React copy |
+| T4 | Honest “parampara” label | React copy — P12 done |
 | T5 | CRM authZ | Spring Security |
 
 **Do not start:** Mithila-2027 Magha fit, Meeus extra terms in SIDDHANTIC, monolith split, MUI 6 + ganita in one PR.
