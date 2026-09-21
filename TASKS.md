@@ -35,7 +35,7 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 - [ ] Month panchang UI on `GET /panchang/month` (shukla/krishna spread).
 - [ ] Muhurta **intra-day clock windows**; travel from/to already specified.
 - [ ] Extra dasha systems (Yogini, Char, Ashtottari, Kalachakra).
-- [ ] Multi-page bilingual PDF (kundali + D9 + dasha + milan).
+- [x] Multi-page bilingual PDF (P3) + ashtakavarga chapter (P4).
 - [ ] Real booking slots + Razorpay/Cashfree.
 - [ ] Admin ayanamsa/content actually driving the engine.
 - [ ] Learning curriculum beyond 5 seed articles.

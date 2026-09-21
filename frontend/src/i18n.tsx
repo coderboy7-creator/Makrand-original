@@ -237,6 +237,10 @@ const HI: Record<string, string> = {
   chart_chalit: "भाव चलित (श्रीपति)",
   chart_gochar: "आज का गोचर",
   chalit_help: "चलित श्रीपति भाव प्रयोग करता है; मूल कुंडली की राशि-पद्धति नहीं बदलती। चन्द्र/सूर्य कुंडली उन्हीं ग्रहों को चन्द्र या सूर्य राशि से गिनती हैं।",
+  ashtakavarga: "अष्टकवर्ग",
+  sav: "सर्वाष्टकवर्ग",
+  bindu: "बिन्दु",
+  ashtaka_help: "पराशर भिन्नाष्टकवर्ग — प्रत्येक राशि में ०–८ बिन्दु (अशोधित)। सर्वाष्टकवर्ग योग ३३७। राहु-केतु नहीं। त्रिकोण/एकाधिपत्य शोधन बाद में।",
 };
 
 const EN: Record<string, string> = {
@@ -474,6 +478,10 @@ const EN: Record<string, string> = {
   chart_chalit: "Bhava chalit (Sripati)",
   chart_gochar: "Today's gochar",
   chalit_help: "Chalit uses Sripati bhavas; it does not change the default whole-sign kundali. Chandra/Surya recount the same grahas from Moon or Sun.",
+  ashtakavarga: "Ashtakavarga",
+  sav: "Sarvashtakavarga",
+  bindu: "Bindu",
+  ashtaka_help: "Parashara Bhinna-ashtakavarga — 0–8 unsodhita bindus per rashi. SAV totals 337. Rahu/Ketu omitted. Trikona/ekadhipatya reduction is later.",
 };
 
 const dict: Record<Lang, Record<string, string>> = { hi: HI, en: EN };
