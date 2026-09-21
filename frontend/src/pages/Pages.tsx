@@ -7,7 +7,7 @@ import {
 import BirthForm from "../components/BirthForm";
 import KundaliChart from "../components/KundaliChart";
 import PlaceSearch from "../components/PlaceSearch";
-import { api, defaultBirth, fetchPdf, triggerDownload } from "../api";
+import { api, defaultBirth, fetchPdf, objectUrl, triggerDownload } from "../api";
 import { useApp } from "../state";
 import { useI18n } from "../i18n";
 import { grahaName, nakName, dignityName, rashiName, yogaName, yogaText, yogaType, gemPhrase, prashnaVerdict, articleTitle, articleBody, astroBio } from "../jyotishLabels";
@@ -82,14 +82,18 @@ export function KundaliPage() {
   const [pdfBusy, setPdfBusy] = useState(false);
   const [pdfErr, setPdfErr] = useState("");
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const makePdf = async () => {
+  const makePdf = async (mode: "preview" | "download") => {
     setPdfBusy(true);
     setPdfErr("");
     try {
       const blob = await fetchPdf("/api/v1/jyotish/report", birth);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
-      const url = triggerDownload(blob, "makaranda-kundali.pdf");
-      setPdfUrl(url);
+      if (mode === "download") {
+        const url = triggerDownload(blob, "makaranda-kundali.pdf");
+        setPdfUrl(url);
+      } else {
+        setPdfUrl(objectUrl(blob));
+      }
     } catch (e: any) {
       setPdfErr(e.message || t("pdf_fail"));
     } finally {
@@ -98,9 +102,14 @@ export function KundaliPage() {
   };
   const pdfBar = (
     <Box sx={{ mt: 2 }}>
-      <Button variant="contained" disabled={pdfBusy} onClick={makePdf}>
-        {pdfBusy ? t("pdf_wait") : t("pdf")}
-      </Button>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+        <Button variant="outlined" disabled={pdfBusy} onClick={() => makePdf("preview")}>
+          {pdfBusy ? t("pdf_wait") : t("pdf_preview")}
+        </Button>
+        <Button variant="contained" disabled={pdfBusy} onClick={() => makePdf("download")}>
+          {pdfBusy ? t("pdf_wait") : t("pdf_download")}
+        </Button>
+      </Box>
       {pdfErr && <Alert severity="error" sx={{ mt: 1 }}>{t("pdf_fail")}: {pdfErr}</Alert>}
       {pdfUrl && (
         <Box sx={{ mt: 2 }}>

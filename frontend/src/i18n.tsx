@@ -81,6 +81,8 @@ const HI: Record<string, string> = {
   nakshatra: "नक्षत्र",
   dignity: "अवस्था",
   pdf: "पीडीएफ रिपोर्ट",
+  pdf_preview: "पूर्वावलोकन",
+  pdf_download: "डाउनलोड",
   reading: "परम्परा पाठ",
   vargas_title: "वर्ग कुंडली",
   vargas_sub: "षोडशवर्ग D1–D60 व विंशोपक बल",
