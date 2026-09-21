@@ -541,7 +541,8 @@ public class PdfReportService {
         String s = v == null ? "" : v;
         PdfPCell cell;
         if (DevanagariPaint.hasDevanagari(s)) {
-            cell = new PdfPCell(DevanagariPaint.block(s, pt, color, bold, 160), true);
+            cell = new PdfPCell();
+            cell.addElement(DevanagariPaint.block(s, pt, color, bold, 220));
         } else {
             cell = new PdfPCell(new Phrase(s, bold ? fB(pt, color) : f(pt, color)));
         }

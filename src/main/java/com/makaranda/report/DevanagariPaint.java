@@ -27,7 +27,7 @@ import javax.imageio.ImageIO;
 public final class DevanagariPaint {
     private static final Font BASE;
     private static final Font BASE_B;
-    private static final float DPI = 144f;
+    private static final float DPI = 192f;
 
     static {
         BASE = load("/fonts/NotoSansDevanagari-Regular.ttf");
