@@ -2,7 +2,7 @@
 
 Internal continuity for humans and agents. Workspace files are the source of truth; this file stores **decisions, gold numbers, and dead ends** that are easy to lose.
 
-**Last updated:** 2026-09-21 (P13 MakarandaSpashta extracted; bijas frozen; NOAA EoT stays)  
+**Last updated:** 2026-09-21 (graha-spaṣṭa CSV lock Chunk 1; engine unchanged)  
 
 ---
 
@@ -13,7 +13,8 @@ Internal continuity for humans and agents. Workspace files are the source of tru
 - DRIK = Swiss Ephemeris (`sepl_18.se1` + `semo_18.se1`, 1800–2400) when files load; else Meeus Sun/Moon **without** −8.2′ bija. SIDDHANTIC never calls SE.
 - Default place **KSDS 26.5833°N 85.268°E** (२६।३५ / ०१।३५ / पल्लभा ६).
 - GitHub: `https://github.com/coderboy7-creator/Makrand-original` branch `main`.
-- **Unfinished:** original KSDSU winter tithi 45–140 min early (photos in hand); mobile stub. Swiss Eph is Drik-only.
+- **Unfinished:** original KSDSU winter tithi 45–140 min early; SIDDHANTIC outer grahas still follow Sūrya (Chunk 2 not started). Swiss Eph is Drik-only.
+- Graha-spaṣṭa gold: `panji-accuracy/graha-spashta-band-data-2023-2026.csv` (166 rows, original KSDSU 2023 + 2025–26). Baseline: `panji-accuracy/ACCURACY_BASELINE.md`. Do not apply planet bijas until outer śīghra is fixed.
 
 ## Gold vs not-gold
 
@@ -88,6 +89,7 @@ Convention: दि. 11।55 = 11:55 AM; दि. 2।17 = 2:17 PM; रा. 2।43
 | `frontend/src/pages/Pages.tsx` | Almost all screens |
 | `src/test/java/com/makaranda/calc/SunriseMithilaTest.java` | KSDSU 2022 SR + T1 + purnima + 2016 T16 |
 | `docs/PROJECT_STATUS.md` | Older snapshot (Aug 2026); prefer PRD/TASKS if conflict |
+| `panji-accuracy/` | KSDSU graha-spaṣṭa CSV gold + baseline (Chunk 1) |
 | `tmp_panji/` | Local OCR; gitignored |
 
 ## Next agent move
