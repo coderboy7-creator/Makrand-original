@@ -87,6 +87,8 @@ export function gemPhrase(s: string, hi: boolean) {
   return out
     .replace(" — supports the lagna lord.", " — लग्नेश का रत्न।")
     .replace(" — supports the weakest of Shodashavarga vimshopaka.", " — षोडशवर्ग विंशोपक में दुर्बल ग्रह का रत्न।")
+    .replace("Never prescribe Neelam (Saturn) or Gomed (Rahu) without seeing dasha, lagna and current gochar. Prefer mantra and dana first. We do not sell gems or rudraksha.",
+      "दशा, लग्न और वर्तमान गोचर देखे बिना नीलम (शनि) या गोमेद (राहु) न दें। पहले मन्त्र और दान श्रेयस्कर हैं। हम रत्न या रुद्राक्ष नहीं बेचते।")
     .replace("Never prescribe Neelam (Saturn) or Gomed (Rahu) without seeing dasha, lagna and current gochar. Prefer mantra and dana first.",
       "दशा, लग्न और वर्तमान गोचर देखे बिना नीलम (शनि) या गोमेद (राहु) न दें। पहले मन्त्र और दान श्रेयस्कर हैं।");
 }
