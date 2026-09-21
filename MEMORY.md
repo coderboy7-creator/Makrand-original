@@ -2,7 +2,7 @@
 
 Internal continuity for humans and agents. Workspace files are the source of truth; this file stores **decisions, gold numbers, and dead ends** that are easy to lose.
 
-**Last updated:** 2026-09-21 (graha-spaṣṭa CSV lock Chunk 1; engine unchanged)  
+**Last updated:** 2026-09-21 (Chunk 2 outer śīghra; July gold held)  
 
 ---
 
@@ -13,8 +13,8 @@ Internal continuity for humans and agents. Workspace files are the source of tru
 - DRIK = Swiss Ephemeris (`sepl_18.se1` + `semo_18.se1`, 1800–2400) when files load; else Meeus Sun/Moon **without** −8.2′ bija. SIDDHANTIC never calls SE.
 - Default place **KSDS 26.5833°N 85.268°E** (२६।३५ / ०१।३५ / पल्लभा ६).
 - GitHub: `https://github.com/coderboy7-creator/Makrand-original` branch `main`.
-- **Unfinished:** original KSDSU winter tithi 45–140 min early; SIDDHANTIC outer grahas still follow Sūrya (Chunk 2 not started). Swiss Eph is Drik-only.
-- Graha-spaṣṭa gold: `panji-accuracy/graha-spashta-band-data-2023-2026.csv` (166 rows, original KSDSU 2023 + 2025–26). Baseline: `panji-accuracy/ACCURACY_BASELINE.md`. Do not apply planet bijas until outer śīghra is fixed.
+- **Unfinished:** original KSDSU winter tithi 45–140 min early; Ketu ~180° vs DRIK (Chunk 3); Mangal still weak near some elongations. Swiss Eph is Drik-only.
+- Graha-spaṣṭa gold: `panji-accuracy/graha-spashta-band-data-2023-2026.csv`. Chunk 2: superior śīghra is `atan2(k sin, 1+k cos)`. Live Śani SIDD−DRIK **+5 to +7°** (was +76° / −68°). Do not paste the old +5.27° Śani bija.
 
 ## Gold vs not-gold
 
@@ -94,7 +94,7 @@ Convention: दि. 11।55 = 11:55 AM; दि. 2।17 = 2:17 PM; रा. 2।43
 
 ## Next agent move
 
-1. Do **not** retune apogee/manda/EoT (grid 2026-09-20). Winter tithi needs a fuller Makaranda spashta table, not a 1-D bija. No Mithila 2027.
-2. Keep servers: `mvn spring-boot:run` + `frontend npm run dev`.
-3. Do not revert SIDDHANTIC to Meeus to chase Drik-like websites (kundligpt, Deccan Chronicle).
+1. Do **not** retune apogee/manda/EoT. No Mithila 2027. No Śani bija yet (panji−SIDD ~−8 to −10° after Chunk 2).
+2. Next calc: Chunk 3 nodes (`calc/graha-nodes`). July gold must stay.
+3. Keep servers: `mvn spring-boot:run` + `frontend npm run dev`.
 4. Swiss Eph Java port is GPL dual-license (`third_party/swisseph`). Drik only.
