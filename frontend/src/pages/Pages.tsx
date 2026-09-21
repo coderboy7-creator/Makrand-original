@@ -14,6 +14,7 @@ import { grahaName, nakName, dignityName, rashiName, yogaName, yogaText, yogaTyp
 import { GlassCard, GoldTitle, LimbTile, MetaRow, PageHero, ScoreHero } from "../ui";
 import { chartFromOrigin, gocharAsChart, VARGA_MEANING } from "../chartViews";
 import { DashaBoard } from "../dashaViews";
+import { DoshaBoard } from "../doshaViews";
 
 export function HomePage() {
   const { config } = useApp();
@@ -167,6 +168,13 @@ export function KundaliPage() {
                   ) : <Typography variant="body2">{t("loading")}</Typography>}
                 </GlassCard>
               </Grid>
+              {chart.doshaPanel && (
+                <Grid item xs={12}>
+                  <GlassCard>
+                    <DoshaBoard panel={chart.doshaPanel} hi={hi} t={t} />
+                  </GlassCard>
+                </Grid>
+              )}
               {chart.avakahada && (
                 <Grid item xs={12}>
                   <GlassCard>
