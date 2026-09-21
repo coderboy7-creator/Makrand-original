@@ -112,11 +112,12 @@ public final class SpecialCharts {
         m.put("weakestPlanet", weakest);
         m.put("weakestScore", min);
         m.put("weakestStone", VedicConstants.GEMSTONES.get(weakest));
-        m.put("warning", "Never prescribe Neelam (Saturn) or Gomed (Rahu) without seeing dasha, lagna and current gochar. Prefer mantra and dana first.");
+        m.put("warning", "Never prescribe Neelam (Saturn) or Gomed (Rahu) without seeing dasha, lagna and current gochar. Prefer mantra and dana first. We do not sell gems or rudraksha.");
         m.put("lifeStone", VedicConstants.GEMSTONES.get(lagnesh) + " — supports the lagna lord.");
         m.put("luckyStone", VedicConstants.GEMSTONES.get(weakest) + " — supports the weakest of Shodashavarga vimshopaka.");
         m.put("metal", VedicConstants.METALS.get(lagnesh));
         m.put("colour", VedicConstants.COLOURS.get(lagnesh));
+        m.put("rudraksha", Rudraksha.fromChart(c));
         return m;
     }
 
