@@ -35,6 +35,16 @@ public final class YogaDetector {
         if (sun.signIndex() == mer.signIndex()) {
             yogas.add(yoga("Budhaditya Yoga", "Dhana / Buddhi", "Sun and Mercury conjunct. Intelligence, speech and skill."));
         }
+        boolean vesi = false, vasi = false;
+        for (PlanetBody p : c.planets().values()) {
+            if (p.name().equals("Sun") || p.name().equals("Moon") || p.name().equals("Rahu") || p.name().equals("Ketu")) continue;
+            int rel = houseFrom(sun.house(), p.house());
+            if (rel == 2) vesi = true;
+            if (rel == 12) vasi = true;
+        }
+        if (vesi && vasi) yogas.add(yoga("Ubhayachari Yoga", "Raja", "Planets on both sides of the Sun (2nd and 12th). Support around the soul-purpose."));
+        else if (vesi) yogas.add(yoga("Vesi Yoga", "Shubha", "A tara-graha in the 2nd from the Sun. Speech and resources around Surya."));
+        else if (vasi) yogas.add(yoga("Vasi Yoga", "Shubha", "A tara-graha in the 12th from the Sun. Inner fuel behind Surya."));
         // Malavya (Venus in kendra in own/exalt Taurus, Libra, Pisces)
         if (kendra(ven.house()) && ("Own Sign".equals(ven.dignity()) || "Exalted".equals(ven.dignity()) || "Moolatrikona".equals(ven.dignity()))) {
             yogas.add(yoga("Malavya Yoga (Panch Mahapurusha)", "Raja", "Venus strong in kendra. Luxury, vehicles, arts and charm."));

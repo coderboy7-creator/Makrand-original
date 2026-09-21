@@ -3,12 +3,16 @@ package com.makaranda.report;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
+import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.makaranda.calc.VedicConstants;
 import com.makaranda.calc.dasha.VimshottariDasha;
@@ -20,6 +24,7 @@ import com.makaranda.calc.vedic.Shadbala;
 import com.makaranda.calc.vedic.ChartBuilder.FullChart;
 import com.makaranda.calc.vedic.ChartBuilder.PlanetBody;
 import com.makaranda.calc.vedic.SpecialCharts;
+import com.makaranda.calc.yoga.DoshaPanel;
 import com.makaranda.calc.yoga.YogaDetector;
 import com.makaranda.dto.BirthRequest;
 import com.makaranda.service.JyotishService;
@@ -28,6 +33,7 @@ import org.springframework.stereotype.Service;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,15 +42,17 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Multi-chapter Makaranda / KSDSU kundali PDF. Hindi+English. Not an Astrotalk clone.
- * Does not retune bijas; prints whatever the engine already computed.
+ * Makaranda / KSDSU kundali PDF. Hindi is HarfBuzz-shaped (not raw OpenPDF TTF).
+ * Not an Astrotalk clone. Does not retune bijas.
  */
 @Service
 public class PdfReportService {
     private static final Color MAROON = new Color(123, 30, 58);
-    private static final Color GOLD = new Color(201, 162, 39);
+    private static final Color GOLD = new Color(232, 197, 71);
     private static final Color CREAM = new Color(247, 241, 227);
-    private static final Color INK = new Color(32, 28, 24);
+    private static final Color INK = new Color(28, 22, 18);
+    private static final Color NAVY = new Color(18, 14, 28);
+    private static final Color ROW_ALT = new Color(252, 246, 232);
 
     private static final DateTimeFormatter CLOCK12 =
             DateTimeFormatter.ofPattern("d MMM yyyy, h:mm a", Locale.ENGLISH);
@@ -53,12 +61,12 @@ public class PdfReportService {
     private final InterpretationEngine interpreter = new InterpretationEngine();
     private final SpecialCharts special = new SpecialCharts();
 
-    private static BaseFont DEV;
-    private static BaseFont DEV_B;
+    private static BaseFont LATIN;
+    private static BaseFont LATIN_B;
 
     static {
-        DEV = loadFont("/fonts/NotoSansDevanagari-Regular.ttf");
-        DEV_B = loadFont("/fonts/NotoSansDevanagari-Bold.ttf");
+        LATIN = loadFont("/fonts/NotoSansDevanagari-Regular.ttf");
+        LATIN_B = loadFont("/fonts/NotoSansDevanagari-Bold.ttf");
     }
 
     public PdfReportService(JyotishService jyotish) {
@@ -80,21 +88,27 @@ public class PdfReportService {
         Map<String, Object> dashaNow = VimshottariDasha.currentAt(dasha, LocalDateTime.now());
         List<Period> yogini = YoginiDasha.compute(moon, c.input().localDateTime(), 2);
         Map<String, Object> yoginiNow = VimshottariDasha.currentAt(yogini, LocalDateTime.now());
+        Map<String, Object> gochar = jyotish.transits(req, LocalDate.now());
+        Map<String, Object> dosa = DoshaPanel.from(c, gochar);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        Document doc = new Document(PageSize.A4, 36, 36, 42, 40);
+        Document doc = new Document(PageSize.A4, 40, 40, 48, 36);
         try {
-            PdfWriter.getInstance(doc, bos);
+            PdfWriter w = PdfWriter.getInstance(doc, bos);
+            w.setPageEvent(new Chrome());
+            doc.addTitle("Makaranda Jyotish — Mithilanchal kundali");
+            doc.addAuthor("Makaranda Jyotish");
+            doc.addCreator("Makaranda Jyotish");
+            doc.addSubject("KSDSU / Surya Siddhanta Makaranda report");
             doc.open();
             cover(doc, req, c);
-            chapterBasic(doc, req, c, panch);
+            chapterBasic(doc, req, c, panch, dosa);
             chapterCharts(doc, c);
             chapterGrahas(doc, c);
             chapterDasha(doc, dasha, dashaNow, yogini, yoginiNow);
             chapterAshtakavarga(doc, Ashtakavarga.fromChart(c));
             chapterShadbala(doc, Shadbala.fromChart(c));
-            chapterExtras(doc, c, yogas, reading, gems);
-            footerNote(doc);
+            chapterInterpret(doc, reading, yogas, gems);
             doc.close();
         } catch (Exception e) {
             throw new IllegalStateException("PDF report failed", e);
@@ -103,43 +117,50 @@ public class PdfReportService {
     }
 
     private void cover(Document doc, BirthRequest req, FullChart c) throws Exception {
-        p(doc, "मकरन्द ज्योतिष", fB(20, MAROON), Element.ALIGN_CENTER);
-        p(doc, "Makaranda Jyotish", fB(12, GOLD), Element.ALIGN_CENTER);
-        p(doc, "सूर्य सिद्धान्त · मकरन्द पंचांग · मिथिलांचल", f(10, GOLD), Element.ALIGN_CENTER);
-        p(doc, "कामेश्वर सिंह दरभंगा संस्कृत विश्वविद्यालय पद्धति", f(9, INK), Element.ALIGN_CENTER);
-        gap(doc, 8);
-        p(doc, "जन्म कुंडली प्रतिवेदन  /  Birth Kundali Report", fB(13, MAROON), Element.ALIGN_CENTER);
+        PdfPTable hero = new PdfPTable(1);
+        hero.setWidthPercentage(100);
+        PdfPCell band = new PdfPCell();
+        band.setBackgroundColor(NAVY);
+        band.setBorder(Rectangle.NO_BORDER);
+        band.setPadding(18);
+        band.setPaddingBottom(20);
+        band.addElement(DevanagariPaint.blockOn("मकरन्द ज्योतिष", 22, GOLD, true, 480, NAVY));
+        Paragraph en = new Paragraph("Makaranda Jyotish  ·  Mithilanchal", fB(11, GOLD));
+        en.setSpacingBefore(6);
+        band.addElement(en);
+        band.addElement(DevanagariPaint.blockOn("सूर्य सिद्धान्त · मकरन्द पंचांग · कामेश्वर सिंह दरभंगा संस्कृत विश्वविद्यालय", 9, CREAM, false, 480, NAVY));
+        hero.addCell(band);
+        doc.add(hero);
+        gap(doc, 10);
+        hi(doc, "जन्म कुंडली प्रतिवेदन", 14, MAROON, true);
+        pEn(doc, "Birth Kundali Report  —  not an Astrotalk clone. Parampara math, not medical or legal advice.", 9, INK);
         gap(doc, 6);
-        kv(doc, "जातक / Native", blank(req.name));
-        kv(doc, "स्थान / Place", c.input().place());
-        kv(doc, "जन्म / Birth", CLOCK12.format(c.input().localDateTime()) + "  (" + c.input().timeZone() + ")");
-        kv(doc, "अक्षांश–देशान्तर", String.format(Locale.ENGLISH, "%.4f°N  %.4f°E",
+        PdfPTable meta = table(2);
+        kvCell(meta, "जातक / Native", blank(req.name));
+        kvCell(meta, "स्थान / Place", c.input().place());
+        kvCell(meta, "जन्म / Birth", CLOCK12.format(c.input().localDateTime()));
+        kvCell(meta, "अक्षांश–देशान्तर", String.format(Locale.ENGLISH, "%.4f°N  %.4f°E",
                 c.input().latitude(), c.input().longitude()));
-        kv(doc, "अयनांश / Ayanamsa", c.ayanamsaLabel() + "  =  "
+        kvCell(meta, "अयनांश / Ayanamsa", c.ayanamsaLabel() + "  =  "
                 + String.format(Locale.ENGLISH, "%.4f°", c.ayanamsaDeg()));
-        kv(doc, "गणिता / Mode", c.panchangMode());
-        kv(doc, "लग्न / Lagna", c.lagna().signHi() + "  " + c.lagna().signSa() + "  " + c.lagna().signDegree());
-        gap(doc, 4);
-        p(doc, "यह प्रतिवेदन मकरन्द / सूर्य सिद्धान्त स्पष्ट पर है (सिद्धान्तिक) जब तक दृक् न चुना हो। "
-                + "Astrotalk की नकल नहीं; अध्याय-क्रम एक सामान्य कुंडली-रिपोर्ट का है। परम्परा पाठ — चिकित्सा या कानूनी सलाह नहीं।",
-                f(8, INK), Element.ALIGN_JUSTIFIED);
+        kvCell(meta, "लग्न / Lagna", c.lagna().signHi() + "  " + c.lagna().signDegree());
+        doc.add(meta);
     }
 
-    private void chapterBasic(Document doc, BirthRequest req, FullChart c, Map<String, Object> panch) throws Exception {
+    private void chapterBasic(Document doc, BirthRequest req, FullChart c, Map<String, Object> panch,
+                              Map<String, Object> dosa) throws Exception {
         h(doc, "१  बुनियादी  /  Basic");
         Map<String, Object> av = c.avakahada();
-        kv(doc, "लग्नेश / Lagnesha", str(av.get("lagneshHi")) + "  (" + str(av.get("lagnesh")) + ")");
-        kv(doc, "लिंग / Gender", blank(req.gender));
-        gap(doc, 4);
-        p(doc, "जन्म पंचांग (अंग समाप्ति = तक)", fB(11, MAROON), Element.ALIGN_LEFT);
-        kv(doc, "तिथि", join(panch.get("pakshaHi"), panch.get("tithiHi")) + till(panch.get("tithiEnd")));
-        kv(doc, "नक्षत्र", str(panch.get("nakshatraHi")) + till(panch.get("nakshatraEnd")));
-        kv(doc, "योग", str(panch.get("yogaHi")) + till(panch.get("yogaEnd")));
-        kv(doc, "करण", str(panch.get("karanaHi")) + till(panch.get("karanaEnd")));
-        kv(doc, "वार", str(panch.get("varaHi")));
-        kv(doc, "सूर्योदय / सूर्यास्त", str(panch.get("sunrise")) + "  /  " + str(panch.get("sunset")));
-        gap(doc, 4);
-        p(doc, "अवकहड़ा (चन्द्र से)", fB(11, MAROON), Element.ALIGN_LEFT);
+        kvLine(doc, "लग्नेश", str(av.get("lagneshHi")) + "  (" + str(av.get("lagnesh")) + ")");
+        hi(doc, "जन्म पंचांग (अंग समाप्ति = तक)", 11, MAROON, true);
+        kvLine(doc, "तिथि", join(panch.get("pakshaHi"), panch.get("tithiHi")) + till(panch.get("tithiEnd")));
+        kvLine(doc, "नक्षत्र", str(panch.get("nakshatraHi")) + till(panch.get("nakshatraEnd")));
+        kvLine(doc, "योग", str(panch.get("yogaHi")) + till(panch.get("yogaEnd")));
+        kvLine(doc, "करण", str(panch.get("karanaHi")) + till(panch.get("karanaEnd")));
+        kvLine(doc, "वार", str(panch.get("varaHi")));
+        kvLine(doc, "सूर्योदय / सूर्यास्त", str(panch.get("sunrise")) + "  /  " + str(panch.get("sunset")));
+        gap(doc, 6);
+        hi(doc, "अवकहड़ा (चन्द्र से)", 11, MAROON, true);
         PdfPTable t = table(4);
         avCell(t, "वर्ण", av.get("varnaHi"));
         avCell(t, "वश्य", av.get("vashyaHi"));
@@ -156,22 +177,37 @@ public class PdfReportService {
         avCell(t, "पाया", av.get("payaHi"));
         avCell(t, "लग्न राशि", av.get("lagnaRashiHi"));
         doc.add(t);
+        gap(doc, 8);
+        hi(doc, "दोष पटल — गणित, भय नहीं", 11, MAROON, true);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> items = (List<Map<String, Object>>) dosa.get("items");
+        PdfPTable dt = table(3);
+        header(dt, "दोष", "स्थिति", "टिप्पणी");
+        if (items != null) {
+            for (Map<String, Object> it : items) {
+                cell(dt, str(it.get("nameHi")));
+                cell(dt, statusHi(str(it.get("status"))));
+                cell(dt, str(it.get("textHi")));
+            }
+        }
+        doc.add(dt);
+        hi(doc, str(dosa.get("noteHi")), 8, INK, false);
     }
 
     private void chapterCharts(Document doc, FullChart c) throws Exception {
         h(doc, "२  कुंडली  /  Charts");
-        p(doc, "D1 लग्न कुंडली — पूर्ण राशि (भाव संख्या = लग्न से)", fB(10, MAROON), Element.ALIGN_LEFT);
+        hi(doc, "D1 लग्न कुंडली — पूर्ण राशि", 10, MAROON, true);
         doc.add(bhavaTable(c, c.lagna().signIndex(), true));
         gap(doc, 6);
-        p(doc, "चन्द्र कुंडली — भाव चन्द्र राशि से", fB(10, MAROON), Element.ALIGN_LEFT);
+        hi(doc, "चन्द्र कुंडली", 10, MAROON, true);
         doc.add(bhavaTable(c, c.planets().get("Moon").signIndex(), false));
         gap(doc, 6);
-        p(doc, "सूर्य कुंडली — भाव सूर्य राशि से", fB(10, MAROON), Element.ALIGN_LEFT);
+        hi(doc, "सूर्य कुंडली", 10, MAROON, true);
         doc.add(bhavaTable(c, c.planets().get("Sun").signIndex(), false));
         Map<String, Object> d9 = c.vargas() == null ? null : c.vargas().get(9);
         if (d9 != null) {
             gap(doc, 6);
-            p(doc, "नवमांश D9 — धर्म / दारा", fB(10, MAROON), Element.ALIGN_LEFT);
+            hi(doc, "नवमांश D9 — धर्म / दारा", 10, MAROON, true);
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> bodies = (List<Map<String, Object>>) d9.get("bodies");
             PdfPTable t = table(3);
@@ -185,8 +221,6 @@ public class PdfReportService {
             }
             doc.add(t);
         }
-        p(doc, "भाव चलित (श्रीपति) कुंडली पृष्ठ पर अलग अनुरोध से दिखती है; यह प्रतिवेदन जन्म की राशि-पद्धति नहीं बदलता।",
-                f(8, INK), Element.ALIGN_LEFT);
     }
 
     private PdfPTable bhavaTable(FullChart c, int originSign, boolean markLagnaHouse1) {
@@ -237,9 +271,8 @@ public class PdfReportService {
     private void chapterDasha(Document doc, List<Period> dasha, Map<String, Object> now,
                              List<Period> yogini, Map<String, Object> yoginiNow) throws Exception {
         h(doc, "४  विंशोत्तरी दशा  /  Vimshottari");
-        p(doc, "महादशा · अन्तरदशा · प्रत्यन्तर — जन्म-चन्द्र नक्षत्र से। परम्परा गणित, भविष्य-वाणी नहीं।",
-                f(8, INK), Element.ALIGN_LEFT);
-        kv(doc, "वर्तमान / Current",
+        hi(doc, "महादशा · अन्तरदशा · प्रत्यन्तर — परम्परा गणित, भविष्य-वाणी नहीं।", 8, INK, false);
+        kvLine(doc, "वर्तमान",
                 VedicConstants.planetHi(str(now.get("mahadasha"))) + " → "
                         + VedicConstants.planetHi(str(now.get("antardasha"))) + " → "
                         + VedicConstants.planetHi(str(now.get("pratyantardasha"))));
@@ -268,8 +301,8 @@ public class PdfReportService {
         }
         doc.add(t);
         gap(doc, 6);
-        p(doc, "योगिनी दशा (३६ वर्ष) — अश्विनी = मंगला", fB(11, MAROON), Element.ALIGN_LEFT);
-        kv(doc, "वर्तमान योगिनी",
+        hi(doc, "योगिनी दशा (३६ वर्ष) — अश्विनी = मंगला", 11, MAROON, true);
+        kvLine(doc, "वर्तमान योगिनी",
                 YoginiDasha.nameHi(str(yoginiNow.get("mahadasha"))) + "  ("
                         + VedicConstants.planetHi(YoginiDasha.lordOf(str(yoginiNow.get("mahadasha")))) + ")");
         PdfPTable yt = table(5);
@@ -285,52 +318,9 @@ public class PdfReportService {
     }
 
     @SuppressWarnings("unchecked")
-    private void chapterExtras(Document doc, FullChart c, Map<String, Object> yogas,
-                               Map<String, Object> reading, Map<String, Object> gems) throws Exception {
-        h(doc, "५  विशेष  /  Extras");
-        p(doc, "विंशोपक (षोडशवर्ग)", fB(11, MAROON), Element.ALIGN_LEFT);
-        PdfPTable vt = table(3);
-        header(vt, "ग्रह", "अंक / 20", "");
-        c.vimshopaka().forEach((k, v) -> {
-            cell(vt, VedicConstants.planetHi(k));
-            cell(vt, String.valueOf(v));
-            cell(vt, "");
-        });
-        doc.add(vt);
-        gap(doc, 6);
-        p(doc, "योग व दोष (पैटर्न-सूची — भय-प्रचार नहीं)", fB(11, MAROON), Element.ALIGN_LEFT);
-        List<Map<String, Object>> ys = (List<Map<String, Object>>) yogas.get("yogas");
-        List<Map<String, Object>> ds = (List<Map<String, Object>>) yogas.get("doshas");
-        if (ys != null) {
-            for (Map<String, Object> y : ys) {
-                p(doc, "• " + y.get("name") + " — " + y.get("text"), f(8, INK), Element.ALIGN_LEFT);
-            }
-        }
-        if (ds != null) {
-            for (Map<String, Object> y : ds) {
-                p(doc, "• " + y.get("name") + " — " + y.get("text"), f(8, INK), Element.ALIGN_LEFT);
-            }
-        }
-        gap(doc, 6);
-        p(doc, "परम्परा पाठ", fB(11, MAROON), Element.ALIGN_LEFT);
-        p(doc, str(reading.get("summary")), f(9, INK), Element.ALIGN_JUSTIFIED);
-        p(doc, str(reading.get("personality")), f(9, INK), Element.ALIGN_JUSTIFIED);
-        Map<String, Object> career = (Map<String, Object>) reading.get("career");
-        Map<String, Object> marriage = (Map<String, Object>) reading.get("marriage");
-        if (career != null) p(doc, "कर्म: " + career.get("reading"), f(9, INK), Element.ALIGN_JUSTIFIED);
-        if (marriage != null) p(doc, "विवाह: " + marriage.get("reading"), f(9, INK), Element.ALIGN_JUSTIFIED);
-        gap(doc, 6);
-        p(doc, "रत्न (सलाह, विक्रय नहीं)", fB(11, MAROON), Element.ALIGN_LEFT);
-        kv(doc, "लग्नेश रत्न", str(gems.get("lifeStone")));
-        kv(doc, "निर्बल ग्रह", str(gems.get("weakestPlanet")) + "  " + str(gems.get("luckyStone")));
-        p(doc, str(gems.get("warning")), f(8, MAROON), Element.ALIGN_LEFT);
-    }
-
-    @SuppressWarnings("unchecked")
     private void chapterAshtakavarga(Document doc, Map<String, Object> av) throws Exception {
-        h(doc, "६  अष्टकवर्ग  /  Ashtakavarga");
-        p(doc, str(av.get("noteHi")) + "  " + str(av.get("note")),
-                f(8, INK), Element.ALIGN_LEFT);
+        h(doc, "५  अष्टकवर्ग  /  Ashtakavarga");
+        hi(doc, str(av.get("noteHi")), 8, INK, false);
         PdfPTable t = new PdfPTable(14);
         t.setWidthPercentage(100);
         header(t, "ग्रह");
@@ -354,14 +344,12 @@ public class PdfReportService {
             cell(t, String.valueOf(sav.get("total")));
         }
         doc.add(t);
-        p(doc, "बिन्दु राशि-क्रम (मेष→मीन)। भाव-क्रम लग्न से कुंडली पृष्ठ पर। राहु-केतु अष्टकवर्ग में नहीं।",
-                f(8, INK), Element.ALIGN_LEFT);
     }
 
     @SuppressWarnings("unchecked")
     private void chapterShadbala(Document doc, Map<String, Object> sb) throws Exception {
-        h(doc, "७  षड्बल / भावबल  /  Shadbala");
-        p(doc, str(sb.get("noteHi")), f(8, INK), Element.ALIGN_LEFT);
+        h(doc, "६  षड्बल / भावबल  /  Shadbala");
+        hi(doc, str(sb.get("noteHi")), 8, INK, false);
         PdfPTable t = new PdfPTable(new float[]{1.4f, 1, 1, 1, 1, 1, 1, 1.2f, 0.9f, 1});
         t.setWidthPercentage(100);
         header(t, "ग्रह", "स्थान", "दिक्", "काल", "चेष्टा", "नैसर्गिक", "दृक्", "योग", "रूप", "न्यून");
@@ -383,7 +371,7 @@ public class PdfReportService {
         }
         doc.add(t);
         gap(doc, 4);
-        p(doc, "भावबल — अधिपति षड्बल + दिक् (१०वाँ = ६०) + दृष्टि", fB(10, MAROON), Element.ALIGN_LEFT);
+        hi(doc, "भावबल", 10, MAROON, true);
         PdfPTable bt = table(6);
         header(bt, "भाव", "राशि", "स्वामी", "अधिपति", "दिक्", "योग");
         List<Map<String, Object>> bhavas = (List<Map<String, Object>>) sb.get("bhavas");
@@ -400,16 +388,62 @@ public class PdfReportService {
         doc.add(bt);
     }
 
-    private void footerNote(Document doc) throws Exception {
+    @SuppressWarnings("unchecked")
+    private void chapterInterpret(Document doc, Map<String, Object> reading, Map<String, Object> yogas,
+                                  Map<String, Object> gems) throws Exception {
+        h(doc, "७  परम्परा पाठ  /  Reading");
+        hi(doc, str(reading.get("summaryHi")), 9, INK, false);
+        pEn(doc, str(reading.get("summary")), 8, INK);
+        hi(doc, str(reading.get("lagnaEssayHi")), 9, INK, false);
+        hi(doc, str(reading.get("livelihoodHi")), 9, INK, false);
+        Map<String, Object> mer = (Map<String, Object>) reading.get("mercury");
+        Map<String, Object> sat = (Map<String, Object>) reading.get("saturn");
+        Map<String, Object> maha = (Map<String, Object>) reading.get("mahaByHouse");
+        if (mer != null) hi(doc, str(mer.get("readingHi")), 9, INK, false);
+        if (sat != null) hi(doc, str(sat.get("readingHi")), 9, INK, false);
+        if (maha != null) hi(doc, str(maha.get("readingHi")), 9, INK, false);
+        gap(doc, 6);
+        hi(doc, "विशेष योग", 11, MAROON, true);
+        List<Map<String, Object>> ys = (List<Map<String, Object>>) yogas.get("yogas");
+        if (ys != null) {
+            for (Map<String, Object> y : ys) {
+                pEn(doc, "• " + y.get("name") + " — " + y.get("text"), 8, INK);
+            }
+        }
+        gap(doc, 6);
+        hi(doc, "रत्न (सलाह, विक्रय नहीं)", 11, MAROON, true);
+        kvLine(doc, "लग्नेश रत्न", str(gems.get("lifeStone")));
+        kvLine(doc, "निर्बल ग्रह", str(gems.get("weakestPlanet")) + "  " + str(gems.get("luckyStone")));
+        pEn(doc, str(gems.get("warning")), 8, MAROON);
         gap(doc, 10);
-        p(doc, "टिप्पणी: सिद्धान्तिक अंग मूल KSDSU जुलाई २०१६ / २०२२ स्वर्ण से बँधे हैं। "
-                + "कार्तिक–माघ तिथि अभी ४५–१४० मिनट आगे हो सकती है — बीज न बदलें। "
-                + "दृक् = Swiss Ephemeris। मुहूर्त के लिए जीवित ज्योतिषी से पुष्टि करें। "
-                + "मकरन्द ज्योतिष · अक्षांश २६।३५ देशान्तर ०१।३५ पल्लभा ६।",
-                f(8, INK), Element.ALIGN_JUSTIFIED);
+        hi(doc, "टिप्पणी: सिद्धान्तिक अंग मूल KSDSU जुलाई २०१६ / २०२२ स्वर्ण से बँधे हैं। कार्तिक–माघ तिथि ४५–१४० मिनट आगे हो सकती है — बीज न बदलें। दृक् = Swiss Ephemeris।",
+                8, INK, false);
     }
 
-    /* ——— layout helpers ——— */
+    /* ——— chrome & helpers ——— */
+
+    private static class Chrome extends PdfPageEventHelper {
+        @Override
+        public void onEndPage(PdfWriter w, Document doc) {
+            PdfContentByte cb = w.getDirectContent();
+            float pw = doc.getPageSize().getWidth();
+            cb.setColorFill(NAVY);
+            cb.rectangle(0, doc.getPageSize().getHeight() - 26, pw, 26);
+            cb.fill();
+            cb.setColorFill(GOLD);
+            cb.rectangle(0, doc.getPageSize().getHeight() - 28, pw, 2.2f);
+            cb.fill();
+            cb.setColorFill(NAVY);
+            cb.rectangle(0, 0, pw, 22);
+            cb.fill();
+            cb.setColorFill(GOLD);
+            cb.setFontAndSize(LATIN, 8);
+            cb.beginText();
+            cb.showTextAligned(Element.ALIGN_LEFT, "Makaranda Jyotish  ·  Mithilanchal", 40, 8, 0);
+            cb.showTextAligned(Element.ALIGN_RIGHT, String.valueOf(w.getPageNumber()), pw - 40, 8, 0);
+            cb.endText();
+        }
+    }
 
     private static BaseFont loadFont(String cp) {
         try (InputStream in = PdfReportService.class.getResourceAsStream(cp)) {
@@ -421,30 +455,48 @@ public class PdfReportService {
         }
     }
 
-    private Font f(float size, Color c) { return new Font(DEV, size, Font.NORMAL, c); }
-    private Font fB(float size, Color c) { return new Font(DEV_B, size, Font.NORMAL, c); }
+    private Font f(float size, Color c) { return new Font(LATIN, size, Font.NORMAL, c); }
+    private Font fB(float size, Color c) { return new Font(LATIN_B, size, Font.NORMAL, c); }
 
     private void h(Document doc, String title) throws Exception {
-        gap(doc, 10);
-        Paragraph p = new Paragraph(title, fB(13, MAROON));
-        p.setSpacingAfter(6);
-        doc.add(p);
+        gap(doc, 12);
+        PdfPTable bar = new PdfPTable(1);
+        bar.setWidthPercentage(100);
+        PdfPCell c = new PdfPCell();
+        c.setBackgroundColor(MAROON);
+        c.setBorder(Rectangle.NO_BORDER);
+        c.setPadding(8);
+        c.addElement(DevanagariPaint.blockOn(title, 12, GOLD, true, 500, MAROON));
+        bar.addCell(c);
+        doc.add(bar);
+        gap(doc, 6);
     }
 
-    private void p(Document doc, String text, Font font, int align) throws Exception {
-        Paragraph para = new Paragraph(text == null ? "" : text, font);
-        para.setAlignment(align);
-        para.setLeading(font.getSize() * 1.35f);
+    private void hi(Document doc, String text, float pt, Color color, boolean bold) throws Exception {
+        if (text == null || text.isBlank()) return;
+        Image img = DevanagariPaint.block(text, pt, color, bold, 515);
+        img.setSpacingAfter(3);
+        doc.add(img);
+    }
+
+    private void pEn(Document doc, String text, float size, Color c) throws Exception {
+        Paragraph para = new Paragraph(text == null ? "" : text, f(size, c));
+        para.setLeading(size * 1.35f);
         para.setSpacingAfter(3);
         doc.add(para);
     }
 
-    private void kv(Document doc, String k, String v) throws Exception {
-        Paragraph para = new Paragraph();
-        para.add(new Phrase(k + "  ", fB(9, MAROON)));
-        para.add(new Phrase(v == null ? "—" : v, f(9, INK)));
-        para.setSpacingAfter(2);
-        doc.add(para);
+    private void kvLine(Document doc, String k, String v) throws Exception {
+        hi(doc, k + "  " + (v == null ? "—" : v), 9, INK, false);
+    }
+
+    private void kvCell(PdfPTable t, String k, String v) {
+        PdfPCell a = paintCell(k, 8, GOLD, true);
+        a.setBackgroundColor(NAVY);
+        t.addCell(a);
+        PdfPCell b = paintCell(v == null ? "—" : v, 8, INK, false);
+        b.setBackgroundColor(CREAM);
+        t.addCell(b);
     }
 
     private void gap(Document doc, float n) throws Exception {
@@ -457,35 +509,55 @@ public class PdfReportService {
         PdfPTable t = new PdfPTable(cols);
         t.setWidthPercentage(100);
         t.setSpacingBefore(2);
-        t.setSpacingAfter(4);
+        t.setSpacingAfter(6);
+        t.getDefaultCell().setBorderColor(new Color(232, 197, 71, 80));
         return t;
     }
 
     private void header(PdfPTable t, String... cols) {
         for (String c : cols) {
-            PdfPCell cell = new PdfPCell(new Phrase(c, fB(8, Color.WHITE)));
+            PdfPCell cell = paintCell(c, 8, Color.WHITE, true);
             cell.setBackgroundColor(MAROON);
-            cell.setPadding(4);
             t.addCell(cell);
         }
     }
 
     private void cell(PdfPTable t, String v) {
-        PdfPCell cell = new PdfPCell(new Phrase(v == null ? "" : v, f(8, INK)));
-        cell.setBackgroundColor(CREAM);
-        cell.setPadding(3);
+        PdfPCell cell = paintCell(v == null ? "" : v, 8, INK, false);
+        cell.setBackgroundColor((t.getRows().size() % 2 == 0) ? CREAM : ROW_ALT);
         t.addCell(cell);
     }
 
     private void avCell(PdfPTable t, String k, Object v) {
-        PdfPCell a = new PdfPCell(new Phrase(k, f(7, GOLD)));
-        a.setBackgroundColor(new Color(20, 24, 48));
-        a.setPadding(3);
+        PdfPCell a = paintCell(k, 7, GOLD, true);
+        a.setBackgroundColor(NAVY);
         t.addCell(a);
-        PdfPCell b = new PdfPCell(new Phrase(str(v), f(8, INK)));
+        PdfPCell b = paintCell(str(v), 8, INK, false);
         b.setBackgroundColor(CREAM);
-        b.setPadding(3);
         t.addCell(b);
+    }
+
+    private PdfPCell paintCell(String v, float pt, Color color, boolean bold) {
+        String s = v == null ? "" : v;
+        PdfPCell cell;
+        if (DevanagariPaint.hasDevanagari(s)) {
+            cell = new PdfPCell(DevanagariPaint.block(s, pt, color, bold, 160), true);
+        } else {
+            cell = new PdfPCell(new Phrase(s, bold ? fB(pt, color) : f(pt, color)));
+        }
+        cell.setBorderColor(new Color(201, 162, 39, 60));
+        cell.setPadding(5);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        return cell;
+    }
+
+    private static String statusHi(String st) {
+        return switch (st) {
+            case "present" -> "जन्म में है";
+            case "active" -> "अभी सक्रिय";
+            case "cancelled" -> "निरस्त";
+            default -> "नहीं है";
+        };
     }
 
     private static String str(Object o) { return o == null ? "—" : String.valueOf(o); }
