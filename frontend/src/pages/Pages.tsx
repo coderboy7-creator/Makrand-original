@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 import BirthForm from "../components/BirthForm";
 import KundaliChart from "../components/KundaliChart";
+import PanchangMonthGrid from "../components/PanchangMonthGrid";
 import PlaceSearch from "../components/PlaceSearch";
 import { api, defaultBirth, fetchPdf, objectUrl, triggerDownload } from "../api";
 import { useApp } from "../state";
@@ -543,12 +544,13 @@ export function PanchangPage() {
   const [data, setData] = useState<any>(null);
   const [err, setErr] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
-  const load = () => {
+  const load = (iso?: string) => {
+    const d = iso || date;
     setErr("");
-    return api.get(`/api/v1/jyotish/panchang?date=${date}&lat=${birth.latitude}&lon=${birth.longitude}&ayanamsa=${birth.ayanamsa}&mode=${birth.panchangMode}`)
+    return api.get(`/api/v1/jyotish/panchang?date=${d}&lat=${birth.latitude}&lon=${birth.longitude}&ayanamsa=${birth.ayanamsa}&mode=${birth.panchangMode}`)
       .then(setData).catch((e) => setErr(e.message));
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [date, birth.latitude, birth.longitude, birth.ayanamsa, birth.panchangMode]);
   /** Printed panchang: the clock is END (until). Start is previous sandhi. */
   const limb = (start?: string, until?: string, next?: string) => (
     <>
@@ -570,9 +572,17 @@ export function PanchangPage() {
       <GlassCard sx={{ mb: 2 }}>
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "center" }}>
           <TextField type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-          <Button variant="contained" onClick={load}>{t("compute")}</Button>
+          <Button variant="contained" onClick={() => load()}>{t("compute")}</Button>
         </Box>
       </GlassCard>
+      <PanchangMonthGrid
+        birth={birth}
+        date={date}
+        onPick={(iso, day) => {
+          setDate(iso);
+          if (day) setData(day);
+        }}
+      />
       {err && <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert>}
       {data && (
         <Grid container spacing={2}>
