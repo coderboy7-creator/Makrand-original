@@ -15,6 +15,7 @@ import com.makaranda.calc.dasha.VimshottariDasha;
 import com.makaranda.calc.dasha.VimshottariDasha.Period;
 import com.makaranda.calc.interpret.InterpretationEngine;
 import com.makaranda.calc.vedic.Ashtakavarga;
+import com.makaranda.calc.vedic.Shadbala;
 import com.makaranda.calc.vedic.ChartBuilder.FullChart;
 import com.makaranda.calc.vedic.ChartBuilder.PlanetBody;
 import com.makaranda.calc.vedic.SpecialCharts;
@@ -324,6 +325,48 @@ public class PdfReportService {
         doc.add(t);
         p(doc, "बिन्दु राशि-क्रम (मेष→मीन)। भाव-क्रम लग्न से कुंडली पृष्ठ पर। राहु-केतु अष्टकवर्ग में नहीं।",
                 f(8, INK), Element.ALIGN_LEFT);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void chapterShadbala(Document doc, Map<String, Object> sb) throws Exception {
+        h(doc, "७  षड्बल / भावबल  /  Shadbala");
+        p(doc, str(sb.get("noteHi")), f(8, INK), Element.ALIGN_LEFT);
+        PdfPTable t = new PdfPTable(new float[]{1.4f, 1, 1, 1, 1, 1, 1, 1.2f, 0.9f, 1});
+        t.setWidthPercentage(100);
+        header(t, "ग्रह", "स्थान", "दिक्", "काल", "चेष्टा", "नैसर्गिक", "दृक्", "योग", "रूप", "न्यून");
+        Map<String, Object> grahas = (Map<String, Object>) sb.get("grahas");
+        if (grahas != null) {
+            for (String g : Shadbala.GRAHAS) {
+                Map<String, Object> row = (Map<String, Object>) grahas.get(g);
+                cell(t, VedicConstants.planetHi(g));
+                cell(t, str(row.get("sthana")));
+                cell(t, str(row.get("dig")));
+                cell(t, str(row.get("kala")));
+                cell(t, str(row.get("chesta")));
+                cell(t, str(row.get("naisargika")));
+                cell(t, str(row.get("drik")));
+                cell(t, str(row.get("totalVirupa")));
+                cell(t, str(row.get("rupa")));
+                cell(t, str(row.get("requiredVirupa")));
+            }
+        }
+        doc.add(t);
+        gap(doc, 4);
+        p(doc, "भावबल — अधिपति षड्बल + दिक् (१०वाँ = ६०) + दृष्टि", fB(10, MAROON), Element.ALIGN_LEFT);
+        PdfPTable bt = table(6);
+        header(bt, "भाव", "राशि", "स्वामी", "अधिपति", "दिक्", "योग");
+        List<Map<String, Object>> bhavas = (List<Map<String, Object>>) sb.get("bhavas");
+        if (bhavas != null) {
+            for (Map<String, Object> b : bhavas) {
+                cell(bt, str(b.get("house")));
+                cell(bt, str(b.get("signHi")));
+                cell(bt, str(b.get("lordHi")));
+                cell(bt, str(b.get("adhipati")));
+                cell(bt, str(b.get("dig")));
+                cell(bt, str(b.get("totalVirupa")));
+            }
+        }
+        doc.add(bt);
     }
 
     private void footerNote(Document doc) throws Exception {
