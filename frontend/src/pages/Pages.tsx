@@ -349,6 +349,45 @@ export function VargasPage() {
           </Grid>
         </Grid>
       )}
+      {chart?.ashtakavarga && (
+        <Box sx={{ mt: 3, overflowX: "auto" }}>
+          <Typography variant="h6" color="primary">{t("ashtakavarga")}</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{t("ashtaka_help")}</Typography>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>{t("graha")}</TableCell>
+                {(chart.ashtakavarga.signs || []).map((s: any) => (
+                  <TableCell key={s.signIndex} align="center">{hi ? s.signHi : s.sign}</TableCell>
+                ))}
+                <TableCell align="center">{t("score")}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"].map((g) => {
+                const row = chart.ashtakavarga.bav?.[g];
+                if (!row) return null;
+                return (
+                  <TableRow key={g}>
+                    <TableCell>{grahaName(g, hi)}</TableCell>
+                    {(row.bySign || []).map((n: number, i: number) => (
+                      <TableCell key={i} align="center" sx={{ fontWeight: n >= 4 ? 700 : 400, color: n <= 3 ? "warning.main" : "inherit" }}>{n}</TableCell>
+                    ))}
+                    <TableCell align="center">{row.total}</TableCell>
+                  </TableRow>
+                );
+              })}
+              <TableRow>
+                <TableCell sx={{ fontWeight: 700 }}>{t("sav")}</TableCell>
+                {(chart.ashtakavarga.sav?.bySign || []).map((n: number, i: number) => (
+                  <TableCell key={i} align="center" sx={{ fontWeight: 700 }}>{n}</TableCell>
+                ))}
+                <TableCell align="center" sx={{ fontWeight: 700 }}>{chart.ashtakavarga.sav?.total}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </Box>
+      )}
     </Box>
   );
 }
