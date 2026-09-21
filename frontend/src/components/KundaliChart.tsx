@@ -14,9 +14,13 @@ function occupants(chart: any, hi: boolean): { houses: Record<number, string[]>;
     const h = ((chart.birthLagnaSignIndex - lagnaSign + 12) % 12) + 1;
     houses[h].push(grahaShort("Lagna", hi));
   }
-  Object.values(chart.planets || {}).forEach((p: any) => {
-    const h = p.house || 1;
-    houses[h].push(grahaShort(p.name, hi) + (p.retrograde ? (hi ? "व" : "R") : ""));
+  const rows = Array.isArray(chart.planets) ? chart.planets : Object.values(chart.planets || {});
+  rows.forEach((p: any) => {
+    const name = p?.name || p?.planet || "";
+    if (!name) return;
+    const h = Number(p.house ?? p.houseFromLagna ?? 0);
+    const house = h >= 1 && h <= 12 ? h : 1;
+    houses[house].push(grahaShort(name, hi) + (p.retrograde ? (hi ? "व" : "R") : ""));
   });
   return { houses, lagnaSign };
 }
