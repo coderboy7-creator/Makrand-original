@@ -181,7 +181,10 @@ public class PdfReportService {
         hi(doc, "दोष पटल — गणित, भय नहीं", 11, MAROON, true);
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> items = (List<Map<String, Object>>) dosa.get("items");
-        PdfPTable dt = table(3);
+        PdfPTable dt = new PdfPTable(new float[]{1.4f, 1.1f, 3.2f});
+        dt.setWidthPercentage(100);
+        dt.setSpacingBefore(2);
+        dt.setSpacingAfter(6);
         header(dt, "दोष", "स्थिति", "टिप्पणी");
         if (items != null) {
             for (Map<String, Object> it : items) {
@@ -474,9 +477,16 @@ public class PdfReportService {
 
     private void hi(Document doc, String text, float pt, Color color, boolean bold) throws Exception {
         if (text == null || text.isBlank()) return;
-        Image img = DevanagariPaint.block(text, pt, color, bold, 515);
-        img.setSpacingAfter(3);
-        doc.add(img);
+        Image img = DevanagariPaint.block(text, pt, color, bold, 500);
+        PdfPTable t = new PdfPTable(1);
+        t.setWidthPercentage(100);
+        t.setSpacingAfter(3);
+        PdfPCell c = new PdfPCell();
+        c.setBorder(Rectangle.NO_BORDER);
+        c.setPadding(1);
+        c.addElement(img);
+        t.addCell(c);
+        doc.add(t);
     }
 
     private void pEn(Document doc, String text, float size, Color c) throws Exception {

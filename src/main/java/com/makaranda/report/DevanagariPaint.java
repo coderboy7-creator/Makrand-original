@@ -63,7 +63,8 @@ public final class DevanagariPaint {
             ImageIO.write(bi, "png", bos);
             Image img = Image.getInstance(bos.toByteArray());
             img.scalePercent(72f / DPI * 100f);
-            img.setAlignment(Image.LEFT | Image.TEXTWRAP);
+            img.setAlignment(Image.ALIGN_LEFT);
+            img.setSpacingAfter(0);
             return img;
         } catch (Exception e) {
             throw new IllegalStateException("Hindi paint failed", e);
