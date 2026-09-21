@@ -16,7 +16,6 @@ const LINKS: NavItem[] = [
   { to: "/panchang", key: "nav_panchang" },
   { to: "/vargas", key: "nav_vargas" },
   { to: "/milan", key: "nav_milan" },
-  { to: "/dasha", key: "nav_dasha" },
   { to: "/muhurta", key: "nav_muhurta" },
   { to: "/gochar", key: "nav_gochar" },
   { to: "/yogas", key: "nav_yogas" },

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useSearchParams } from "react-router-dom";
 import {
   Alert, Box, Button, Card, CardContent, Chip, Grid, LinearProgress, MenuItem,
   Tab, Tabs, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography
@@ -74,7 +74,8 @@ export function KundaliPage() {
   const { t, lang } = useI18n();
   const hi = lang !== "en";
   const [style, setStyle] = useState("NORTH");
-  const [tab, setTab] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [tab, setTab] = useState(() => searchParams.get("tab") === "dasha" ? 3 : 0);
   const [panch, setPanch] = useState<any>(null);
   const [chalit, setChalit] = useState<any>(null);
   const [gochar, setGochar] = useState<any>(null);
@@ -134,7 +135,11 @@ export function KundaliPage() {
       {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
       {chart && (
         <>
-          <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" sx={{ mt: 2, mb: 2, borderBottom: "1px solid rgba(232,197,71,0.16)" }}>
+          <Tabs value={tab} onChange={(_, v) => {
+            setTab(v);
+            if (v === 3) setSearchParams({ tab: "dasha" }, { replace: true });
+            else if (searchParams.get("tab")) setSearchParams({}, { replace: true });
+          }} variant="scrollable" sx={{ mt: 2, mb: 2, borderBottom: "1px solid rgba(232,197,71,0.16)" }}>
             <Tab label={t("tab_basic")} /><Tab label={t("tab_kundali")} /><Tab label={t("tab_charts")} /><Tab label={t("tab_dasha")} />
           </Tabs>
           {tab === 0 && (
