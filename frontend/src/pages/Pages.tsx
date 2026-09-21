@@ -928,6 +928,23 @@ export function GemsPage() {
           <Grid item xs={12} md={4}><LimbTile label={t("life_stone")} value={gemPhrase(g.lifeStone, hi)} extra={<Typography variant="caption">{t("lagnesh")} {grahaName(g.lagnesh, hi)}</Typography>} /></Grid>
           <Grid item xs={12} md={4}><LimbTile label={t("support_stone")} value={gemPhrase(g.luckyStone, hi)} extra={<Typography variant="caption">{grahaName(g.weakestPlanet, hi)} · {g.weakestScore}</Typography>} /></Grid>
           <Grid item xs={12} md={4}><LimbTile label={t("metal_colour")} value={`${gemPhrase(g.metal, hi)} · ${gemPhrase(g.colour, hi)}`} /></Grid>
+          {g.rudraksha && (
+            <Grid item xs={12} md={6}>
+              <LimbTile
+                label={t("rudraksha")}
+                value={hi ? (g.rudraksha.nameHi || g.rudraksha.name) : g.rudraksha.name}
+                extra={
+                  <Typography variant="caption" display="block">
+                    {t("nakshatra")} {hi ? g.rudraksha.nakshatraHi : g.rudraksha.nakshatra}
+                    {" · "}{t("lord")} {grahaName(g.rudraksha.lord, hi)}
+                    {" · "}{hi ? g.rudraksha.deityHi : g.rudraksha.deity}
+                    {" · "}{hi ? g.rudraksha.mantraHi : g.rudraksha.mantra}
+                    <br />{hi ? g.rudraksha.noteHi : g.rudraksha.note}
+                  </Typography>
+                }
+              />
+            </Grid>
+          )}
           <Grid item xs={12}><Alert severity="warning">{gemPhrase(g.warning, hi)}</Alert></Grid>
         </Grid>
       )}
