@@ -76,10 +76,10 @@ PDF Hindi is JDK `TextLayout` (HarfBuzz) → PNG — OpenPDF IDENTITY_H does not
 ### P9 — KP as a **mode**, not a second app *(done)*
 When house system = Placidus/KP and ayanamsa = KP: cusps, star-lord, sub-lord tables. Monolith setting. Do not make KP the default.
 
-### P10 — Upāya *(calc on `calc/p10-upaya`)*
+### P10 — Upāya *(done)*
 Rudrākṣa by nakṣatra (extend gems). Life-stone already exists. Never auto-sell; warning stays.
 
-### P11 — Standing UI: month panchang sheet
+### P11 — Standing UI: month panchang sheet *(in progress)*
 `/panchang/month` already has an API. Calendar grid, till-times, Hindi.
 
 ### P12 — Standing copy: winter honesty
