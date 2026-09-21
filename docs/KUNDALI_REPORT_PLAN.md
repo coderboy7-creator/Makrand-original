@@ -79,7 +79,7 @@ When house system = Placidus/KP and ayanamsa = KP: cusps, star-lord, sub-lord ta
 ### P10 — Upāya *(done)*
 Rudrākṣa by nakṣatra (extend gems). Life-stone already exists. Never auto-sell; warning stays.
 
-### P11 — Standing UI: month panchang sheet *(in progress)*
+### P11 — Standing UI: month panchang sheet *(done on `ui/p11-month-panchang`)*
 `/panchang/month` already has an API. Calendar grid, till-times, Hindi.
 
 ### P12 — Standing copy: winter honesty
