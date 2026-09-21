@@ -106,11 +106,9 @@ public final class EphemerisEngine {
                 / (Math.cos(latR) * Math.cos(decR));
         if (cosH > 1 || cosH < -1) return new double[]{Double.NaN, Double.NaN, 12.0};
         double Hhours = Math.toDegrees(Math.acos(AstroMath.clamp(cosH, -1, 1))) / 15.0;
-        // SIDDHANTIC still uses NOAA EoT for madhyāhna. Bhujāntara-only (P13 try)
-        // put 29 Jul 2022 SS at 6:45 vs book 6:50 (fails 4 min). NOAA scale-0 was
-        // the same dead end. Keep NOAA; MakarandaSpashta.bhujantaraMinutes is the
-        // next lever together with udayāntara — not a 1-D scale.
-        double eot = equationOfTimeMinutes(jd);
+        double eot = (mode == PanchangMode.SIDDHANTIC)
+                ? MakarandaSpashta.equationOfTimeMinutes(jd, lonEast)
+                : equationOfTimeMinutes(jd);
         double noon = 12.0 - eot / 60.0;
         return new double[]{noon - Hhours, noon + Hhours, noon};
     }

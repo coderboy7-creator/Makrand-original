@@ -30,6 +30,8 @@ public final class MakarandaSpashta {
     public static final double SUN_MANDA_ODD = 14.0;
     public static final double MOON_MANDA_ODD = 32.0;
     public static final double EVEN_PARIDHI_REDUCTION = 20.0 / 60.0;
+    /** Sūrya-Siddhānta obliquity for udayāntara (not NOAA 23°.44). */
+    public static final double SS_OBLIQUITY = 24.0;
 
     public static final double REV_SUN = 4_320_000.0;
     public static final double REV_MOON = 57_753_336.0;
@@ -72,6 +74,37 @@ public final class MakarandaSpashta {
      */
     public static double bhujantaraMinutes(double jdUt, double lonEast) {
         return at(jdUt, lonEast).bhujantaraMin;
+    }
+
+    /**
+     * Udayāntara: 4 min per degree of (true tropical λ − RA). Obliquity 24° SS.
+     * Does not retune NOAA EoT or bijas.
+     */
+    public static double udayantaraMinutes(double jdUt, double lonEast) {
+        Bodies g = at(jdUt, lonEast);
+        double ay = AyanamsaSystem.SURYA_SIDDHANTA_MAKARANDA.ayanamsa(jdUt);
+        double lambda = AstroMath.norm360(g.sun() + ay);
+        double ra = rightAscension(lambda, SS_OBLIQUITY);
+        return 4.0 * AstroMath.norm180(lambda - ra);
+    }
+
+    /**
+     * SS equation of time: 4 × (mean tropical − RA of spaṣṭa sun).
+     * Equals −bhujāntara + udayāntara. Positive → apparent sun fast → noon before 12.
+     */
+    public static double equationOfTimeMinutes(double jdUt, double lonEast) {
+        Bodies g = at(jdUt, lonEast);
+        double ay = AyanamsaSystem.SURYA_SIDDHANTA_MAKARANDA.ayanamsa(jdUt);
+        double meanTrop = AstroMath.norm360(g.sunMean() + ay);
+        double trueTrop = AstroMath.norm360(g.sun() + ay);
+        double ra = rightAscension(trueTrop, SS_OBLIQUITY);
+        return 4.0 * AstroMath.norm180(meanTrop - ra);
+    }
+
+    static double rightAscension(double lambdaDeg, double epsDeg) {
+        return AstroMath.atan2d(
+                AstroMath.sind(lambdaDeg) * AstroMath.cosd(epsDeg),
+                AstroMath.cosd(lambdaDeg));
     }
 
     static Bodies atAhargana(double ah) {
