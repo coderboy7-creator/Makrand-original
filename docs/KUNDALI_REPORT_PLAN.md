@@ -69,8 +69,9 @@ Sthāna, Kāla, Dig, Ceṣṭā, Naisargika, Drik; rūpa + ratio. New calc class
 ### P7 — Doṣa panel on kundali
 Mangal (already in milan), Kālasarpa, Sade-satī (already in gochar). One “दोष” card. Honest “not present / active” — no scare copy.
 
-### P8 — Interpretive report (our paddhati)
-Lagna reading, 10th-house livelihood, Budha/Śani by bhāva, mahādaśā by house of lord, Viśeṣa yoga (extend `YogaDetector`: Budhāditya, Veśi, etc.). Hindi from our maps, not PDF paragraphs.
+### P8 — Interpretive report (our paddhati) *(in progress on `calc/p8-interpret-pdf`)*
+Lagna reading, 10th-house livelihood, Budha/Śani by bhāva, mahādaśā by house of lord, Viśeṣa yoga (extend `YogaDetector`: Budhāditya, Veśi, Vāsi, Ubhayachari). Hindi from our maps, not PDF paragraphs.
+PDF Hindi is JDK `TextLayout` (HarfBuzz) → PNG — OpenPDF IDENTITY_H does not GSUB Devanagari. Chrome restyled (navy/maroon/gold). No bija retune.
 
 ### P9 — KP as a **mode**, not a second app
 When house system = Placidus/KP and ayanamsa = KP: cusps, star-lord, sub-lord tables. Monolith setting. Do not make KP the default.

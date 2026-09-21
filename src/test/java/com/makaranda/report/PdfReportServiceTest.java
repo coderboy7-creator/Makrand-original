@@ -25,5 +25,8 @@ class PdfReportServiceTest {
         // OpenPDF may compress streams; still the catalog often keeps font names / info.
         String ascii = new String(bytes, StandardCharsets.ISO_8859_1);
         assertTrue(!ascii.toLowerCase().contains("astrotalk"));
+        assertTrue(ascii.contains("Makaranda") || ascii.contains("makaranda"), "branding missing");
+        assertTrue(ascii.contains("/Subtype /Image") || ascii.contains("/Subtype/Image"),
+                "Hindi must be HarfBuzz-rasterised images, not raw TTF");
     }
 }

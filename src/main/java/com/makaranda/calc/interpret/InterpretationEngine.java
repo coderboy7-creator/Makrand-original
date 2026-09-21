@@ -22,14 +22,23 @@ public final class InterpretationEngine {
     public Map<String, Object> interpret(FullChart c) {
         Map<String, Object> out = new LinkedHashMap<>();
         out.put("summary", summary(c));
+        out.put("summaryHi", summaryHi(c));
         out.put("personality", personality(c));
+        out.put("personalityHi", personalityHi(c));
         out.put("lagna", houseRead(c, 1, "Self, body, vitality, appearance"));
+        out.put("lagnaEssay", lagnaEssay(c));
+        out.put("lagnaEssayHi", lagnaEssayHi(c));
         out.put("wealth", houseRead(c, 2, "Speech, family, savings, food"));
         out.put("career", houseRead(c, 10, "Karma, status, profession, public life"));
+        out.put("livelihood", livelihood(c));
+        out.put("livelihoodHi", livelihoodHi(c));
         out.put("marriage", houseRead(c, 7, "Spouse, partnerships, public dealings"));
         out.put("fortune", houseRead(c, 9, "Dharma, father, guru, long journeys"));
         out.put("mind", mind(c));
+        out.put("mercury", grahaByBhava(c, "Mercury"));
+        out.put("saturn", grahaByBhava(c, "Saturn"));
         out.put("currentDasha", currentDasha(c));
+        out.put("mahaByHouse", mahaByHouse(c));
         out.put("yogas", YogaDetector.analyse(c));
         out.put("remedies", remedies(c));
         out.put("houses", allHouses(c));
@@ -192,6 +201,180 @@ public final class InterpretationEngine {
             default -> "karmic unfolding";
         };
         return "Mahadasha of " + lord + " activates house " + house + " and significations of " + planet + ".";
+    }
+
+    private String summaryHi(FullChart c) {
+        PlanetBody moon = c.planets().get("Moon");
+        PlanetBody sun = c.planets().get("Sun");
+        return "लग्न " + c.lagna().signHi() + " " + c.lagna().signDegree()
+                + "। चन्द्र " + moon.nakshatraHi() + " चरण " + moon.pada()
+                + ", राशि " + moon.signHi() + "। सूर्य " + sun.signHi()
+                + " भाव " + sun.house() + "। अयनांश " + c.ayanamsaLabel()
+                + "। गणिता " + c.panchangMode() + "।";
+    }
+
+    private String personalityHi(FullChart c) {
+        String[] lines = {
+                "अग्रणी ऊर्जा, सीधी वाणी, स्पर्धात्मक प्राण।",
+                "स्थिर, रसप्रिय, मूल्य धीरे बाँधते हैं, निष्ठा गहरी।",
+                "जिज्ञासु, द्वि-मन, शब्द और जाल से जीते हैं।",
+                "रक्षक, ज्वारीय भाव, कुल और घर पोषण करते हैं।",
+                "तेजस्वी, स्वाभिमान, अर्थपूर्ण मंच चाहते हैं।",
+                "विवेकी, सेवा-बुद्धि, कौशल से आजीविका।",
+                "सौम्य, सौन्दर्यप्रिय, न्याय और संग चाहते हैं।",
+                "तीव्र, शोधक, जिसे छूते हैं बदल देते हैं।",
+                "दार्शनिक, अर्थ-यात्री, गुरु या तीर्थ पथ।",
+                "महत्त्वाकांक्षी, संरचना, धैर्य से चढ़ते हैं।",
+                "अपरम्परा, लोकहित, अन्तर-नियम से जीते हैं।",
+                "संवेदक, कल्पना, सीमा गलाकर शांत सेवा।"
+        };
+        PlanetBody moon = c.planets().get("Moon");
+        return lines[c.lagna().signIndex()] + " चन्द्र " + moon.nakshatraHi()
+                + " मन को " + VedicConstants.NAK_DEITIES[moon.nakshatraIndex()] + " की छाप देते हैं।";
+    }
+
+    private String lagnaEssay(FullChart c) {
+        PlanetBody lagnaLord = c.planets().get(c.lagna().rashiLord());
+        return "Lagna is " + c.lagna().sign() + ". Lagnesha " + c.lagna().rashiLord()
+                + " sits in house " + lagnaLord.house() + " (" + lagnaLord.dignity()
+                + "). Body, fame and the opening of life follow that lord — not a canned essay.";
+    }
+
+    private String lagnaEssayHi(FullChart c) {
+        PlanetBody lagnaLord = c.planets().get(c.lagna().rashiLord());
+        return "लग्न " + c.lagna().signHi() + "। लग्नेश " + VedicConstants.planetHi(c.lagna().rashiLord())
+                + " भाव " + lagnaLord.house() + " में (" + VedicConstants.dignityHi(lagnaLord.dignity())
+                + ")। तनु, कीर्ति और जीवन-आरम्भ उसी स्वामी से — डिब्बाबंद पाठ नहीं।";
+    }
+
+    private String livelihood(FullChart c) {
+        Map<String, Object> tenth = houseRead(c, 10, "Karma, status, profession, public life");
+        PlanetBody mer = c.planets().get("Mercury");
+        PlanetBody sat = c.planets().get("Saturn");
+        return tenth.get("reading") + " Mercury (skill/trade) in house " + mer.house()
+                + "; Saturn (labour/office) in house " + sat.house() + ".";
+    }
+
+    private String livelihoodHi(FullChart c) {
+        int sign = (c.lagna().signIndex() + 9) % 12;
+        String lord = VedicConstants.SIGN_LORDS[sign];
+        PlanetBody lp = c.planets().get(lord);
+        PlanetBody mer = c.planets().get("Mercury");
+        PlanetBody sat = c.planets().get("Saturn");
+        return "दशम " + VedicConstants.SIGNS_HI[sign] + ", स्वामी "
+                + VedicConstants.planetHi(lord) + " भाव " + lp.house() + " में। बुध (कौशल/वाणिज्य) भाव "
+                + mer.house() + "; शनि (श्रम/पद) भाव " + sat.house() + "। आजीविका इन्हीं से पढ़ें।";
+    }
+
+    private Map<String, Object> grahaByBhava(FullChart c, String name) {
+        PlanetBody p = c.planets().get(name);
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("planet", name);
+        m.put("planetHi", VedicConstants.planetHi(name));
+        m.put("house", p.house());
+        m.put("sign", p.sign());
+        m.put("signHi", p.signHi());
+        m.put("dignity", p.dignity());
+        m.put("reading", name + " in house " + p.house() + " / " + p.sign() + " (" + p.dignity() + "). "
+                + bhavaNote(name, p.house()));
+        m.put("readingHi", VedicConstants.planetHi(name) + " भाव " + p.house() + " / " + p.signHi()
+                + " (" + VedicConstants.dignityHi(p.dignity()) + ")। " + bhavaNoteHi(name, p.house()));
+        return m;
+    }
+
+    private String bhavaNote(String planet, int h) {
+        if ("Mercury".equals(planet)) {
+            return switch (h) {
+                case 1 -> "Speech and wit colour the body and first impression.";
+                case 2 -> "Family accounts, food talk, and savings skill.";
+                case 3 -> "Writing, siblings, short trade routes.";
+                case 4 -> "Study at home, property papers.";
+                case 5 -> "Buddhi, mantra, speculation — watch nerves.";
+                case 6 -> "Service, editing, disputes of words.";
+                case 7 -> "Contracts, clients, a partner who talks shop.";
+                case 8 -> "Research, occult study, tax and shared money.";
+                case 9 -> "Teaching, dharma-texts, long study.";
+                case 10 -> "Profession through pen, trade, or analysis.";
+                case 11 -> "Gains from networks and commerce.";
+                default -> "Foreign papers, losses that teach, moksha-study.";
+            };
+        }
+        return switch (h) {
+            case 1 -> "Duty sits on the body; slow vitality, serious face.";
+            case 2 -> "Family karma, delayed wealth, spare speech.";
+            case 3 -> "Courage through labour; siblings and effort mature late.";
+            case 4 -> "Heavy home, land after time, mother-duty.";
+            case 5 -> "Children and intellect need patience; mantra over speculation.";
+            case 6 -> "Service, debt, disease-work — Saturn is usable here.";
+            case 7 -> "Late or sober partnership; public contracts that last.";
+            case 8 -> "Longevity yoga or chronic tests; occult labour.";
+            case 9 -> "Dharma through austerity; father and guru as taskmasters.";
+            case 10 -> "Office, government, climb by endurance.";
+            case 11 -> "Slow gains, elder friends, structured income.";
+            default -> "Vyaya, foreign, retreat — isolation that ripens.";
+        };
+    }
+
+    private String bhavaNoteHi(String planet, int h) {
+        if ("Mercury".equals(planet)) {
+            return switch (h) {
+                case 1 -> "वाणी और बुद्धि तनु व प्रथम प्रभाव रँगते हैं।";
+                case 2 -> "कुल-लेखा, अन्न-संवाद, बचत-कौशल।";
+                case 3 -> "लेखन, सहज, लघु व्यापार-मार्ग।";
+                case 4 -> "गृह-अध्ययन, भूमि-पत्र।";
+                case 5 -> "बुद्धि, मन्त्र, सट्टा — तंत्रिका देखें।";
+                case 6 -> "सेवा, संपादन, शब्द-विवाद।";
+                case 7 -> "अनुबन्ध, ग्राहक, व्यापार-संग।";
+                case 8 -> "शोध, गुप्त विद्या, कर व साझा धन।";
+                case 9 -> "अध्यापन, धर्म-ग्रन्थ, दीर्घ अध्ययन।";
+                case 10 -> "लेखनी, वाणिज्य या विश्लेषण से कर्म।";
+                case 11 -> "जाल और वाणिज्य से लाभ।";
+                default -> "विदेश-पत्र, हानि जो सिखाए, मोक्ष-पाठ।";
+            };
+        }
+        return switch (h) {
+            case 1 -> "कर्तव्य तनु पर; धीमा प्राण, गम्भीर मुख।";
+            case 2 -> "कुल-कर्म, विलम्बित धन, मित वाणी।";
+            case 3 -> "श्रम से साहस; सहज देर से पकते हैं।";
+            case 4 -> "भारी गृह, समय से भूमि, मातृ-कर्तव्य।";
+            case 5 -> "सुत-बुद्धि को धैर्य; सट्टे से मन्त्र श्रेष्ठ।";
+            case 6 -> "सेवा, ऋण, रोग-कर्म — शनि यहाँ काम आते हैं।";
+            case 7 -> "विलम्ब/गम्भीर संग; टिकने वाले अनुबन्ध।";
+            case 8 -> "आयु-योग या दीर्घ परीक्षा; गुप्त श्रम।";
+            case 9 -> "तप से धर्म; पिता-गुरु कठोर शिक्षक।";
+            case 10 -> "पद, शासन, धैर्य से चढ़ाई।";
+            case 11 -> "धीमा लाभ, ज्येष्ठ मित्र, संरचना आय।";
+            default -> "व्यय, विदेश, एकान्त जो पकता है।";
+        };
+    }
+
+    private Map<String, Object> mahaByHouse(FullChart c) {
+        Map<String, Object> cur = currentDasha(c);
+        String lord = String.valueOf(cur.getOrDefault("mahadasha", ""));
+        PlanetBody p = c.planets().get(lord);
+        int h = p == null ? 1 : p.house();
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("mahadasha", lord);
+        m.put("house", h);
+        m.put("reading", themesFor(lord, h) + " " + adviceFor(lord));
+        m.put("readingHi", "महादशा " + VedicConstants.planetHi(lord) + " भाव " + h
+                + " जगाती है। " + adviceForHi(lord));
+        return m;
+    }
+
+    private String adviceForHi(String lord) {
+        return switch (lord) {
+            case "Saturn" -> "धीमा संचय। सेवा, सरलता, वचन-पालन। Shortcut न लें।";
+            case "Rahu" -> "हर चमकते विदेश-अवसर के पीछे न भागें। एक असाधारण पथ।";
+            case "Ketu" -> "पद-क्रीड़ा छोड़ें। शोध, साधना, विशेषज्ञ कौशल।";
+            case "Jupiter" -> "शिक्षा, परामर्श, धर्म से विस्तार। विवाह-सुत-अध्ययन अनुकूल।";
+            case "Venus" -> "रस बिना अति। सम्बन्ध और सौन्दर्य कर्म-योग बनें।";
+            case "Mars" -> "कर्म करें, व्यर्थ कलह न चुनें। भूमि, शिल्प, खेल।";
+            case "Sun" -> "स्वच्छ नेतृत्व। शासन, चिकित्सा, पितृ-आकृति। अहं-शुद्धि साधना।";
+            case "Moon" -> "निद्रा, माता, भाव-आहार रक्षा। लोक-मुख कार्य अनुकूल।";
+            case "Mercury" -> "लिखें, व्यापार, सीखें। अनुबन्ध में मिश्र संकेत देखें।";
+            default -> "दशा को सचेत जीएँ।";
+        };
     }
 
     private String adviceFor(String lord) {
