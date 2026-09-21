@@ -101,9 +101,13 @@ public class PdfReportService {
             doc.addCreator("Makaranda Jyotish");
             doc.addSubject("KSDSU / Surya Siddhanta Makaranda report");
             doc.open();
-            cover(doc, req, c);
+            String prevHs = req.houseSystem;
+            req.houseSystem = "SRIPATI";
+            FullChart chalit = jyotish.chart(req);
+            req.houseSystem = prevHs;
+            cover(doc, req, c, panch);
             chapterBasic(doc, req, c, panch, dosa);
-            chapterCharts(doc, c);
+            chapterCharts(doc, c, chalit, gochar);
             chapterGrahas(doc, c);
             chapterDasha(doc, dasha, dashaNow, yogini, yoginiNow);
             chapterAshtakavarga(doc, Ashtakavarga.fromChart(c));
@@ -116,35 +120,90 @@ public class PdfReportService {
         return bos.toByteArray();
     }
 
-    private void cover(Document doc, BirthRequest req, FullChart c) throws Exception {
+    private void cover(Document doc, BirthRequest req, FullChart c, Map<String, Object> panch) throws Exception {
         PdfPTable hero = new PdfPTable(1);
         hero.setWidthPercentage(100);
         PdfPCell band = new PdfPCell();
         band.setBackgroundColor(NAVY);
         band.setBorder(Rectangle.NO_BORDER);
-        band.setPadding(18);
-        band.setPaddingBottom(20);
-        band.addElement(DevanagariPaint.blockOn("मकरन्द ज्योतिष", 22, GOLD, true, 480, NAVY));
-        Paragraph en = new Paragraph("Makaranda Jyotish  ·  Mithilanchal", fB(11, GOLD));
-        en.setSpacingBefore(6);
-        band.addElement(en);
-        band.addElement(DevanagariPaint.blockOn("सूर्य सिद्धान्त · मकरन्द पंचांग · कामेश्वर सिंह दरभंगा संस्कृत विश्वविद्यालय", 9, CREAM, false, 480, NAVY));
+        band.setPadding(20);
+        band.setPaddingBottom(22);
+        band.addElement(DevanagariPaint.blockOn("मिथिलांचल  ·  मकरन्द पंचांग  ·  सूर्य सिद्धान्त", 8, GOLD, false, 500, NAVY));
+        band.addElement(DevanagariPaint.blockOn("मकरन्द ज्योतिष", 26, GOLD, true, 500, NAVY));
+        String nativeName = blank(req.name);
+        if ("—".equals(nativeName)) nativeName = "जातक";
+        band.addElement(DevanagariPaint.blockOn(nativeName, 16, CREAM, true, 500, NAVY));
+        band.addElement(DevanagariPaint.blockOn(
+                c.input().place() + "  ·  " + CLOCK12.format(c.input().localDateTime()),
+                9, new Color(210, 200, 180), false, 500, NAVY));
         hero.addCell(band);
         doc.add(hero);
-        gap(doc, 10);
-        hi(doc, "जन्म कुंडली प्रतिवेदन", 14, MAROON, true);
-        pEn(doc, "Birth Kundali Report  —  not an Astrotalk clone. Parampara math, not medical or legal advice.", 9, INK);
-        gap(doc, 6);
-        PdfPTable meta = table(2);
-        kvCell(meta, "जातक / Native", blank(req.name));
-        kvCell(meta, "स्थान / Place", c.input().place());
-        kvCell(meta, "जन्म / Birth", CLOCK12.format(c.input().localDateTime()));
-        kvCell(meta, "अक्षांश–देशान्तर", String.format(Locale.ENGLISH, "%.4f°N  %.4f°E",
-                c.input().latitude(), c.input().longitude()));
-        kvCell(meta, "अयनांश / Ayanamsa", c.ayanamsaLabel() + "  =  "
-                + String.format(Locale.ENGLISH, "%.4f°", c.ayanamsaDeg()));
-        kvCell(meta, "लग्न / Lagna", c.lagna().signHi() + "  " + c.lagna().signDegree());
-        doc.add(meta);
+        gap(doc, 8);
+
+        PdfPTable split = new PdfPTable(new float[]{1.12f, 1f});
+        split.setWidthPercentage(100);
+        split.setSpacingAfter(8);
+
+        PdfPCell chartCell = new PdfPCell();
+        chartCell.setBorder(Rectangle.NO_BORDER);
+        chartCell.setPadding(4);
+        chartCell.setBackgroundColor(NAVY);
+        chartCell.addElement(DevanagariPaint.blockOn("लग्न कुंडली  D1", 9, GOLD, true, 240, NAVY));
+        Image d1 = KundaliPaint.d1(c, 248);
+        d1.setAlignment(Image.ALIGN_CENTER);
+        chartCell.addElement(d1);
+        split.addCell(chartCell);
+
+        PdfPCell id = new PdfPCell();
+        id.setBorder(Rectangle.NO_BORDER);
+        id.setPadding(0);
+        id.setPaddingLeft(8);
+        PdfPTable facts = new PdfPTable(1);
+        facts.setWidthPercentage(100);
+        fact(facts, "लग्न", c.lagna().signHi() + "  " + c.lagna().signDegree());
+        fact(facts, "लग्नेश", str(c.avakahada().get("lagneshHi")));
+        fact(facts, "चन्द्र", c.planets().get("Moon").signHi() + "  " + c.planets().get("Moon").nakshatraHi()
+                + "  चरण " + c.planets().get("Moon").pada());
+        fact(facts, "तिथि", join(panch.get("pakshaHi"), panch.get("tithiHi")) + till(panch.get("tithiEnd")));
+        fact(facts, "नक्षत्र", str(panch.get("nakshatraHi")) + till(panch.get("nakshatraEnd")));
+        fact(facts, "वार", str(panch.get("varaHi")));
+        fact(facts, "सूर्योदय / अस्त", str(panch.get("sunrise")) + "  ·  " + str(panch.get("sunset")));
+        fact(facts, "अयनांश", c.ayanamsaLabel() + "  " + String.format(Locale.ENGLISH, "%.2f°", c.ayanamsaDeg()));
+        fact(facts, "गणिता", c.panchangMode());
+        id.addElement(facts);
+        split.addCell(id);
+        doc.add(split);
+
+        PdfPTable chips = new PdfPTable(3);
+        chips.setWidthPercentage(100);
+        chip(chips, "KSDS  २६।३५ N");
+        chip(chips, "पूर्ण राशि");
+        chip(chips, "परम्परा — चिकित्सा नहीं");
+        doc.add(chips);
+        doc.newPage();
+    }
+
+    private void fact(PdfPTable t, String k, String v) {
+        PdfPCell c = new PdfPCell();
+        c.setBorder(Rectangle.NO_BORDER);
+        c.setBackgroundColor(CREAM);
+        c.setPadding(6);
+        c.setPaddingBottom(7);
+        c.setBorderWidthBottom(0.6f);
+        c.setBorderColorBottom(new Color(232, 197, 71, 90));
+        c.addElement(DevanagariPaint.block(k, 7, MAROON, true, 230));
+        c.addElement(DevanagariPaint.block(v == null ? "—" : v, 9, INK, false, 230));
+        t.addCell(c);
+    }
+
+    private void chip(PdfPTable t, String label) {
+        PdfPCell c = new PdfPCell();
+        c.setBackgroundColor(NAVY);
+        c.setBorder(Rectangle.NO_BORDER);
+        c.setPadding(7);
+        c.setHorizontalAlignment(Element.ALIGN_CENTER);
+        c.addElement(DevanagariPaint.blockOn(label, 8, GOLD, true, 160, NAVY));
+        t.addCell(c);
     }
 
     private void chapterBasic(Document doc, BirthRequest req, FullChart c, Map<String, Object> panch,
@@ -197,33 +256,34 @@ public class PdfReportService {
         hi(doc, str(dosa.get("noteHi")), 8, INK, false);
     }
 
-    private void chapterCharts(Document doc, FullChart c) throws Exception {
+    private void chapterCharts(Document doc, FullChart c, FullChart chalit, Map<String, Object> gochar) throws Exception {
         h(doc, "२  कुंडली  /  Charts");
-        hi(doc, "D1 लग्न कुंडली — पूर्ण राशि", 10, MAROON, true);
+        hi(doc, "उत्तर-भारतीय हीरक। लग्न भाव १। चन्द्र/सूर्य उसी जन्म से। चलित = श्रीपति। गोचर = आज, लग्न से।", 8, INK, false);
+        PdfPTable grid = new PdfPTable(2);
+        grid.setWidthPercentage(100);
+        grid.setSpacingAfter(8);
+        chartCard(grid, "लग्न कुंडली  D1", KundaliPaint.d1(c, 242));
+        chartCard(grid, "चन्द्र कुंडली", KundaliPaint.fromOrigin(c, "Moon", 242));
+        chartCard(grid, "सूर्य कुंडली", KundaliPaint.fromOrigin(c, "Sun", 242));
+        chartCard(grid, "नवमांश  D9  धर्म / दारा", KundaliPaint.d9(c, 242));
+        chartCard(grid, "भाव चलित  श्रीपति", KundaliPaint.chalit(chalit, 242));
+        chartCard(grid, "आज का गोचर", KundaliPaint.gochar(c, gochar, 242));
+        doc.add(grid);
+        hi(doc, "भाव-सारणी (लग्न कुंडली)", 9, MAROON, true);
         doc.add(bhavaTable(c, c.lagna().signIndex(), true));
-        gap(doc, 6);
-        hi(doc, "चन्द्र कुंडली", 10, MAROON, true);
-        doc.add(bhavaTable(c, c.planets().get("Moon").signIndex(), false));
-        gap(doc, 6);
-        hi(doc, "सूर्य कुंडली", 10, MAROON, true);
-        doc.add(bhavaTable(c, c.planets().get("Sun").signIndex(), false));
-        Map<String, Object> d9 = c.vargas() == null ? null : c.vargas().get(9);
-        if (d9 != null) {
-            gap(doc, 6);
-            hi(doc, "नवमांश D9 — धर्म / दारा", 10, MAROON, true);
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> bodies = (List<Map<String, Object>>) d9.get("bodies");
-            PdfPTable t = table(3);
-            header(t, "ग्रह", "राशि", "भाव");
-            if (bodies != null) {
-                for (Map<String, Object> b : bodies) {
-                    cell(t, str(b.get("nameHi"), b.get("name")));
-                    cell(t, str(b.get("signHi"), b.get("signSa")));
-                    cell(t, str(b.get("house")));
-                }
-            }
-            doc.add(t);
-        }
+    }
+
+    private void chartCard(PdfPTable grid, String title, Image chart) {
+        PdfPCell c = new PdfPCell();
+        c.setBorderColor(GOLD);
+        c.setBorderWidth(0.8f);
+        c.setBackgroundColor(NAVY);
+        c.setPadding(8);
+        c.setPaddingBottom(10);
+        c.addElement(DevanagariPaint.blockOn(title, 9, GOLD, true, 240, NAVY));
+        chart.setAlignment(Image.ALIGN_CENTER);
+        c.addElement(chart);
+        grid.addCell(c);
     }
 
     private PdfPTable bhavaTable(FullChart c, int originSign, boolean markLagnaHouse1) {
@@ -430,12 +490,14 @@ public class PdfReportService {
         public void onEndPage(PdfWriter w, Document doc) {
             PdfContentByte cb = w.getDirectContent();
             float pw = doc.getPageSize().getWidth();
-            cb.setColorFill(NAVY);
-            cb.rectangle(0, doc.getPageSize().getHeight() - 26, pw, 26);
-            cb.fill();
-            cb.setColorFill(GOLD);
-            cb.rectangle(0, doc.getPageSize().getHeight() - 28, pw, 2.2f);
-            cb.fill();
+            if (w.getPageNumber() > 1) {
+                cb.setColorFill(NAVY);
+                cb.rectangle(0, doc.getPageSize().getHeight() - 26, pw, 26);
+                cb.fill();
+                cb.setColorFill(GOLD);
+                cb.rectangle(0, doc.getPageSize().getHeight() - 28, pw, 2.2f);
+                cb.fill();
+            }
             cb.setColorFill(NAVY);
             cb.rectangle(0, 0, pw, 22);
             cb.fill();

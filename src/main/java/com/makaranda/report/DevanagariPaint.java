@@ -36,6 +36,10 @@ public final class DevanagariPaint {
 
     private DevanagariPaint() {}
 
+    public static Font awtFont(boolean bold) {
+        return bold ? BASE_B : BASE;
+    }
+
     public static boolean hasDevanagari(String s) {
         if (s == null) return false;
         for (int i = 0; i < s.length(); i++) {
