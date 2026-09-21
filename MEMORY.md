@@ -2,7 +2,7 @@
 
 Internal continuity for humans and agents. Workspace files are the source of truth; this file stores **decisions, gold numbers, and dead ends** that are easy to lose.
 
-**Last updated:** 2026-09-21 (Chunk 3 nodes +180°; July gold held)  
+**Last updated:** 2026-09-21 (Chunk 4 measure: no planet bija)  
 
 ---
 
@@ -14,7 +14,7 @@ Internal continuity for humans and agents. Workspace files are the source of tru
 - Default place **KSDS 26.5833°N 85.268°E** (२६।३५ / ०१।३५ / पल्लभा ६).
 - GitHub: `https://github.com/coderboy7-creator/Makrand-original` branch `main`.
 - **Unfinished:** original KSDSU winter tithi 45–140 min early; Mangal still weak on some elongations (e.g. 6 Feb 2023). Swiss Eph is Drik-only.
-- Graha-spaṣṭa gold: `panji-accuracy/`. Chunk 2 śīghra; Chunk 3 `RAHU_MEAN_OFFSET = 180`. Ketu SIDD−DRIK **+2 to +5°** (was ~−175°). Do not paste the old +5.27° Śani bija.
+- Graha-spaṣṭa: Chunk 2 śīghra; Chunk 3 node +180°. Chunk 4: Śani panji−SIDD **−10.1° ± 1.5°**, corr(elong) −0.93 — **HOLD bija**. See `panji-accuracy/CHUNK4_MEASURE.md`.
 
 ## Gold vs not-gold
 
@@ -94,7 +94,7 @@ Convention: दि. 11।55 = 11:55 AM; दि. 2।17 = 2:17 PM; रा. 2।43
 
 ## Next agent move
 
-1. Do **not** retune apogee/manda/EoT. No Mithila 2027. No Śani bija yet (panji−SIDD ~−8 to −10° after Chunk 2).
-2. Next calc: Chunk 3 nodes (`calc/graha-nodes`). July gold must stay.
+1. Do **not** retune apogee/manda/EoT. No Mithila 2027. No Śani/Guru constant (Chunk 4 bar failed: sd 1.5°, elong −0.93).
+2. Next calc: Chunk 5 fuller śīghra. July gold must stay.
 3. Keep servers: `mvn spring-boot:run` + `frontend npm run dev`.
 4. Swiss Eph Java port is GPL dual-license (`third_party/swisseph`). Drik only.

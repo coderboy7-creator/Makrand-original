@@ -21,6 +21,7 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 - [x] KSDSU graha-spaṣṭa CSV lock (2023 + 2025–26) — `panji-accuracy/`, `GrahaSpashtaBandGoldTest` (Chunk 1; no engine change)
 - [x] Outer-graha śīghra epicycle (Chunk 2) — Śani/Guru leave Sūrya; July SR/SS unchanged
 - [x] SIDDHANTIC Rāhu/Ketu +180° vs DRIK/panji (Chunk 3)
+- [x] Chunk 4 measure: Śani panji−SIDD −10.1° ± 1.5° and elongation-shaped — **no bija**
 
 ## Now / P0 — correctness
 
@@ -60,7 +61,7 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 
 | ID | Ticket | Lane |
 |---|---|---|
-| T0 | Re-measure Śani panji−SIDD; bija only if bar met (Chunk 4) | calc, new branch |
+| T0 | Makaranda śīghra/paridhi for leftover Śani phase + Mangal/Budha/Śukra (Chunk 5) | `calc/graha-sighra-full` |
 | T1 | Winter KSDSU page → spashta residual fit | Java `calc/ephemeris` |
 | T2 | Golden tests for the 8-row validation table | `SunriseMithilaTest` |
 | T3 | Month calendar UI | React |
