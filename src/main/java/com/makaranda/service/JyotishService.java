@@ -20,6 +20,7 @@ import com.makaranda.calc.vedic.ChartBuilder;
 import com.makaranda.calc.vedic.ChartBuilder.BirthInput;
 import com.makaranda.calc.vedic.ChartBuilder.FullChart;
 import com.makaranda.calc.vedic.SpecialCharts;
+import com.makaranda.calc.yoga.DoshaPanel;
 import com.makaranda.calc.yoga.YogaDetector;
 import com.makaranda.dto.BirthRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +80,9 @@ public class JyotishService {
         m.put("dasha", dashaTree(c));
         m.put("ashtakavarga", Ashtakavarga.fromChart(c));
         m.put("shadbala", Shadbala.fromChart(c));
+        Map<String, Object> gocharNow = transits.gochar(c, LocalDate.now(),
+                c.input().ayanamsa(), PanchangMode.from(c.panchangMode()));
+        m.put("doshaPanel", DoshaPanel.from(c, gocharNow));
         return m;
     }
 

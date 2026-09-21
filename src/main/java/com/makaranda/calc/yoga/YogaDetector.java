@@ -232,7 +232,8 @@ public final class YogaDetector {
         return shubha ? (secondBen && twelfthBen) : (secondMal && twelfthMal);
     }
 
-    private static String kaalSarp(FullChart c) {
+    /** Rahu-house type name, or null if grahas are not all between the nodes. */
+    public static String kaalSarp(FullChart c) {
         double rahu = c.planets().get("Rahu").siderealLon();
         double ketu = c.planets().get("Ketu").siderealLon();
         boolean allForward = true;
