@@ -306,7 +306,7 @@ export function KundaliPage() {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography color="primary" sx={{ mb: 1 }}>{t("chart_gochar")}</Typography>
-                {gochar ? <KundaliChart chart={gochar} style={style} /> : <Typography variant="body2">{t("loading")}</Typography>}
+                {gochar ? <KundaliChart chart={gocharAsChart(chart, gochar)} style={style} /> : <Typography variant="body2">{t("loading")}</Typography>}
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography color="primary" sx={{ mb: 1 }}>D9</Typography>
