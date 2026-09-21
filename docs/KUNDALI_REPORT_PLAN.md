@@ -73,10 +73,10 @@ Mangal (already in milan), Kālasarpa, Sade-satī (already in gochar). One “�
 Lagna reading, 10th-house livelihood, Budha/Śani by bhāva, mahādaśā by house of lord, Viśeṣa yoga (extend `YogaDetector`: Budhāditya, Veśi, Vāsi, Ubhayachari). Hindi from our maps, not PDF paragraphs.
 PDF Hindi is JDK `TextLayout` (HarfBuzz) → PNG — OpenPDF IDENTITY_H does not GSUB Devanagari. Chrome restyled (navy/maroon/gold). No bija retune.
 
-### P9 — KP as a **mode**, not a second app *(calc on `calc/p9-kp-mode`)*
+### P9 — KP as a **mode**, not a second app *(done)*
 When house system = Placidus/KP and ayanamsa = KP: cusps, star-lord, sub-lord tables. Monolith setting. Do not make KP the default.
 
-### P10 — Upāya
+### P10 — Upāya *(calc on `calc/p10-upaya`)*
 Rudrākṣa by nakṣatra (extend gems). Life-stone already exists. Never auto-sell; warning stays.
 
 ### P11 — Standing UI: month panchang sheet
