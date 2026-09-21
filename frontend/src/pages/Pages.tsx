@@ -311,6 +311,72 @@ export function KundaliPage() {
             </Grid>
           )}
           {tab === 3 && <DashaBoard dasha={chart.dasha} hi={hi} t={t} />}
+          {tab === 4 && (
+            <Box>
+              <Typography variant="h6" color="primary">{t("kp_title")}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{t("kp_help")}</Typography>
+              <Typography variant="subtitle1" color="primary" sx={{ mb: 1 }}>{t("kp_cusps")}</Typography>
+              <Box sx={{ overflowX: "auto", mb: 3 }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>{t("bhava")}</TableCell>
+                      <TableCell>{t("rashi")}</TableCell>
+                      <TableCell>{t("rashi_lord")}</TableCell>
+                      <TableCell>{t("nakshatra")}</TableCell>
+                      <TableCell>{t("star_lord")}</TableCell>
+                      <TableCell>{t("sub_lord")}</TableCell>
+                      <TableCell>{t("dms")}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {(chart.kp?.cusps || []).map((r: any) => (
+                      <TableRow key={r.house}>
+                        <TableCell>{r.house}</TableCell>
+                        <TableCell>{hi ? r.signHi : r.sign}</TableCell>
+                        <TableCell>{grahaName(r.signLord, hi)}</TableCell>
+                        <TableCell>{hi ? r.nakshatraHi : r.nakshatra}</TableCell>
+                        <TableCell>{grahaName(r.starLord, hi)}</TableCell>
+                        <TableCell>{grahaName(r.subLord, hi)}</TableCell>
+                        <TableCell>{r.dms}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Box>
+              <Typography variant="subtitle1" color="primary" sx={{ mb: 1 }}>{t("kp_bodies")}</Typography>
+              <Box sx={{ overflowX: "auto" }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>{t("graha")}</TableCell>
+                      <TableCell>{t("bhava")}</TableCell>
+                      <TableCell>{t("rashi")}</TableCell>
+                      <TableCell>{t("rashi_lord")}</TableCell>
+                      <TableCell>{t("nakshatra")}</TableCell>
+                      <TableCell>{t("star_lord")}</TableCell>
+                      <TableCell>{t("sub_lord")}</TableCell>
+                      <TableCell>{t("dms")}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {(chart.kp?.bodies || []).map((r: any) => (
+                      <TableRow key={r.name}>
+                        <TableCell>{grahaName(r.name, hi)}</TableCell>
+                        <TableCell>{r.house}</TableCell>
+                        <TableCell>{hi ? r.signHi : r.sign}</TableCell>
+                        <TableCell>{grahaName(r.signLord, hi)}</TableCell>
+                        <TableCell>{hi ? r.nakshatraHi : r.nakshatra}</TableCell>
+                        <TableCell>{grahaName(r.starLord, hi)}</TableCell>
+                        <TableCell>{grahaName(r.subLord, hi)}</TableCell>
+                        <TableCell>{r.dms}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Box>
+          )}
         </>
       )}
     </Box>
