@@ -149,7 +149,7 @@ export function KundaliPage() {
             if (v === 3) setSearchParams({ tab: "dasha" }, { replace: true });
             else if (searchParams.get("tab")) setSearchParams({}, { replace: true });
           }} variant="scrollable" sx={{ mt: 2, mb: 2, borderBottom: "1px solid rgba(232,197,71,0.16)" }}>
-            <Tab label={t("tab_basic")} /><Tab label={t("tab_kundali")} /><Tab label={t("tab_charts")} /><Tab label={t("tab_dasha")} />
+            <Tab label={t("tab_basic")} /><Tab label={t("tab_kundali")} /><Tab label={t("tab_charts")} /><Tab label={t("tab_dasha")} /><Tab label={t("tab_kp")} />
           </Tabs>
           {tab === 0 && (
             <Grid container spacing={2}>

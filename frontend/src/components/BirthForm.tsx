@@ -56,6 +56,8 @@ export default function BirthForm({ onSubmit, submitLabel }: { onSubmit?: () => 
             <MenuItem value="WHOLE_SIGN">{t("house_whole")}</MenuItem>
             <MenuItem value="EQUAL">{t("house_equal")}</MenuItem>
             <MenuItem value="SRIPATI">{t("house_sripati")}</MenuItem>
+            <MenuItem value="PLACIDUS">{t("house_placidus")}</MenuItem>
+            <MenuItem value="KP">{t("house_kp")}</MenuItem>
           </TextField>
         </Box>
       </Box>
