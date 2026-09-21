@@ -13,6 +13,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.makaranda.calc.VedicConstants;
 import com.makaranda.calc.dasha.VimshottariDasha;
 import com.makaranda.calc.dasha.VimshottariDasha.Period;
+import com.makaranda.calc.dasha.YoginiDasha;
 import com.makaranda.calc.interpret.InterpretationEngine;
 import com.makaranda.calc.vedic.Ashtakavarga;
 import com.makaranda.calc.vedic.Shadbala;
@@ -74,8 +75,11 @@ public class PdfReportService {
         Map<String, Object> yogas = YogaDetector.analyse(c);
         Map<String, Object> reading = interpreter.interpret(c);
         Map<String, Object> gems = special.gemstones(c);
-        List<Period> dasha = VimshottariDasha.compute(
-                c.planets().get("Moon").siderealLon(), c.input().localDateTime(), 2);
+        double moon = c.planets().get("Moon").siderealLon();
+        List<Period> dasha = VimshottariDasha.compute(moon, c.input().localDateTime(), 3);
+        Map<String, Object> dashaNow = VimshottariDasha.currentAt(dasha, LocalDateTime.now());
+        List<Period> yogini = YoginiDasha.compute(moon, c.input().localDateTime(), 2);
+        Map<String, Object> yoginiNow = VimshottariDasha.currentAt(yogini, LocalDateTime.now());
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Document doc = new Document(PageSize.A4, 36, 36, 42, 40);
@@ -86,7 +90,9 @@ public class PdfReportService {
             chapterBasic(doc, req, c, panch);
             chapterCharts(doc, c);
             chapterGrahas(doc, c);
-            chapterDasha(doc, dasha);
+            chapterDasha(doc, dasha, dashaNow, yogini, yoginiNow);
+            chapterAshtakavarga(doc, Ashtakavarga.fromChart(c));
+            chapterShadbala(doc, Shadbala.fromChart(c));
             chapterExtras(doc, c, yogas, reading, gems);
             footerNote(doc);
             doc.close();
@@ -228,29 +234,54 @@ public class PdfReportService {
         cell(t, p.avasthaHi() == null ? p.avastha() : p.avasthaHi());
     }
 
-    private void chapterDasha(Document doc, List<Period> dasha) throws Exception {
+    private void chapterDasha(Document doc, List<Period> dasha, Map<String, Object> now,
+                             List<Period> yogini, Map<String, Object> yoginiNow) throws Exception {
         h(doc, "४  विंशोत्तरी दशा  /  Vimshottari");
-        p(doc, "महादशा · अन्तरदशा जन्म-चन्द्र नक्षत्र से। यह परम्परा गणित है, भविष्य-वाणी नहीं।",
+        p(doc, "महादशा · अन्तरदशा · प्रत्यन्तर — जन्म-चन्द्र नक्षत्र से। परम्परा गणित, भविष्य-वाणी नहीं।",
                 f(8, INK), Element.ALIGN_LEFT);
+        kv(doc, "वर्तमान / Current",
+                VedicConstants.planetHi(str(now.get("mahadasha"))) + " → "
+                        + VedicConstants.planetHi(str(now.get("antardasha"))) + " → "
+                        + VedicConstants.planetHi(str(now.get("pratyantardasha"))));
         PdfPTable t = table(4);
         header(t, "स्वामी", "आरम्भ", "समाप्ति", "वर्ष");
+        String curM = str(now.get("mahadasha"));
         int n = 0;
         for (Period maha : dasha) {
             if (n++ >= 5) break;
-            cell(t, VedicConstants.planetHi(maha.lord()) + " महादशा");
+            String mark = maha.lord().equals(curM) ? " ●" : "";
+            cell(t, VedicConstants.planetHi(maha.lord()) + " महादशा" + mark);
             cell(t, CLOCK12.format(maha.start()));
             cell(t, CLOCK12.format(maha.end()));
             cell(t, String.format(Locale.ENGLISH, "%.2f", maha.years()));
             int a = 0;
+            String curA = str(now.get("antardasha"));
             for (Period antar : maha.children()) {
-                if (a++ >= 4) break;
-                cell(t, "  " + VedicConstants.planetHi(antar.lord()));
+                if (a++ >= 9) break;
+                if (!maha.lord().equals(curM) && a > 3) break;
+                String am = antar.lord().equals(curA) && maha.lord().equals(curM) ? " ●" : "";
+                cell(t, "  " + VedicConstants.planetHi(antar.lord()) + am);
                 cell(t, CLOCK12.format(antar.start()));
                 cell(t, CLOCK12.format(antar.end()));
                 cell(t, String.format(Locale.ENGLISH, "%.2f", antar.years()));
             }
         }
         doc.add(t);
+        gap(doc, 6);
+        p(doc, "योगिनी दशा (३६ वर्ष) — अश्विनी = मंगला", fB(11, MAROON), Element.ALIGN_LEFT);
+        kv(doc, "वर्तमान योगिनी",
+                YoginiDasha.nameHi(str(yoginiNow.get("mahadasha"))) + "  ("
+                        + VedicConstants.planetHi(YoginiDasha.lordOf(str(yoginiNow.get("mahadasha")))) + ")");
+        PdfPTable yt = table(5);
+        header(yt, "योगिनी", "स्वामी", "आरम्भ", "समाप्ति", "वर्ष");
+        for (Period y : yogini) {
+            cell(yt, YoginiDasha.nameHi(y.lord()));
+            cell(yt, VedicConstants.planetHi(YoginiDasha.lordOf(y.lord())));
+            cell(yt, CLOCK12.format(y.start()));
+            cell(yt, CLOCK12.format(y.end()));
+            cell(yt, String.format(Locale.ENGLISH, "%.0f", y.years()));
+        }
+        doc.add(yt);
     }
 
     @SuppressWarnings("unchecked")

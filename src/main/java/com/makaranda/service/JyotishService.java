@@ -3,7 +3,9 @@ package com.makaranda.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.makaranda.calc.VedicConstants;
 import com.makaranda.calc.dasha.VimshottariDasha;
+import com.makaranda.calc.dasha.YoginiDasha;
 import com.makaranda.calc.ephemeris.AyanamsaSystem;
 import com.makaranda.calc.ephemeris.PanchangMode;
 import com.makaranda.calc.interpret.Encyclopedia;
@@ -89,9 +91,23 @@ public class JyotishService {
     }
 
     public Map<String, Object> dashaTree(FullChart c) {
-        var periods = VimshottariDasha.compute(c.planets().get("Moon").siderealLon(),
-                c.input().localDateTime(), 3);
-        return Map.of("system", "Vimshottari", "periods", mapper.convertValue(periods, List.class));
+        double moon = c.planets().get("Moon").siderealLon();
+        LocalDateTime birth = c.input().localDateTime();
+        LocalDateTime now = LocalDateTime.now();
+        var periods = VimshottariDasha.compute(moon, birth, 3);
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("system", "Vimshottari");
+        out.put("cycleYears", 120);
+        out.put("nakshatra", VedicConstants.NAKSHATRAS[VedicConstants.nakshatraIndex(moon)]);
+        out.put("nakLord", VedicConstants.NAK_LORDS[VedicConstants.nakshatraIndex(moon)]);
+        out.put("periods", mapper.convertValue(periods, List.class));
+        out.put("current", VimshottariDasha.currentAt(periods, now));
+        out.put("currentAtBirth", VimshottariDasha.currentAt(periods, birth));
+        Map<String, Object> yog = YoginiDasha.bundle(moon, birth, now);
+        yog.put("periods", mapper.convertValue(yog.get("periods"), List.class));
+        yog.put("current", mapper.convertValue(yog.get("current"), Map.class));
+        out.put("yogini", yog);
+        return out;
     }
 
     public Map<String, Object> panchang(LocalDate date, Double lat, Double lon, Double tz,
