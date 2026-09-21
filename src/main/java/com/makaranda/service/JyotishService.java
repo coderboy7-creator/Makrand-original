@@ -12,6 +12,7 @@ import com.makaranda.calc.match.AshtakootaMatcher;
 import com.makaranda.calc.muhurta.MuhurtaCalculator;
 import com.makaranda.calc.panchang.PanchangCalculator;
 import com.makaranda.calc.transit.TransitCalculator;
+import com.makaranda.calc.vedic.Ashtakavarga;
 import com.makaranda.calc.vedic.ChartBuilder;
 import com.makaranda.calc.vedic.ChartBuilder.BirthInput;
 import com.makaranda.calc.vedic.ChartBuilder.FullChart;
@@ -73,7 +74,12 @@ public class JyotishService {
         m.put("yogas", YogaDetector.analyse(c));
         m.put("gemstones", special.gemstones(c));
         m.put("dasha", dashaTree(c));
+        m.put("ashtakavarga", Ashtakavarga.fromChart(c));
         return m;
+    }
+
+    public Map<String, Object> ashtakavarga(BirthRequest r) {
+        return Ashtakavarga.fromChart(chart(r));
     }
 
     public Map<String, Object> dashaTree(FullChart c) {

@@ -34,6 +34,11 @@ public class JyotishController {
         return Map.of("vargas", jyotish.chart(req).vargas(), "vimshopaka", jyotish.chart(req).vimshopaka());
     }
 
+    @PostMapping("/ashtakavarga")
+    public Map<String, Object> ashtakavarga(@RequestBody BirthRequest req) {
+        return jyotish.ashtakavarga(req);
+    }
+
     @PostMapping("/dasha")
     public Map<String, Object> dasha(@RequestBody BirthRequest req) {
         return jyotish.dashaTree(jyotish.chart(req));
