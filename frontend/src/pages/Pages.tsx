@@ -13,116 +13,7 @@ import { useI18n } from "../i18n";
 import { grahaName, nakName, dignityName, rashiName, yogaName, yogaText, yogaType, gemPhrase, prashnaVerdict, articleTitle, articleBody, astroBio } from "../jyotishLabels";
 import { GlassCard, GoldTitle, LimbTile, MetaRow, PageHero, ScoreHero } from "../ui";
 import { chartFromOrigin, gocharAsChart, VARGA_MEANING } from "../chartViews";
-
-function fmtWhen(v: any) {
-  if (v == null) return "—";
-  const s = String(v);
-  return s.length >= 16 ? s.slice(0, 16).replace("T", " ") : s;
-}
-
-function yoginiLabel(yog: any, name: string, hi: boolean) {
-  if (!name) return "—";
-  const i = (yog?.names || []).indexOf(name);
-  if (hi && i >= 0) return yog.namesHi?.[i] || name;
-  return name;
-}
-
-function CurrentDashaBanner({ dasha, hi, t }: { dasha: any; hi: boolean; t: (k: string) => string }) {
-  const c = dasha?.current;
-  if (!c?.mahadasha) return null;
-  return (
-    <Alert severity="info" sx={{ mb: 2, border: "1px solid rgba(232,197,71,0.45)" }}>
-      <Typography variant="subtitle2">{t("now")}</Typography>
-      <Typography>
-        {grahaName(c.mahadasha, hi)} {t("mahadasha")}
-        {c.antardasha ? ` → ${grahaName(c.antardasha, hi)} ${t("antar")}` : ""}
-        {c.pratyantardasha ? ` → ${grahaName(c.pratyantardasha, hi)} ${t("pratyantar")}` : ""}
-      </Typography>
-      <Typography variant="caption" display="block">
-        {fmtWhen(c.mahaStart)} → {fmtWhen(c.mahaEnd)}
-        {c.antarStart ? ` · ${t("antar")} ${fmtWhen(c.antarStart)} → ${fmtWhen(c.antarEnd)}` : ""}
-        {c.pratyantarStart ? ` · ${t("pratyantar")} ${fmtWhen(c.pratyantarStart)} → ${fmtWhen(c.pratyantarEnd)}` : ""}
-      </Typography>
-    </Alert>
-  );
-}
-
-function VimshottariList({ dasha, hi, t, compact }: { dasha: any; hi: boolean; t: (k: string) => string; compact?: boolean }) {
-  const cur = dasha?.current || {};
-  return (
-    <Box>
-      {(dasha?.periods || []).map((p: any) => {
-        const isM = p.lord === cur.mahadasha;
-        return (
-          <Card key={p.lord + p.start} sx={{ mb: 1, outline: isM ? "2px solid #c9a227" : "none", bgcolor: isM ? "rgba(232,197,71,0.08)" : undefined }}>
-            <CardContent>
-              <Typography variant="h6" color="primary">
-                {grahaName(p.lord, hi)} {t("mahadasha")}{isM ? ` · ${t("now")}` : ""}
-              </Typography>
-              <Typography variant="body2">{fmtWhen(p.start)} → {fmtWhen(p.end)} ({Number(p.years).toFixed(2)} {t("yrs")})</Typography>
-              {(p.children || []).slice(0, compact && !isM ? 0 : 9).map((a: any) => {
-                const isA = isM && a.lord === cur.antardasha;
-                return (
-                  <Box key={a.lord + a.start} sx={{
-                    pl: 2, py: 0.4,
-                    borderLeft: isA ? "3px solid #c9a227" : "3px solid transparent",
-                    bgcolor: isA ? "rgba(232,197,71,0.12)" : undefined,
-                  }}>
-                    <Typography variant="body2">
-                      {grahaName(a.lord, hi)} {t("antar")}{isA ? ` · ${t("now")}` : ""} · {fmtWhen(a.start)} – {fmtWhen(a.end)}
-                    </Typography>
-                    {isA && (a.children || []).map((pd: any) => {
-                      const isP = pd.lord === cur.pratyantardasha;
-                      return (
-                        <Typography key={pd.lord + pd.start} variant="caption" display="block"
-                          sx={{ pl: 2, fontWeight: isP ? 700 : 400, color: isP ? "primary.main" : "text.secondary" }}>
-                          {grahaName(pd.lord, hi)} {t("pratyantar")}{isP ? ` · ${t("now")}` : ""} · {fmtWhen(pd.start)} – {fmtWhen(pd.end)}
-                        </Typography>
-                      );
-                    })}
-                  </Box>
-                );
-              })}
-            </CardContent>
-          </Card>
-        );
-      })}
-    </Box>
-  );
-}
-
-function YoginiList({ yog, hi, t }: { yog: any; hi: boolean; t: (k: string) => string }) {
-  if (!yog) return null;
-  const cur = yog.current || {};
-  return (
-    <Box sx={{ mt: 3 }}>
-      <Typography variant="h6" color="primary">{t("yogini_title")}</Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{t("yogini_sub")}</Typography>
-      {cur.mahadasha && (
-        <Alert sx={{ mb: 1 }}>
-          {t("now")}: {yoginiLabel(yog, cur.mahadasha, hi)}
-          {cur.antardasha ? ` → ${yoginiLabel(yog, cur.antardasha, hi)}` : ""}
-          {` · ${grahaName((yog.lords || [])[(yog.names || []).indexOf(cur.mahadasha)], hi)}`}
-        </Alert>
-      )}
-      {(yog.periods || []).map((p: any) => {
-        const isM = p.lord === cur.mahadasha;
-        const li = (yog.names || []).indexOf(p.lord);
-        return (
-          <Card key={p.lord + p.start} sx={{ mb: 1, outline: isM ? "2px solid #c9a227" : "none" }}>
-            <CardContent>
-              <Typography>
-                {yoginiLabel(yog, p.lord, hi)} · {grahaName(yog.lords?.[li], hi)} · {Number(p.years).toFixed(0)} {t("yrs")}
-                {isM ? ` · ${t("now")}` : ""}
-              </Typography>
-              <Typography variant="body2">{fmtWhen(p.start)} → {fmtWhen(p.end)}</Typography>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </Box>
-  );
-}
+import { DashaBoard } from "../dashaViews";
 
 export function HomePage() {
   const { config } = useApp();
@@ -397,13 +288,7 @@ export function KundaliPage() {
               </Grid>
             </Grid>
           )}
-          {tab === 3 && (
-            <Box>
-              <CurrentDashaBanner dasha={chart.dasha} hi={hi} t={t} />
-              <VimshottariList dasha={chart.dasha} hi={hi} t={t} compact />
-              <YoginiList yog={chart.dasha?.yogini} hi={hi} t={t} />
-            </Box>
-          )}
+          {tab === 3 && <DashaBoard dasha={chart.dasha} hi={hi} t={t} />}
         </>
       )}
     </Box>
@@ -701,22 +586,7 @@ export function DashaPage() {
     <Box>
       <GoldTitle sub={t("dasha_sub")}>{t("dasha_title")}</GoldTitle>
       <BirthForm />
-      {(chart?.dasha?.periods || []).map((p: any) => (
-        <Card key={p.lord + p.start} sx={{ mb: 1 }}>
-          <CardContent>
-            <Typography variant="h6" color="primary">{grahaName(p.lord, hi)} {t("mahadasha")}</Typography>
-            <Typography variant="body2">{p.start} → {p.end} ({Number(p.years).toFixed(2)} {t("yrs")})</Typography>
-            {(p.children || []).slice(0, 9).map((a: any) => (
-              <Box key={a.lord + a.start} sx={{ pl: 2, py: 0.5 }}>
-                <Typography variant="body2">{grahaName(a.lord, hi)} {t("antar")} · {String(a.start).slice(0, 10)} – {String(a.end).slice(0, 10)}</Typography>
-              </Box>
-            ))}
-          </CardContent>
-        </Card>
-      ))}
-      {chart?.interpretation?.currentDasha && (
-        <Alert sx={{ mt: 2 }}>{JSON.stringify(chart.interpretation.currentDasha.prediction?.themes || chart.interpretation.currentDasha)}</Alert>
-      )}
+      {chart?.dasha && <DashaBoard dasha={chart.dasha} hi={hi} t={t} />}
     </Box>
   );
 }
