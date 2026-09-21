@@ -505,6 +505,83 @@ public final class EphemerisEngine {
         return c;
     }
 
+    /**
+     * Tropical Placidus cusps (1–12). Polar latitudes fall back to Sripati
+     * (Porphyry-style quadrants). Does not call Swiss Ephemeris.
+     */
+    public double[] houseCuspsPlacidus(double jdUt, double lat, double lonEast) {
+        double eps = obliquity(jdUt);
+        if (Math.abs(lat) >= 90.0 - eps - 1e-6) {
+            return houseCuspsSripati(jdUt, lat, lonEast);
+        }
+        double ramc = localSidereal(jdUt, lonEast);
+        double sine = AstroMath.sind(eps);
+        double cose = AstroMath.cosd(eps);
+        double tane = AstroMath.tand(eps);
+        double tanfi = AstroMath.tand(lat);
+        double[] c = new double[13];
+        c[1] = tropicalAscendant(jdUt, lat, lonEast);
+        c[10] = tropicalMc(jdUt, lonEast);
+        double a = AstroMath.asind(AstroMath.tand(lat) * tane);
+        double fh1 = Math.toDegrees(Math.atan(AstroMath.sind(a / 3.0) / tane));
+        double fh2 = Math.toDegrees(Math.atan(AstroMath.sind(a * 2.0 / 3.0) / tane));
+        c[11] = placidusCusp(ramc, 30, fh1, 3.0, tanfi, sine, cose);
+        c[12] = placidusCusp(ramc, 60, fh2, 1.5, tanfi, sine, cose);
+        c[2] = placidusCusp(ramc, 120, fh2, 1.5, tanfi, sine, cose);
+        c[3] = placidusCusp(ramc, 150, fh1, 3.0, tanfi, sine, cose);
+        c[4] = AstroMath.norm360(c[10] + 180);
+        c[5] = AstroMath.norm360(c[11] + 180);
+        c[6] = AstroMath.norm360(c[12] + 180);
+        c[7] = AstroMath.norm360(c[1] + 180);
+        c[8] = AstroMath.norm360(c[2] + 180);
+        c[9] = AstroMath.norm360(c[3] + 180);
+        return c;
+    }
+
+    private static double placidusCusp(double ramc, double addRa, double fh, double poleDiv,
+                                       double tanfi, double sine, double cose) {
+        double rectasc = AstroMath.norm360(addRa + ramc);
+        double first = houseAsc(rectasc, fh, sine, cose);
+        double tant = AstroMath.tand(AstroMath.asind(sine * AstroMath.sind(first)));
+        if (Math.abs(tant) < 1e-10) return rectasc;
+        double f = Math.toDegrees(Math.atan(AstroMath.sind(AstroMath.asind(tanfi * tant) / poleDiv) / tant));
+        double cusp = houseAsc(rectasc, f, sine, cose);
+        for (int i = 0; i < 2; i++) {
+            tant = AstroMath.tand(AstroMath.asind(sine * AstroMath.sind(cusp)));
+            if (Math.abs(tant) < 1e-10) return rectasc;
+            f = Math.toDegrees(Math.atan(AstroMath.sind(AstroMath.asind(tanfi * tant) / poleDiv) / tant));
+            cusp = houseAsc(rectasc, f, sine, cose);
+        }
+        return cusp;
+    }
+
+    /** Ecliptic longitude of the ascendant for a given RA and pole height (degrees). */
+    private static double houseAsc(double x1, double f, double sine, double cose) {
+        x1 = AstroMath.norm360(x1);
+        int n = (int) (x1 / 90.0) + 1;
+        double ass;
+        if (n == 1) ass = houseAscQ(x1, f, sine, cose);
+        else if (n == 2) ass = 180 - houseAscQ(180 - x1, -f, sine, cose);
+        else if (n == 3) ass = 180 + houseAscQ(x1 - 180, -f, sine, cose);
+        else ass = 360 - houseAscQ(360 - x1, f, sine, cose);
+        return AstroMath.norm360(ass);
+    }
+
+    private static double houseAscQ(double x, double f, double sine, double cose) {
+        double ass = -AstroMath.tand(f) * sine + cose * AstroMath.cosd(x);
+        double sinx = AstroMath.sind(x);
+        if (Math.abs(ass) < 1e-12) ass = 0;
+        if (Math.abs(sinx) < 1e-12) sinx = 0;
+        if (sinx == 0) {
+            ass = ass < 0 ? -1e-12 : 1e-12;
+            return 90;
+        }
+        if (ass == 0) return sinx < 0 ? -90 : 90;
+        ass = Math.toDegrees(Math.atan(sinx / ass));
+        if (ass < 0) ass += 180;
+        return ass;
+    }
+
     private static void fillQuadrant(double[] c, int start, int end) {
         double a = c[start];
         double b = c[end];

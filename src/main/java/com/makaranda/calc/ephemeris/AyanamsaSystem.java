@@ -30,8 +30,12 @@ public enum AyanamsaSystem {
 
     public static AyanamsaSystem from(String raw) {
         if (raw == null || raw.isBlank()) return SURYA_SIDDHANTA_MAKARANDA;
+        String k = raw.trim().toUpperCase().replace('-', '_').replace(' ', '_');
+        if ("KP".equals(k) || "KP_NEW".equals(k) || "KRISHNAMURTI_KP".equals(k) || "KSK".equals(k)) {
+            return KRISHNAMURTI;
+        }
         try {
-            return AyanamsaSystem.valueOf(raw.trim().toUpperCase().replace('-', '_').replace(' ', '_'));
+            return AyanamsaSystem.valueOf(k);
         } catch (IllegalArgumentException ex) {
             return SURYA_SIDDHANTA_MAKARANDA;
         }

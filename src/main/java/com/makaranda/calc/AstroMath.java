@@ -86,6 +86,19 @@ public final class AstroMath {
         return ((planetSign - lagnaSign + 12) % 12) + 1;
     }
 
+    /** House 1–12 from Placidus/Sripati cusps (cusps[1..12] sidereal longitudes). */
+    public static int houseFromCusps(double longitude, double[] cusps) {
+        if (cusps == null || cusps.length < 13) return 1;
+        double lon = norm360(longitude);
+        for (int h = 1; h <= 12; h++) {
+            int next = h == 12 ? 1 : h + 1;
+            double span = norm360(cusps[next] - cusps[h]);
+            double d = norm360(lon - cusps[h]);
+            if (d < span || span < 1e-9) return h;
+        }
+        return 1;
+    }
+
     public static double keplerE(double Mdeg, double e) {
         double M = Math.toRadians(norm360(Mdeg + 180.0) - 180.0);
         double E = M;
