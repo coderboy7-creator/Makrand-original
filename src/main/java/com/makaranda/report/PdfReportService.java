@@ -14,6 +14,7 @@ import com.makaranda.calc.VedicConstants;
 import com.makaranda.calc.dasha.VimshottariDasha;
 import com.makaranda.calc.dasha.VimshottariDasha.Period;
 import com.makaranda.calc.interpret.InterpretationEngine;
+import com.makaranda.calc.vedic.Ashtakavarga;
 import com.makaranda.calc.vedic.ChartBuilder.FullChart;
 import com.makaranda.calc.vedic.ChartBuilder.PlanetBody;
 import com.makaranda.calc.vedic.SpecialCharts;
@@ -291,6 +292,38 @@ public class PdfReportService {
         kv(doc, "लग्नेश रत्न", str(gems.get("lifeStone")));
         kv(doc, "निर्बल ग्रह", str(gems.get("weakestPlanet")) + "  " + str(gems.get("luckyStone")));
         p(doc, str(gems.get("warning")), f(8, MAROON), Element.ALIGN_LEFT);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void chapterAshtakavarga(Document doc, Map<String, Object> av) throws Exception {
+        h(doc, "६  अष्टकवर्ग  /  Ashtakavarga");
+        p(doc, str(av.get("noteHi")) + "  " + str(av.get("note")),
+                f(8, INK), Element.ALIGN_LEFT);
+        PdfPTable t = new PdfPTable(14);
+        t.setWidthPercentage(100);
+        header(t, "ग्रह");
+        for (String s : VedicConstants.SIGNS_HI) header(t, s);
+        header(t, "योग");
+        Map<String, Object> bav = (Map<String, Object>) av.get("bav");
+        if (bav != null) {
+            for (String g : Ashtakavarga.BAV_GRAHAS) {
+                Map<String, Object> row = (Map<String, Object>) bav.get(g);
+                cell(t, VedicConstants.planetHi(g));
+                List<Integer> bySign = (List<Integer>) row.get("bySign");
+                for (int n : bySign) cell(t, String.valueOf(n));
+                cell(t, String.valueOf(row.get("total")));
+            }
+        }
+        Map<String, Object> sav = (Map<String, Object>) av.get("sav");
+        cell(t, "सर्व");
+        if (sav != null) {
+            List<Integer> bySign = (List<Integer>) sav.get("bySign");
+            for (int n : bySign) cell(t, String.valueOf(n));
+            cell(t, String.valueOf(sav.get("total")));
+        }
+        doc.add(t);
+        p(doc, "बिन्दु राशि-क्रम (मेष→मीन)। भाव-क्रम लग्न से कुंडली पृष्ठ पर। राहु-केतु अष्टकवर्ग में नहीं।",
+                f(8, INK), Element.ALIGN_LEFT);
     }
 
     private void footerNote(Document doc) throws Exception {
