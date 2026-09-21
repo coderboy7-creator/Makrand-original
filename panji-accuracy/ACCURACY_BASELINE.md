@@ -2,7 +2,7 @@
 
 Measured on live `/api/v1/jyotish/kundali` at **06:30 IST**, KSDS 26.5833°N / 85.268°E.  
 CSV: `graha-spashta-band-data-2023-2026.csv`.  
-Chunk 1 was dataset-only. **Chunk 2 (2026-09-21)** inverted superior śīghra so Śani/Guru/Mangal no longer collapse onto Sūrya. Sun/Moon/July clocks unchanged. Ketu still ~180° (Chunk 3). No planet bija applied.
+Chunk 1 dataset-only. **Chunk 2** superior śīghra. **Chunk 3** SS Rāhu +180° so nodes match DRIK/panji (were swapped). Sun/Moon/July clocks unchanged. No planet bija.
 
 Circular delta in [−180°, +180°). Mean ± sd.
 
@@ -53,9 +53,9 @@ Not a constant. Elongation / print jumps. Magha Budha column defective vs `p25a`
 
 ---
 
-## B. App SIDDHANTIC vs DRIK — after Chunk 2 (live 06:30 IST)
+## B. App SIDDHANTIC vs DRIK — after Chunk 2+3 (live 06:30 IST)
 
-Sun/Moon stay on July gold. Outer grahas **no longer follow Sūrya**. Nodes still ~180° vs DRIK.
+Sun/Moon stay on July gold. Outer grahas **no longer follow Sūrya**. Nodes **no longer swapped**.
 
 | Date | Graha | SIDDHANTIC now | DRIK | SIDD − DRIK now | was (Chunk 1) |
 |---|---|---|---|---|---|
@@ -70,7 +70,9 @@ Sun/Moon stay on July gold. Outer grahas **no longer follow Sūrya**. Nodes stil
 | 2023-02-06 | Mangal | 20.5° Meṣa | 47.3° Vṛṣabha | **−26.8°** | −74° (still a rāśi off) |
 | 2023-02-06 | Budha | 274.6° | 268.7° | +5.9° | same |
 | 2023-02-06 | Śukra | 319.1° | 318.2° | +1.0° | same |
-| 2023-02-06 | Ketu | 18.1° | 193.5° | ~−175° | same (Chunk 3) |
+| 2023-02-06 | Ketu | **198.1°** | 193.5° | **+4.6°** | ~−175° |
+| 2026-01-04 | Ketu | **141.7°** | 136.3° | **+5.5°** | ~−175° |
+| 2025-10-08 | Ketu | **146.4°** | 144.0° | **+2.4°** | ~−175° |
 | 2023-02-06 | Sūrya | 291.9° | 292.8° | −0.9° | same |
 | 2023-02-06 | Candra | 115.9° | 115.7° | +0.2° | same |
 
@@ -78,31 +80,13 @@ Sun/Moon stay on July gold. Outer grahas **no longer follow Sūrya**. Nodes stil
 
 DRIK kundali vs panji (good pages) is still §A (~2–3° Śani, ~1° Guru).
 
-| Date (test this) | Graha | SIDDHANTIC | DRIK | SIDD − DRIK |
-|---|---|---|---|---|
-| 2023-02-06 | Śani | 293.5° Makara | 302.3° Makara | −8.8° |
-| 2023-05-20 | Śani | 28.5° **Meṣa** | 312.4° **Kumbha** | **+76°** (wrong rāśi) |
-| 2026-01-04 | Śani | 264.3° **Dhanu** | 332.1° **Kumbha** | **−68°** (wrong rāśi) |
-| 2023-02-06 | Guru | 300.9° | 342.8° | −42° |
-| 2026-01-04 | Guru | 258.1° Dhanu | 86.7° Mithuna | **~171°** |
-| 2023-02-06 | Mangal | 332.9° | 47.3° | −74° |
-| 2023-02-06 | Budha | 274.6° | 268.7° | **+5.9°** (order-of-magnitude OK) |
-| 2023-02-06 | Śukra | 319.1° | 318.2° | **+1.0°** |
-| 2023-02-06 | Ketu | 18.1° | 193.5° | **~−175°** (swap) |
-| 2023-02-06 | Sūrya | 291.9° | 292.8° | −0.9° |
-| 2023-02-06 | Candra | 115.9° | 115.7° | +0.2° |
-
-Inferior grahas are in the right rāśi. Śani/Guru/Mangal/Ketu on SIDDHANTIC kundali are **not**.
-
-DRIK kundali vs panji (good pages) is the table in §A (~2–3° Śani, ~1° Guru). Use DRIK as the visual check against the printed band until Chunk 2.
-
 ---
 
-## C. Screen impact — Chunk 2
+## C. Screen impact — Chunk 3 (nodes) + Chunk 2 (śīghra)
 
 | Route | Hindi UI | Chunk 2 (now) |
 |---|---|---|
-| `/kundali` tab कुंडली | graha table | **Śani/Guru/Mangal rāśi + nakṣatra** (positive on 20 May 2023 / 4 Jan 2026). Ketu unchanged. Sūrya/Candra unchanged. |
+| `/kundali` tab कुंडली | graha table | **Śani/Guru/Mangal** (Chunk 2). **Rāhu/Ketu rāśi** (Chunk 3, ~180° flip). Sūrya/Candra unchanged. |
 | `/kundali` tab चार्ट | D1 / Chandra / gochar | those three grahas move house if rāśi flipped |
 | `/kundali` tab KP | graha star/sub | tara-graha subs |
 | `/vargas` `/gochar` `/yogas` `/gems` `/varshaphal` `/prashna` `/milan` | | same grahas |
@@ -110,36 +94,10 @@ DRIK kundali vs panji (good pages) is the table in §A (~2–3° Śani, ~1° Gur
 | `/panchang` | tithi, SR/SS | **none — 29 Jul 2022 still 5:23 / 6:50** |
 | दशा | Moon | **none** |
 
-**How to see the gain:** Darbhanga, 06:30, **20 May 2023**, सिद्धान्तिक. Śani must be **Kumbha**, not Meṣa. Toggle दृक: also Kumbha (~6° apart). **4 Jan 2026** Śani **Mīna** (near Kumbha/Mīna cusp), not Dhanu.
+**How to see Chunk 2:** 20 May 2023, 06:30, सिद्धान्तिक — Śani **Kumbha**, not Meṣa.
 
-**Still wrong:** Ketu ~opposite; 6 Feb 2023 Mangal still Meṣa vs Swiss Vṛṣabha.
+**How to see Chunk 3:** **4 Jan 2026** 06:30 सिद्धान्तिक — Ketu ~**141° Siṃha** (panji 140°), not ~322°. Rāhu ~**322° Kumbha**.
 
-| Route | Hindi UI | Chunk 1 | Later graha chunks |
-|---|---|---|---|
-| `/kundali` tab मूल | name, place, lagna line | none | lagna unchanged; not this gold |
-| `/kundali` tab कुंडली | graha table (rāśi, bhāva, nakṣatra, DMS) | **none** | **Śani/Guru/Mangal/Ketu rāśi + nakṣatra** |
-| `/kundali` tab चार्ट | D1, Chandra, gochar drawings | **none** | house occupants for those grahas |
-| `/kundali` tab दशा | Vimśottari | none (Moon-based) | none unless Moon changes (it must not) |
-| `/kundali` tab KP | cusp + graha star/sub | **none** | graha star/sub for tara-grahas |
-| `/vargas` | D9 etc. | **none** | varga signs of tara-grahas |
-| `/gochar` | transits | **none** | transit rāśi of Śani/Guru/Mangal |
-| `/yogas` | yoga list | **none** | yogas that need those grahas |
-| `/gems` | graha gem | **none** | if lord/rāśi of a tara-graha flips |
-| `/varshaphal` | annual chart | **none** | annual grahas |
-| `/prashna` | query chart | **none** | same as kundali grahas |
-| `/milan` | two charts | **none** | guna that use Mars/Jupiter/Saturn |
-| PDF `/api/v1/jyotish/report` | graha table + varga | **none** | same as कुंडली table |
-| `/panchang` | tithi, nakṣatra, SR/SS | **none, must stay** | **must stay** |
-| `/muhurta` | windows | none | only if it reads tara-grahas |
-| `/horoscope` | daily | none | Moon/Sun; not this gold |
-| `/nakshatra` `/rashi` | encyclopedia | none | none |
+**Must not move:** `/panchang` 29 Jul 2022 **5:23 / 6:50**. दशा (Moon).
 
-**How to test today (baseline, not a gain):**
-
-1. Mode **सिद्धान्तिक**. Place Darbhanga. Time **06:30**.
-2. Date **20 May 2023** → कुंडली table: Śani should show **Meṣa** (~28°) in the app. Printed/Swiss is **Kumbha**. That is the current loss.
-3. Toggle **दृक** on the same date: Śani **Kumbha**. That matches KSDSU within ~3°.
-4. Date **4 Jan 2026**: सिद्धान्तिक Śani **Dhanu**; दृक **Kumbha**; panji Magha ~329.4° (Kumbha) ≈ दृक.
-5. Open `/panchang` for **29 Jul 2022**: sunrise still ~**5:23 AM** / **6:50 PM**. If that moved, Chunk 1 failed.
-
-Panchang is the **no-regression** screen. Kundali graha table is the **future-gain** screen.
+**Still wrong:** 6 Feb 2023 Mangal Meṣa vs Swiss Vṛṣabha. Ignore 2023 Phālguna/Chaitra printed Ketu (garbage).
