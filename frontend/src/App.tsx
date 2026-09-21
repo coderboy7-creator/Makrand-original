@@ -1,7 +1,7 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import {
-  AdminPage, ConsultPage, CrmPage, DashaPage, GemsPage, GocharPage, HomePage, HoroscopePage,
+  AdminPage, ConsultPage, CrmPage, GemsPage, GocharPage, HomePage, HoroscopePage,
   KundaliPage, LearnPage, LoginPage, MilanPage, MuhurtaPage, NakshatraPage, PanchangPage,
   PrashnaPage, RashiPage, VargasPage, VarshaPage, YogasPage
 } from "./pages/Pages";
@@ -15,7 +15,7 @@ export default function App() {
         <Route path="/vargas" element={<VargasPage />} />
         <Route path="/panchang" element={<PanchangPage />} />
         <Route path="/milan" element={<MilanPage />} />
-        <Route path="/dasha" element={<DashaPage />} />
+        <Route path="/dasha" element={<Navigate to="/kundali?tab=dasha" replace />} />
         <Route path="/horoscope" element={<HoroscopePage />} />
         <Route path="/yogas" element={<YogasPage />} />
         <Route path="/nakshatra" element={<NakshatraPage />} />
