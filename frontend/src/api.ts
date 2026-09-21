@@ -57,8 +57,12 @@ export async function fetchPdf(path: string, body: any): Promise<Blob> {
   return res.blob();
 }
 
+export function objectUrl(blob: Blob): string {
+  return URL.createObjectURL(blob);
+}
+
 export function triggerDownload(blob: Blob, filename: string): string {
-  const url = URL.createObjectURL(blob);
+  const url = objectUrl(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
