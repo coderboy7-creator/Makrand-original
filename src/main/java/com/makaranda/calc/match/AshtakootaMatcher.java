@@ -43,7 +43,7 @@ public final class AshtakootaMatcher {
         kootas.add(koota("Graha Maitri", 5, maitri, "Mental friendship of Moon lords"));
         kootas.add(koota("Gana", 6, gana, "Temperament — Deva / Manushya / Rakshasa"));
         kootas.add(koota("Bhakoot", 7, bhakoot, "Rashi love, wealth and family harmony"));
-        kootas.add(koota("Nadi", 8, nadi, "Health, genes and progeny (Ayurvedic nadi)"));
+        kootas.add(koota("Nadi", 8, nadi, "Traditional nadi koota (Ayurvedic name) — not a medical or genetic test"));
 
         String verdict;
         if (total >= 32) verdict = "Uttama — Excellent match";
@@ -60,10 +60,13 @@ public final class AshtakootaMatcher {
         out.put("mangalDosha", mangal);
         out.put("boyMoon", Map.of("sign", bMoon.signSa(), "nakshatra", bMoon.nakshatra(), "pada", bMoon.pada()));
         out.put("girlMoon", Map.of("sign", gMoon.signSa(), "nakshatra", gMoon.nakshatra(), "pada", gMoon.pada()));
+        out.put("disclaimer", "Ashtakoota is parampara arithmetic — not a marriage licence, medical opinion, or court finding.");
+        out.put("disclaimerHi", "अष्टकूट परम्परा गणित है — विवाह-लाइसेंस, चिकित्सा राय या न्यायालय निर्णय नहीं।");
         out.put("notes", List.of(
                 "Nadi dosha is traditionally considered cancellable if other kootas are strong and Rasi lords are friendly.",
                 "Mangal dosha cancellation: Mars in own/exaltation, or both charts manglik, or Saturn/Rahu occupying same houses.",
-                "Mithilanchal custom: Maithil marriages also weigh gotra, pravara and village exogamy beyond Guna milan."
+                "Mithilanchal custom: Maithil marriages also weigh gotra, pravara and village exogamy beyond Guna milan.",
+                "Guna milan is not a marriage licence, medical opinion, or court finding."
         ));
         return out;
     }

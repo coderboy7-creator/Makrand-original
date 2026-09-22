@@ -32,8 +32,8 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 - [ ] **Seasonal सिद्धान्तिक lock** — Kartika/Magha tithi 45–140 min early. **Do not** retune apogee/manda/EoT (winter grid dead). Next lever is not a school constant.
 - [ ] Tighten 12 Aug 2022 purnima (app ~7:47 vs book 7:27). Even-paridhi 20′ missed the gate — do not reapply.
 - [ ] Stop labelling interpretation “AI”; copy = परम्परा पाठ + disclaimer.
-- [ ] JWT secret / H2 console off in prod; Flyway + real Postgres test.
-- [ ] Gem / matching legal copy pass.
+- [x] JWT secret / H2 console off in prod; Flyway + real Postgres test.
+- [x] Gem / matching legal copy pass.
 
 ## P1 — finish the brief
 

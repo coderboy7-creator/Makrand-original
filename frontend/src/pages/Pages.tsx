@@ -650,6 +650,7 @@ export function MilanPage() {
   return (
     <Box>
       <PageHero title={t("milan_title")} sub={t("milan_sub")} />
+      <Alert severity="info" sx={{ mb: 2 }}>{t("milan_legal")}</Alert>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <GlassCard>
@@ -681,6 +682,9 @@ export function MilanPage() {
           <Alert sx={{ mt: 2 }} severity={res.mangalDosha?.cancelled ? "success" : res.mangalDosha?.boyManglik || res.mangalDosha?.girlManglik ? "warning" : "info"}>
             {res.mangalDosha?.note}
           </Alert>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+            {t("milan_legal")}
+          </Typography>
         </GlassCard>
       )}
     </Box>
@@ -943,7 +947,8 @@ export function GemsPage() {
   const g = chart?.gemstones;
   return (
     <Box>
-      <PageHero title={t("gems_title")} />
+      <PageHero title={t("gems_title")} sub={t("gems_sub")} />
+      <Alert severity="info" sx={{ mb: 2 }}>{t("gems_legal")}</Alert>
       <BirthForm />
       {g && (
         <Grid container spacing={2} sx={{ mt: 1 }}>
