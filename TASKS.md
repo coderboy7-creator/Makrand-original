@@ -22,16 +22,17 @@ Legend: **Done** · **Now** (active) · **P0** beta · **P1** brief-complete · 
 - [x] Outer-graha śīghra epicycle (Chunk 2) — Śani/Guru leave Sūrya; July SR/SS unchanged
 - [x] SIDDHANTIC Rāhu/Ketu +180° vs DRIK/panji (Chunk 3)
 - [x] Chunk 4 measure: Śani panji−SIDD −10.1° ± 1.5° and elongation-shaped — **no bija**
+- [x] Chunk 5 SS paridhi + mandocca (inferiors not śīghrocca-as-mandocca)
+- [x] Chunk 6 SS four-step spaṣṭa — 6 Feb 2023 Mangal SIDD−DRIK −26° → −1° (same rāśi as Drik)
 
 ## Now / P0 — correctness
 
-- [ ] **Seasonal सिद्धान्तिक lock** — original KSDSU Kartika/Magha tithi 45–140 min early; Jan SR already ~5 min; Oct SR ~20 min. Next: **sun apogee / manda only** on a new branch; July fixtures must stay.
-- [ ] More golden tests: 24 Jul 2016 10:14 PM; 27 Jul 2022 Chaturdashi; 12 Aug 2022 purnima Δ≤15 min.
-- [ ] Tighten 12 Aug 2022 purnima (app ~7:47 vs book 7:27).
-- [ ] Swiss Ephemeris adapter for **Drik only** (keep SS path).
+- [ ] **Śani panji−SIDD phase** (~−10° ± 1.4°, corr elong −0.82) — **HOLD bija** until a physical lever exists.
+- [ ] **Do not merge** `calc/p13-udayantara` (29 Jul 2022 SR 5:25 vs 5:20).
+- [ ] **Seasonal सिद्धान्तिक lock** — Kartika/Magha tithi 45–140 min early. **Do not** retune apogee/manda/EoT (winter grid dead). Next lever is not a school constant.
+- [ ] Tighten 12 Aug 2022 purnima (app ~7:47 vs book 7:27). Even-paridhi 20′ missed the gate — do not reapply.
 - [ ] Stop labelling interpretation “AI”; copy = परम्परा पाठ + disclaimer.
 - [ ] JWT secret / H2 console off in prod; Flyway + real Postgres test.
-- [ ] CRM/consult **ownership** checks.
 - [ ] Gem / matching legal copy pass.
 
 ## P1 — finish the brief
