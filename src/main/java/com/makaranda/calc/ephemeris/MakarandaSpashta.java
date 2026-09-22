@@ -47,6 +47,29 @@ public final class MakarandaSpashta {
     public static final double REV_APSIDES_MOON = 488_203.0;
 
     /**
+     * SS / Makaranda Kali mandocca and odd-quadrant paridhi (Burgess).
+     * Chunk 5: inferiors use these mandoccas (not śīghrocca as mandocca).
+     * Śīghra k = paridhi/360, not AU. Sun/Moon bijas untouched.
+     */
+    public static final double MARS_MANDOCCA = 130.0;
+    public static final double MER_MANDOCCA = 220.0 + 28.0 / 60.0;
+    public static final double JUP_MANDOCCA = 171.0 + 18.0 / 60.0;
+    public static final double VEN_MANDOCCA = 79.0 + 50.0 / 60.0;
+    public static final double SAT_MANDOCCA = 236.0 + 37.0 / 60.0;
+
+    public static final double MARS_MANDA_PARIDHI = 75.0;
+    public static final double MER_MANDA_PARIDHI = 30.0;
+    public static final double JUP_MANDA_PARIDHI = 32.0;
+    public static final double VEN_MANDA_PARIDHI = 12.0;
+    public static final double SAT_MANDA_PARIDHI = 49.0;
+
+    public static final double MARS_SIGHRA_PARIDHI = 235.0;
+    public static final double MER_SIGHRA_PARIDHI = 133.0;
+    public static final double JUP_SIGHRA_PARIDHI = 72.0;
+    public static final double VEN_SIGHRA_PARIDHI = 262.0;
+    public static final double SAT_SIGHRA_PARIDHI = 39.0;
+
+    /**
      * SS jyā table, R = 3438′, every 3°45′ (Burgess). Used for manda bhuja.
      */
     private static final int[] JYA = {
@@ -97,11 +120,12 @@ public final class MakarandaSpashta {
         double sunPhala = mandaPhala(sunMean, sunApogee, SUN_MANDA_ODD);
         double sun = AstroMath.norm360(sunMean + sunPhala);
         double moon = mandaLon(moonMean, moonApsis, MOON_MANDA_ODD);
-        double mars = sighra(mandaLon(marsMean, 130.0, 75.0), sun, 1.524);
-        double mer = sighra(mandaLon(sunMean, merMean, 35.0), merMean, 0.387);
-        double jup = sighra(mandaLon(jupMean, 171.0, 32.0), sun, 5.2);
-        double ven = sighra(mandaLon(sunMean, venMean, 12.0), venMean, 0.723);
-        double sat = sighra(mandaLon(satMean, 236.0, 49.0), sun, 9.5);
+        // Chunk 5: SS paridhi + correct mandocca. Inferiors: mean = Sūrya, śīghrocca = graha mean.
+        double mars = superiorSpashta(marsMean, MARS_MANDOCCA, MARS_MANDA_PARIDHI, sun, MARS_SIGHRA_PARIDHI);
+        double mer = inferiorSpashta(sunMean, MER_MANDOCCA, MER_MANDA_PARIDHI, merMean, MER_SIGHRA_PARIDHI);
+        double jup = superiorSpashta(jupMean, JUP_MANDOCCA, JUP_MANDA_PARIDHI, sun, JUP_SIGHRA_PARIDHI);
+        double ven = inferiorSpashta(sunMean, VEN_MANDOCCA, VEN_MANDA_PARIDHI, venMean, VEN_SIGHRA_PARIDHI);
+        double sat = superiorSpashta(satMean, SAT_MANDOCCA, SAT_MANDA_PARIDHI, sun, SAT_SIGHRA_PARIDHI);
 
         return new Bodies(sun, moon, mer, ven, mars, jup, sat, rahuMean, sunMean, sunPhala, 4.0 * sunPhala);
     }
@@ -130,6 +154,25 @@ public final class MakarandaSpashta {
 
     static double mandaLon(double mean, double mandocca, double oddCircum) {
         return AstroMath.norm360(mean + mandaPhala(mean, mandocca, oddCircum));
+    }
+
+    /**
+     * Superior graha: manda on own mean, then śīghra vs Sūrya spaṣṭa.
+     * Paridhi/360, not AU. Half-equation iteration threw Śani ~180° on 6 Feb 2023 — not used.
+     */
+    static double superiorSpashta(double mean, double mandocca, double mandaParidhi,
+                                  double sunSpashta, double sighraParidhi) {
+        double manda = mandaLon(mean, mandocca, mandaParidhi);
+        return AstroMath.norm360(manda + mandaPhala(sunSpashta, manda, sighraParidhi));
+    }
+
+    /**
+     * Inferior: manda on Sūrya mean vs graha mandocca (not śīghrocca), then śīghra.
+     */
+    static double inferiorSpashta(double sunMean, double mandocca, double mandaParidhi,
+                                  double sighrocca, double sighraParidhi) {
+        double manda = mandaLon(sunMean, mandocca, mandaParidhi);
+        return AstroMath.norm360(manda + mandaPhala(sighrocca, manda, sighraParidhi));
     }
 
     /**
