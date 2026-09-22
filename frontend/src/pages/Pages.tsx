@@ -809,6 +809,11 @@ export function RashiPage() {
   );
 }
 
+function clockSpan(win: { start?: string; end?: string } | undefined) {
+  if (!win?.start) return "—";
+  return `${win.start}–${win.end || ""}`;
+}
+
 export function MuhurtaPage() {
   const { t, lang } = useI18n();
   const [purpose, setPurpose] = useState("MARRIAGE");
@@ -844,6 +849,7 @@ export function MuhurtaPage() {
   return (
     <Box>
       <PageHero title={t("muhurta_title")} sub={t("muhurta_sub")} />
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{t("muhurta_windows_help")}</Typography>
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
         {["MARRIAGE", "BUSINESS", "TRAVEL", "PROPERTY", "EDUCATION", "NAMAKARANA", "GENERAL"].map((p) => (
           <Chip key={p} label={t(p)} color={purpose === p ? "primary" : "default"} onClick={() => setPurpose(p)} />
@@ -1187,6 +1193,20 @@ export function LoginPage() {
   const [email, setEmail] = useState("user@makaranda.app");
   const [password, setPassword] = useState("user123");
   const [err, setErr] = useState("");
+  return (
+    <Box sx={{ maxWidth: 440, mx: "auto", mt: 4 }}>
+      <GlassCard>
+        <PageHero title={t("signin")} sub={t("demo_accounts")} />
+        <TextField fullWidth label={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} sx={{ mb: 2 }} />
+        <TextField fullWidth type="password" label={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} sx={{ mb: 2 }} />
+        {err && <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert>}
+        <Button fullWidth variant="contained" onClick={() => login(email, password).catch((e) => setErr(e.message))}>{t("enter")}</Button>
+        <Typography variant="body2" sx={{ mt: 2 }} color="text.secondary">user123 · astro123 · admin123</Typography>
+      </GlassCard>
+    </Box>
+  );
+}
+r, setErr] = useState("");
   return (
     <Box sx={{ maxWidth: 440, mx: "auto", mt: 4 }}>
       <GlassCard>
