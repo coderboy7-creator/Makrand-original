@@ -157,22 +157,32 @@ public final class MakarandaSpashta {
     }
 
     /**
-     * Superior graha: manda on own mean, then śīghra vs Sūrya spaṣṭa.
-     * Paridhi/360, not AU. Half-equation iteration threw Śani ~180° on 6 Feb 2023 — not used.
+     * SS four-step (II.43–45 / JAA 2025 notes): ½ śīghra on mean, ½ manda on
+     * that, full manda on the <em>mean</em> with the twice-corrected kendra,
+     * full śīghra. Not a bija. The old half-sum on manda+śīghra from the
+     * uncorrected mean threw Śani ~180° on 6 Feb 2023 — different order.
      */
-    static double superiorSpashta(double mean, double mandocca, double mandaParidhi,
-                                  double sunSpashta, double sighraParidhi) {
-        double manda = mandaLon(mean, mandocca, mandaParidhi);
-        return AstroMath.norm360(manda + mandaPhala(sunSpashta, manda, sighraParidhi));
+    static double ssFourStep(double mean, double mandocca, double mandaParidhi,
+                             double sighrocca, double sighraParidhi) {
+        double sHalf = mandaPhala(sighrocca, mean, sighraParidhi);
+        double lonA = AstroMath.norm360(mean + 0.5 * sHalf);
+        double mHalf = mandaPhala(lonA, mandocca, mandaParidhi);
+        double lonB = AstroMath.norm360(lonA + 0.5 * mHalf);
+        double mFull = mandaPhala(lonB, mandocca, mandaParidhi);
+        double lonC = AstroMath.norm360(mean + mFull);
+        return AstroMath.norm360(lonC + mandaPhala(sighrocca, lonC, sighraParidhi));
     }
 
-    /**
-     * Inferior: manda on Sūrya mean vs graha mandocca (not śīghrocca), then śīghra.
-     */
+    /** Superior: śīghrocca = Sūrya spaṣṭa. */
+    static double superiorSpashta(double mean, double mandocca, double mandaParidhi,
+                                  double sunSpashta, double sighraParidhi) {
+        return ssFourStep(mean, mandocca, mandaParidhi, sunSpashta, sighraParidhi);
+    }
+
+    /** Inferior: mean = Sūrya mean, śīghrocca = graha mean. */
     static double inferiorSpashta(double sunMean, double mandocca, double mandaParidhi,
                                   double sighrocca, double sighraParidhi) {
-        double manda = mandaLon(sunMean, mandocca, mandaParidhi);
-        return AstroMath.norm360(manda + mandaPhala(sighrocca, manda, sighraParidhi));
+        return ssFourStep(sunMean, mandocca, mandaParidhi, sighrocca, sighraParidhi);
     }
 
     /**
