@@ -10,6 +10,8 @@ spring:
     console:
       enabled: true
       path: /h2
+  flyway:
+    enabled: false
   jpa:
     hibernate:
       ddl-auto: update
@@ -29,7 +31,7 @@ server:
     include-message: always
 
 makaranda:
-  jwt-secret: MakarandaMithilaJyotishSecretKey2026ForHS256TokensMustBeLongEnough!!
+  jwt-secret: ${MAKARANDA_JWT_SECRET:CHANGE_ME_DEV_ONLY_MakarandaLocalHs256Key32!!}
   jwt-expiry-hours: 72
   default-place: Darbhanga, Bihar, India (KSDS अक्षांश २६।३५)
   default-lat: 26.5833

@@ -3,6 +3,7 @@ package com.makaranda.config;
 import com.makaranda.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -22,9 +23,11 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
+    private final Environment env;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, Environment env) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.env = env;
     }
 
     @Bean
@@ -32,20 +35,29 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/public/**").permitAll()
-                        .requestMatchers("/api/v1/jyotish/**").permitAll()
-                        .requestMatchers("/api/v1/learn/**").permitAll()
-                        .requestMatchers("/api/v1/location/**").permitAll()
-                        .requestMatchers("/api/docs/**", "/api/swagger/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/h2/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/", "/index.html", "/assets/**", "/static/**",
-                                "/*.js", "/*.css", "/*.svg", "/*.png", "/*.ico", "/manifest.json").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/crm/**", "/api/v1/consult/**").authenticated()
-                        .anyRequest().permitAll())
-                .headers(h -> h.frameOptions(f -> f.sameOrigin()))
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/api/v1/auth/**").permitAll()
+                            .requestMatchers("/api/v1/public/**").permitAll()
+                            .requestMatchers("/api/v1/jyotish/**").permitAll()
+                            .requestMatchers("/api/v1/learn/**").permitAll()
+                            .requestMatchers("/api/v1/location/**").permitAll()
+                            .requestMatchers("/api/docs/**", "/api/swagger/**", "/v3/api-docs/**").permitAll();
+                    if (!env.matchesProfiles("prod")) {
+                        auth.requestMatchers("/h2/**").permitAll();
+                    }
+                    auth.requestMatchers(HttpMethod.GET, "/", "/index.html", "/assets/**", "/static/**",
+                                    "/*.js", "/*.css", "/*.svg", "/*.png", "/*.ico", "/manifest.json").permitAll()
+                            .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                            .requestMatchers("/api/v1/crm/**", "/api/v1/consult/**").authenticated()
+                            .anyRequest().permitAll();
+                })
+                .headers(h -> {
+                    if (env.matchesProfiles("prod")) {
+                        h.frameOptions(f -> f.deny());
+                    } else {
+                        h.frameOptions(f -> f.sameOrigin());
+                    }
+                })
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
