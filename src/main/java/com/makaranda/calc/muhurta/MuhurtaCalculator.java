@@ -91,8 +91,11 @@ public final class MuhurtaCalculator {
             row.put("vara", p.get("varaHi"));
             row.put("varaEn", p.get("vara"));
             row.put("sunrise", p.get("sunrise"));
+            row.put("sunset", p.get("sunset"));
             row.put("abhijit", p.get("abhijit"));
+            row.put("brahmaMuhurta", p.get("brahmaMuhurta"));
             row.put("avoid", p.get("muhurta"));
+            putWindows(row, p);
             if (purpose == Purpose.TRAVEL) {
                 row.put("direction", dir);
                 row.put("directionHi", directionHi(dir));
@@ -158,6 +161,34 @@ public final class MuhurtaCalculator {
             case "N", "NE", "E", "SE", "S", "SW", "W", "NW" -> s;
             default -> s.length() <= 2 ? s : null;
         };
+    }
+
+    /** Flatten Rahu / Yamaganda / Gulika / Abhijit / Brahma into 12-hour clock strings. */
+    static void putWindows(Map<String, Object> row, Map<String, Object> p) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> avoid = p.get("muhurta") instanceof Map<?, ?> m
+                ? (Map<String, Object>) m : Map.of();
+        Object rahu = avoid.get("rahuKalam");
+        Object yama = avoid.get("yamaganda");
+        Object gulika = avoid.get("gulika");
+        Object abhijit = p.get("abhijit");
+        Object brahma = p.get("brahmaMuhurta");
+        row.put("rahuKalam", rahu);
+        row.put("yamaganda", yama);
+        row.put("gulika", gulika);
+        row.put("rahuClock", span(rahu));
+        row.put("yamaClock", span(yama));
+        row.put("gulikaClock", span(gulika));
+        row.put("abhijitClock", span(abhijit));
+        row.put("brahmaClock", span(brahma));
+    }
+
+    static String span(Object win) {
+        if (!(win instanceof Map<?, ?> m)) return "—";
+        Object a = m.get("start");
+        Object b = m.get("end");
+        if (a == null || String.valueOf(a).isBlank()) return "—";
+        return a + "–" + (b == null ? "" : b);
     }
 
     public static String directionHi(String dir) {
