@@ -47,8 +47,12 @@ class DoshaPanelTest {
         assertFalse(blob.contains("deadly"));
         assertFalse(blob.contains("ruin"));
         assertFalse(blob.contains("you will suffer"));
-        assertTrue(blob.contains("not a curse") || blob.contains("शाप नहीं"));
         assertTrue(String.valueOf(pan.get("noteHi")).contains("भय-प्रचार"));
+        // "not a curse" lives on the present-state Kaal Sarp line only.
+        Object kspOn = items.get(1).get("present");
+        if (Boolean.TRUE.equals(kspOn)) {
+            assertTrue(blob.contains("not a curse") || blob.contains("शाप नहीं"));
+        }
     }
 
     @Test
