@@ -19,6 +19,9 @@ public class JwtService {
 
     public JwtService(@Value("${makaranda.jwt-secret}") String secret,
                       @Value("${makaranda.jwt-expiry-hours}") long expiryHours) {
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalArgumentException("makaranda.jwt-secret must be ≥32 bytes (set MAKARANDA_JWT_SECRET)");
+        }
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expiryHours = expiryHours;
     }
